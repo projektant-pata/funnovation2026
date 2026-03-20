@@ -1141,13 +1141,6 @@ CREATE INDEX idx_challenges_type_status ON public.challenges(challenge_type, sta
 CREATE INDEX idx_personal_challenges_user ON public.personal_challenges(user_id, completed_at);
 CREATE INDEX idx_community_submissions_challenge ON public.community_challenge_submissions(challenge_id, submitted_at DESC);
 CREATE INDEX idx_pair_votes_challenge_voter ON public.challenge_pair_votes(challenge_id, voter_user_id);
-CREATE UNIQUE INDEX idx_pair_votes_unique_pair_per_voter
-	ON public.challenge_pair_votes(
-		challenge_id,
-		voter_user_id,
-		LEAST(submission_a_id, submission_b_id),
-		GREATEST(submission_a_id, submission_b_id)
-	);
 
 CREATE INDEX idx_cooking_sessions_user ON public.cooking_sessions(user_id, started_at DESC);
 CREATE INDEX idx_cooking_sessions_recipe ON public.cooking_sessions(recipe_id);
@@ -1392,42 +1385,6 @@ CREATE POLICY group_invitations_member_read ON public.group_invitations
 		OR public.is_group_member(group_id, auth.uid())
 	);
 
-DROP POLICY IF EXISTS group_invitations_member_insert ON public.group_invitations;
-CREATE POLICY group_invitations_member_insert ON public.group_invitations
-	FOR INSERT
-	WITH CHECK (
-		auth.uid() = inviter_user_id
-		AND (
-			public.is_group_member(group_id, auth.uid())
-			OR EXISTS (
-				SELECT 1
-				FROM public.user_groups ug
-				WHERE ug.id = group_id
-					AND ug.owner_user_id = auth.uid()
-			)
-		)
-	);
-
-DROP POLICY IF EXISTS group_invitations_member_update ON public.group_invitations;
-CREATE POLICY group_invitations_member_update ON public.group_invitations
-	FOR UPDATE
-	USING (
-		auth.uid() = inviter_user_id
-		OR auth.uid() = invitee_user_id
-	)
-	WITH CHECK (
-		auth.uid() = inviter_user_id
-		OR auth.uid() = invitee_user_id
-	);
-
-DROP POLICY IF EXISTS group_invitations_member_delete ON public.group_invitations;
-CREATE POLICY group_invitations_member_delete ON public.group_invitations
-	FOR DELETE
-	USING (
-		auth.uid() = inviter_user_id
-		OR auth.uid() = invitee_user_id
-	);
-
 DROP POLICY IF EXISTS follows_owner_all ON public.follows;
 CREATE POLICY follows_owner_all ON public.follows
 	FOR ALL USING (auth.uid() = follower_user_id)
@@ -1642,17 +1599,6 @@ DROP POLICY IF EXISTS challenges_create_owner ON public.challenges;
 CREATE POLICY challenges_create_owner ON public.challenges
 	FOR INSERT WITH CHECK (created_by_user_id = auth.uid() OR created_by_user_id IS NULL);
 
-DROP POLICY IF EXISTS challenges_update_owner ON public.challenges;
-CREATE POLICY challenges_update_owner ON public.challenges
-	FOR UPDATE
-	USING (created_by_user_id = auth.uid())
-	WITH CHECK (created_by_user_id = auth.uid());
-
-DROP POLICY IF EXISTS challenges_delete_owner ON public.challenges;
-CREATE POLICY challenges_delete_owner ON public.challenges
-	FOR DELETE
-	USING (created_by_user_id = auth.uid());
-
 DROP POLICY IF EXISTS personal_challenges_owner ON public.personal_challenges;
 CREATE POLICY personal_challenges_owner ON public.personal_challenges
 	FOR ALL USING (user_id = auth.uid())
@@ -1850,5 +1796,71 @@ CREATE POLICY glossary_terms_read_all ON public.glossary_terms
 DROP POLICY IF EXISTS glossary_term_translations_read_all ON public.glossary_term_translations;
 CREATE POLICY glossary_term_translations_read_all ON public.glossary_term_translations
 	FOR SELECT USING (true);
+
+-- ---------------------------------------------------------------------------
+-- Supabase role grants and stricter RLS defaults
+-- ---------------------------------------------------------------------------
+DO $$
+BEGIN
+	IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+		GRANT USAGE ON SCHEMA public TO anon;
+	END IF;
+
+	IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+		GRANT USAGE ON SCHEMA public TO authenticated;
+	END IF;
+END
+$$;
+
+DO $$
+DECLARE
+	table_name text;
+BEGIN
+	FOREACH table_name IN ARRAY ARRAY[
+		'profiles', 'continents', 'countries', 'allergens', 'diet_types', 'recipe_categories', 'recipe_tags',
+		'ingredients', 'recipes', 'recipe_translations', 'recipe_ingredients', 'recipe_steps', 'recipe_step_translations',
+		'recipe_allergens', 'recipe_diet_compatibility', 'recipe_tag_links', 'recipe_media',
+		'campaigns', 'campaign_nodes', 'campaign_node_translations', 'campaign_edges', 'cutscenes',
+		'campaign_tasks', 'campaign_task_translations', 'campaign_task_recipes',
+		'challenges', 'community_challenge_submissions', 'challenge_results',
+		'badges', 'level_config', 'glossary_terms', 'glossary_term_translations',
+		'reels', 'reel_comments'
+	] LOOP
+		IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+			EXECUTE format('GRANT SELECT ON TABLE public.%I TO anon', table_name);
+		END IF;
+
+		IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+			EXECUTE format('GRANT SELECT ON TABLE public.%I TO authenticated', table_name);
+		END IF;
+	END LOOP;
+END
+$$;
+
+DO $$
+DECLARE
+	table_name text;
+BEGIN
+	FOREACH table_name IN ARRAY ARRAY[
+		'profiles', 'user_preferences', 'user_skill_assessments', 'consents', 'data_export_jobs', 'deletion_requests',
+		'user_diets', 'user_allergies',
+		'user_groups', 'group_memberships', 'group_invitations', 'follows',
+		'recipes', 'recipe_translations', 'recipe_ingredients', 'recipe_steps', 'recipe_step_translations',
+		'recipe_allergens', 'recipe_diet_compatibility', 'recipe_tag_links', 'recipe_media', 'recipe_group_shares',
+		'reels', 'reel_likes', 'reel_comments', 'social_feed_impressions',
+		'campaigns', 'campaign_nodes', 'campaign_node_translations', 'campaign_edges', 'cutscenes',
+		'campaign_tasks', 'campaign_task_translations', 'campaign_task_recipes', 'user_campaign_progress', 'user_node_decisions',
+		'challenges', 'personal_challenges', 'community_challenge_submissions', 'challenge_pair_votes', 'challenge_results',
+		'cooking_sessions', 'cooking_session_step_progress', 'cooking_session_notes', 'cooking_session_media', 'user_region_progress',
+		'level_config', 'xp_events', 'badges', 'user_badges', 'streaks', 'crowns',
+		'meal_plans', 'meal_plan_items', 'pantry_items', 'shopping_lists', 'shopping_list_items', 'receipt_ocr_jobs', 'receipt_ocr_items',
+		'ai_interactions', 'ai_generated_assets', 'image_moderation_logs', 'audit_events',
+		'glossary_terms', 'glossary_term_translations',
+		'continents', 'countries', 'allergens', 'diet_types', 'recipe_categories', 'recipe_tags', 'ingredients'
+	] LOOP
+		EXECUTE format('ALTER TABLE public.%I FORCE ROW LEVEL SECURITY', table_name);
+	END LOOP;
+END
+$$;
 
 COMMIT;
