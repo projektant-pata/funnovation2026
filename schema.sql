@@ -1141,6 +1141,13 @@ CREATE INDEX idx_challenges_type_status ON public.challenges(challenge_type, sta
 CREATE INDEX idx_personal_challenges_user ON public.personal_challenges(user_id, completed_at);
 CREATE INDEX idx_community_submissions_challenge ON public.community_challenge_submissions(challenge_id, submitted_at DESC);
 CREATE INDEX idx_pair_votes_challenge_voter ON public.challenge_pair_votes(challenge_id, voter_user_id);
+CREATE UNIQUE INDEX idx_pair_votes_unique_pair_per_voter
+	ON public.challenge_pair_votes(
+		challenge_id,
+		voter_user_id,
+		LEAST(submission_a_id, submission_b_id),
+		GREATEST(submission_a_id, submission_b_id)
+	);
 
 CREATE INDEX idx_cooking_sessions_user ON public.cooking_sessions(user_id, started_at DESC);
 CREATE INDEX idx_cooking_sessions_recipe ON public.cooking_sessions(recipe_id);
@@ -1385,6 +1392,42 @@ CREATE POLICY group_invitations_member_read ON public.group_invitations
 		OR public.is_group_member(group_id, auth.uid())
 	);
 
+DROP POLICY IF EXISTS group_invitations_member_insert ON public.group_invitations;
+CREATE POLICY group_invitations_member_insert ON public.group_invitations
+	FOR INSERT
+	WITH CHECK (
+		auth.uid() = inviter_user_id
+		AND (
+			public.is_group_member(group_id, auth.uid())
+			OR EXISTS (
+				SELECT 1
+				FROM public.user_groups ug
+				WHERE ug.id = group_id
+					AND ug.owner_user_id = auth.uid()
+			)
+		)
+	);
+
+DROP POLICY IF EXISTS group_invitations_member_update ON public.group_invitations;
+CREATE POLICY group_invitations_member_update ON public.group_invitations
+	FOR UPDATE
+	USING (
+		auth.uid() = inviter_user_id
+		OR auth.uid() = invitee_user_id
+	)
+	WITH CHECK (
+		auth.uid() = inviter_user_id
+		OR auth.uid() = invitee_user_id
+	);
+
+DROP POLICY IF EXISTS group_invitations_member_delete ON public.group_invitations;
+CREATE POLICY group_invitations_member_delete ON public.group_invitations
+	FOR DELETE
+	USING (
+		auth.uid() = inviter_user_id
+		OR auth.uid() = invitee_user_id
+	);
+
 DROP POLICY IF EXISTS follows_owner_all ON public.follows;
 CREATE POLICY follows_owner_all ON public.follows
 	FOR ALL USING (auth.uid() = follower_user_id)
@@ -1598,6 +1641,17 @@ CREATE POLICY challenges_read_active ON public.challenges
 DROP POLICY IF EXISTS challenges_create_owner ON public.challenges;
 CREATE POLICY challenges_create_owner ON public.challenges
 	FOR INSERT WITH CHECK (created_by_user_id = auth.uid() OR created_by_user_id IS NULL);
+
+DROP POLICY IF EXISTS challenges_update_owner ON public.challenges;
+CREATE POLICY challenges_update_owner ON public.challenges
+	FOR UPDATE
+	USING (created_by_user_id = auth.uid())
+	WITH CHECK (created_by_user_id = auth.uid());
+
+DROP POLICY IF EXISTS challenges_delete_owner ON public.challenges;
+CREATE POLICY challenges_delete_owner ON public.challenges
+	FOR DELETE
+	USING (created_by_user_id = auth.uid());
 
 DROP POLICY IF EXISTS personal_challenges_owner ON public.personal_challenges;
 CREATE POLICY personal_challenges_owner ON public.personal_challenges
