@@ -1,5 +1,5 @@
-import WorldMapClient from './components/WorldMap/WorldMapClient';
+import { redirect } from 'next/navigation'
 
-export default function Home() {
-  return <WorldMapClient />;
+export default function Root() {
+  redirect('/cs')
 }

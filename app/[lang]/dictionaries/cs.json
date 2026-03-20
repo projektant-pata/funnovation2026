@@ -1,0 +1,59 @@
+{
+  "hero": {
+    "title": "žemLOVEka",
+    "subtitle": "Nauč se vařit jako šéfkuchař",
+    "tagline": "Gamifikovaná výuka vaření — příběhy, recepty, AI asistent.",
+    "cta": "Začít vařit"
+  },
+  "stats": {
+    "regions": "kulinářských regionů",
+    "recipes": "receptů",
+    "chapters": "kapitol kampaně",
+    "ai": "AI šéfkuchař"
+  },
+  "campaign": {
+    "label": "Kampaň",
+    "title": "Uvař svůj příběh",
+    "description": "Interaktivní vizuální novela s butterfly-effect větvením. Každé rozhodnutí ovlivňuje tvůj kulinářský osud.",
+    "cta": "Objevuj"
+  },
+  "map": {
+    "label": "Mapa světa",
+    "title": "Prozkoumej kulinářský svět",
+    "description": "5 kulinářských regionů, desítky receptů. Klikni na stát a objev jeho kulinářské poklady.",
+    "cta": "Otevřít mapu"
+  },
+  "sandbox": {
+    "label": "Sandbox",
+    "title": "Vař, co chceš",
+    "description": "Vyber si recept z celého světa a pusť se do vaření.",
+    "cta": "Zobrazit vše"
+  },
+  "team": {
+    "label": "Tým",
+    "title": "Lidé za žemLOVEkou"
+  },
+  "nav": {
+    "lang": "EN",
+    "map": "Mapa",
+    "sandbox": "Sandbox",
+    "campaign": "Kampaň",
+    "dictionary": "Slovník",
+    "login": "Přihlásit se"
+  },
+  "footer": {
+    "tagline": "Duolingo pro vaření.",
+    "pages": "Stránky",
+    "info": "Informace",
+    "gdpr": "GDPR",
+    "about": "O projektu",
+    "contact": "Kontakt",
+    "dictionary": "Slovník",
+    "copyright": "© 2026 žemLOVEka. Všechna práva vyhrazena."
+  },
+  "difficulty": {
+    "Easy": "Lehké",
+    "Medium": "Střední",
+    "Hard": "Těžké"
+  }
+}

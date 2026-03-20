@@ -22,6 +22,6 @@ const WorldMap = dynamic(() => import('./WorldMap'), {
   ),
 });
 
-export default function WorldMapClient() {
-  return <WorldMap />;
+export default function WorldMapClient({ lang }: { lang: string }) {
+  return <WorldMap lang={lang} />;
 }

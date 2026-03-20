@@ -196,7 +196,40 @@ function ZoomControls({ onReset }: { onReset: () => void }) {
   );
 }
 
-// ─── Side panel ───────────────────────────────────────────────────────────────
+// ─── Left sidebar ─────────────────────────────────────────────────────────────
+function LeftSidebar({ lang, onSelectGroup }: { lang: string; onSelectGroup: (g: Group) => void }) {
+  return (
+    <div className={styles.sidebar}>
+      <a href={`/${lang}`} className={styles.sidebarLogo}>
+        žem<span style={{ color: '#E57373' }}>LOVE</span>ka
+      </a>
+
+      <nav className={styles.sidebarNav}>
+        <a href={`/${lang}`}          className={styles.sidebarNavLink}>🏠 Domů</a>
+        <a href={`/${lang}/sandbox`}  className={styles.sidebarNavLink}>📦 Sandbox</a>
+        <a href={`/${lang}/campaign`} className={styles.sidebarNavLink}>🎭 Kampaň</a>
+      </nav>
+
+      <hr className={styles.sidebarDivider} />
+
+      <p className={styles.sidebarSectionTitle}>Kulinářské regiony</p>
+      <div className={styles.sidebarLegend}>
+        {GROUPS.map((group) => (
+          <button
+            key={group.id}
+            className={styles.sidebarLegendItem}
+            onClick={() => onSelectGroup(group)}
+          >
+            <span className={styles.sidebarLegendDot} style={{ background: group.color }} />
+            <span>{group.emoji} {group.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Right side panel ─────────────────────────────────────────────────────────
 function SidePanel({ group, onClose }: { group: Group | null; onClose: () => void }) {
   return (
     <div
@@ -246,7 +279,7 @@ function SidePanel({ group, onClose }: { group: Group | null; onClose: () => voi
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function WorldMap() {
+export default function WorldMap({ lang }: { lang: string }) {
   const [geoData, setGeoData]        = useState<GeoJSON.FeatureCollection | null>(null);
   const [selectedGroup, setSelected] = useState<Group | null>(null);
   const mapRef                       = useRef<L.Map | null>(null);
@@ -278,7 +311,6 @@ export default function WorldMap() {
 
     if (!group) return;
 
-    // register layer so we can highlight the whole group on hover
     if (!layersByGroup.current.has(group.id)) {
       layersByGroup.current.set(group.id, []);
     }
@@ -312,6 +344,8 @@ export default function WorldMap() {
 
   return (
     <div className={styles.mapContainer}>
+      <LeftSidebar lang={lang} onSelectGroup={setSelected} />
+
       <div ref={tooltipRef} className={styles.tooltip} style={{ opacity: 0 }} aria-live="polite" />
 
       <MapContainer

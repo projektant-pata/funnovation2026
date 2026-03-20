@@ -1,0 +1,59 @@
+{
+  "hero": {
+    "title": "žemLOVEka",
+    "subtitle": "Learn to cook like a chef",
+    "tagline": "Gamified cooking lessons — stories, recipes, AI assistant.",
+    "cta": "Start cooking"
+  },
+  "stats": {
+    "regions": "culinary regions",
+    "recipes": "recipes",
+    "chapters": "campaign chapters",
+    "ai": "AI chef"
+  },
+  "campaign": {
+    "label": "Campaign",
+    "title": "Cook your story",
+    "description": "An interactive visual novel with butterfly-effect branching. Every decision shapes your culinary destiny.",
+    "cta": "Explore"
+  },
+  "map": {
+    "label": "World Map",
+    "title": "Explore the culinary world",
+    "description": "5 culinary regions, dozens of recipes. Click a country and discover its culinary treasures.",
+    "cta": "Open map"
+  },
+  "sandbox": {
+    "label": "Sandbox",
+    "title": "Cook whatever you want",
+    "description": "Pick a recipe from around the world and start cooking.",
+    "cta": "View all"
+  },
+  "team": {
+    "label": "Team",
+    "title": "The people behind žemLOVEka"
+  },
+  "nav": {
+    "lang": "CS",
+    "map": "Map",
+    "sandbox": "Sandbox",
+    "campaign": "Campaign",
+    "dictionary": "Dictionary",
+    "login": "Sign in"
+  },
+  "footer": {
+    "tagline": "Duolingo for cooking.",
+    "pages": "Pages",
+    "info": "Information",
+    "gdpr": "GDPR",
+    "about": "About",
+    "contact": "Contact",
+    "dictionary": "Dictionary",
+    "copyright": "© 2026 žemLOVEka. All rights reserved."
+  },
+  "difficulty": {
+    "Easy": "Easy",
+    "Medium": "Medium",
+    "Hard": "Hard"
+  }
+}

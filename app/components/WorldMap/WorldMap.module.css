@@ -106,6 +106,114 @@
   z-index:         999;
 }
 
+/* ─── Left sidebar ───────────────────────────────────────────────────────────*/
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 228px;
+  height: 100vh;
+  z-index: 2000;
+
+  background:   #FFF3E0;
+  border-right: 1px solid rgba(78, 52, 46, 0.12);
+  box-shadow:   4px 0 24px rgba(78, 52, 46, 0.08);
+  display:      flex;
+  flex-direction: column;
+  overflow-y:   auto;
+  padding:      20px 14px 32px;
+}
+
+.sidebarLogo {
+  display:       block;
+  font-family:   sans-serif;
+  font-size:     1.2rem;
+  font-weight:   900;
+  color:         #4E342E;
+  text-decoration: none;
+  margin-bottom: 20px;
+  padding:       4px 8px;
+}
+
+.sidebarNav {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  margin-bottom:  16px;
+}
+
+.sidebarNavLink {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  padding:     9px 10px;
+  border-radius: 10px;
+  color:       #4E342E;
+  text-decoration: none;
+  font-family: sans-serif;
+  font-size:   0.875rem;
+  font-weight: 600;
+  transition:  background 0.15s ease;
+}
+
+.sidebarNavLink:hover {
+  background: rgba(78, 52, 46, 0.08);
+}
+
+.sidebarDivider {
+  border: none;
+  border-top: 1px solid rgba(78, 52, 46, 0.12);
+  margin: 4px 0 16px;
+}
+
+.sidebarSectionTitle {
+  font-family:    sans-serif;
+  font-size:      0.68rem;
+  font-weight:    700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color:          #6D4C41;
+  opacity:        0.55;
+  margin:         0 0 8px;
+  padding-left:   10px;
+}
+
+.sidebarLegend {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+}
+
+.sidebarLegendItem {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+  width:       100%;
+  padding:     8px 10px;
+  border:      none;
+  border-radius: 10px;
+  background:  transparent;
+  cursor:      pointer;
+  font-family: sans-serif;
+  font-size:   0.82rem;
+  font-weight: 600;
+  color:       #4E342E;
+  text-align:  left;
+  transition:  background 0.15s ease;
+}
+
+.sidebarLegendItem:hover {
+  background: rgba(78, 52, 46, 0.08);
+}
+
+.sidebarLegendDot {
+  width:       13px;
+  height:      13px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow:  0 0 0 1px rgba(0,0,0,0.08);
+}
+
 /* ─── Side panel ─────────────────────────────────────────────────────────────*/
 .panel {
   position:   fixed;
