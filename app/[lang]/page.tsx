@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getDictionary, hasLocale, type Locale } from './dictionaries'
 import LangSwitcher from '@/app/components/LangSwitcher'
 import TeamSlider from '@/app/components/TeamSlider'
+import { getSession } from '@/app/lib/auth'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -30,6 +31,7 @@ export default async function HomePage({ params }: Props) {
   const { lang } = await params
   if (!hasLocale(lang)) notFound()
   const d = await getDictionary(lang as Locale)
+  const session = await getSession()
 
   const navLinks = [
     { label: d.nav.map,        href: `/${lang}/map` },
@@ -73,12 +75,21 @@ export default async function HomePage({ params }: Props) {
         </div>
         <div className="flex items-center gap-2">
           <LangSwitcher lang={lang} />
-          <Link
-            href={`/${lang}/login`}
-            className="bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] font-bold text-sm px-4 py-2 rounded-full transition-colors shadow-sm"
-          >
-            {d.nav.login}
-          </Link>
+          {session ? (
+            <Link
+              href={`/${lang}/profile`}
+              className="bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] font-bold text-sm px-4 py-2 rounded-full transition-colors shadow-sm"
+            >
+              @{session.username}
+            </Link>
+          ) : (
+            <Link
+              href={`/${lang}/login`}
+              className="bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] font-bold text-sm px-4 py-2 rounded-full transition-colors shadow-sm"
+            >
+              {d.nav.login}
+            </Link>
+          )}
         </div>
       </nav>
 
