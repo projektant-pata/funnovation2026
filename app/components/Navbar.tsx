@@ -16,9 +16,7 @@ export default async function Navbar({ lang }: { lang: string }) {
   const d = hasLocale(lang) ? await getDictionary(lang as Locale) : null
 
   const navLinks = d ? [
-    { label: d.nav.map,        href: `/${lang}/map` },
-    { label: d.nav.sandbox,    href: `/${lang}/sandbox` },
-    { label: d.nav.campaign,   href: `/${lang}/campaign` },
+    { label: 'Objevuj',        href: `/${lang}/game` },
     { label: d.nav.dictionary, href: `/${lang}/dictionary` },
   ] : []
 
