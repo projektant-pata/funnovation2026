@@ -47,7 +47,7 @@ export default async function HomePage({ params }: Props) {
         <p className="text-2xl md:text-3xl text-[#6D4C41] mb-4 font-semibold">{d.hero.subtitle}</p>
         <p className="text-lg text-[#6D4C41]/60 mb-12 max-w-sm">{d.hero.tagline}</p>
         <Link
-          href={`/${lang}/sandbox`}
+          href={`/${lang}/game`}
           className="bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] font-bold text-xl px-10 py-5 rounded-2xl transition-colors shadow-md"
         >
           {d.hero.cta} →
@@ -87,7 +87,7 @@ export default async function HomePage({ params }: Props) {
               {d.campaign.description}
             </p>
             <Link
-              href={`/${lang}/campaign`}
+              href={`/${lang}/game/campaign`}
               className="inline-block bg-white text-[#E57373] font-bold text-xl px-10 py-5 rounded-2xl hover:bg-white/90 transition-colors"
             >
               {d.campaign.cta}
@@ -113,7 +113,7 @@ export default async function HomePage({ params }: Props) {
               {d.map.description}
             </p>
             <Link
-              href={`/${lang}/map`}
+              href={`/${lang}/game/world`}
               className="inline-block bg-[#4E342E] text-white font-bold text-xl px-10 py-5 rounded-2xl hover:bg-[#3e2723] transition-colors"
             >
               {d.map.cta}
@@ -164,7 +164,7 @@ export default async function HomePage({ params }: Props) {
 
           <div className="text-center">
             <Link
-              href={`/${lang}/sandbox`}
+              href={`/${lang}/game/freeplay`}
               className="inline-block bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] font-bold text-xl px-10 py-5 rounded-2xl transition-colors shadow-md"
             >
               {d.sandbox.cta}

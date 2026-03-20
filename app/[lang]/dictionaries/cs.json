@@ -55,5 +55,27 @@
     "Easy": "Lehké",
     "Medium": "Střední",
     "Hard": "Těžké"
+  },
+  "game": {
+    "play": "Hrát",
+    "campaign": "Kampaň",
+    "world": "Svět",
+    "freeplay": "Freeplay",
+    "social": "Social",
+    "profile": "Profil",
+    "settings": "Nastavení",
+    "notifications": "Upozornění",
+    "chef": "Šéfkuchař",
+    "chefDescription": "Tvůj AI asistent pro vaření",
+    "comingSoon": "Již brzy",
+    "campaignDescription": "Interaktivní příběh s větvením",
+    "worldDescription": "Prozkoumej kulinářské regiony světa",
+    "freeplayDescription": "Vař, co chceš — bez příběhu",
+    "badges": "Odznaky",
+    "pantry": "Špajz",
+    "shoppingList": "Nákupní seznam",
+    "mealPlan": "Jídelníček",
+    "reels": "Reels",
+    "groups": "Skupiny"
   }
 }

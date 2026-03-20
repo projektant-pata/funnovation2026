@@ -1,185 +1,99 @@
-## Color schema
-#FFF3E0 - background
-#FEDC56 - main color
-#E57373 - second color
-#6D4C41 - text
-#4E342E - headers
-#4FC3F7 - links
+# žemLOVEka
 
-## 1. Srdce Evropy 
-- Česká republika, Slovensko, Polsko, Německo, Rakousko, Maďarsko
-- Základní: #FFB74D
-- Hover: #F57C00 
+Gamifikovaná výuka vaření — Duolingo pro vaření.
 
-## 2. Italská vášeň
-- Itálie
-- Základní: #81C784
-- Hover: #43A047 
+## Požadavky
 
-## 3. Francouzská elegance
-- Francie, Belgie
-- Základní: #BA68C8
-- Hover: #9C27B0 
+- [Docker](https://docs.docker.com/get-docker/) a [Docker Compose](https://docs.docker.com/compose/install/) (Docker Desktop obsahuje obojí)
+- Git
 
-## 4. Iberský temperament 
-- Španělsko, Portugalsko, Mexico
-- Základní: #FEDC56
-- Hover: #FBC02D 
+## Lokální nasazení
 
-## 5. Exploze chutí (Jihovýchodní Asie)
-- Thajsko, Vietnam, Indonésie, Malajsie
-- Základní: #D4E157
-- Hover: #C0CA33
-
-
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Pages
-
-Všechny stránky jsou prefixované locale segmentem `[lang]` (`cs` nebo `en`).
-Proxy (`proxy.ts`) přesměrovává `/` → `/cs` automaticky.
-
----
-
-### Veřejné stránky (bez přihlášení)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]` | Landing page | ✅ Hotovo |
-| `/[lang]/map` | Světová mapa | ✅ Hotovo |
-| `/[lang]/sandbox` | Sandbox — přehled receptů | 🚧 Coming soon |
-| `/[lang]/sandbox/[id]` | Detail receptu + cooking flow | 🔒 Plánováno |
-| `/[lang]/campaign` | Kampaň — story strom | 🚧 Coming soon |
-| `/[lang]/login` | Přihlášení / registrace | 🔒 Plánováno |
-| `/[lang]/dictionary` | Slovník kuchařského slangu | 🔒 Plánováno |
-| `/[lang]/about` | O projektu | 🔒 Plánováno |
-| `/[lang]/contact` | Kontakt | 🔒 Plánováno |
-| `/[lang]/gdpr` | GDPR & podmínky | 🔒 Plánováno |
-
----
-
-### Onboarding (po registraci)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]/onboarding` | Úvodní dotazník | 🔒 Plánováno |
-
-Krátký dotazník (5–7 otázek) — kuchařská zkušenost, alergie, dietní preference, časový disponibilní čas. AI vyhodnotí odpovědi a určí počáteční skill level (1–7) a personalizační profil. GDPR souhlas pro zdravotní data (alergie) formou samostatného checkboxu.
-
----
-
-### Kampaňový flow (vyžaduje přihlášení)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]/campaign` | Story strom — přehled nodů, zamčené větve | 🚧 Coming soon |
-| `/[lang]/campaign/[nodeId]` | Pre-level summary — co budeš vařit, XP, obtížnost | 🔒 Plánováno |
-| `/[lang]/campaign/[nodeId]/cutscene` | Cutscéna — vizuální novela před levelem | 🔒 Plánováno |
-| `/[lang]/campaign/[nodeId]/cook` | Cooking flow — ingredience, kroky, AI asistent, timer | 🔒 Plánováno |
-| `/[lang]/campaign/[nodeId]/complete` | Dokončení — XP, fotka výsledku, AI reflexe, větvení | 🔒 Plánováno |
-
-Celý strom je vždy viditelný (i zamčené nody). Větvení (butterfly effect) na vybraných nodech — hráč volí, kam se příběh posune. Adaptivní start: onboarding určí startovní pozici ve stromu.
-
----
-
-### Sandbox (přehled a vaření)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]/sandbox` | Přehled receptů — filtr, search, řazení | 🚧 Coming soon |
-| `/[lang]/sandbox/[id]` | Detail receptu | 🔒 Plánováno |
-| `/[lang]/sandbox/[id]/cook` | Cooking flow — ingredience, kroky, AI asistent, timer | 🔒 Plánováno |
-
-Dostupný bez přihlášení (progres se neukládá, XP se nepřidělují). Filtry: obtížnost, kuchyně/země, alergeny, čas, kategorie. Cooking mode: zjednodušené UI, velký text, timer vždy viditelný.
-
----
-
-### Profil a účet (vyžaduje přihlášení)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]/account` | Nastavení účtu — email, heslo, jazyk, GDPR, smazání | 🔒 Plánováno |
-| `/[lang]/profile` | Vlastní profil — XP, level, odznaky, statistiky, galerie | 🔒 Plánováno |
-| `/[lang]/profile/[username]` | Veřejný profil jiného hráče | 🔒 Plánováno |
-
----
-
-### Gamifikace (vyžaduje přihlášení)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]/challenges` | Přehled challenges — osobní + komunitní | 🔒 Plánováno |
-| `/[lang]/challenges/[id]` | Detail challenge + submissions + hlasování | 🔒 Plánováno |
-
-Osobní challenges: denní/týdenní AI-generované úkoly (3 úrovně obtížnosti). Komunitní challenges: tématické výzvy s pairwise hlasováním (tinder-style). XP za splnění, korunky na profilu.
-
----
-
-### Sociální sekce (vyžaduje přihlášení)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]/social` | Social feed — vertikální video discovery (à la Reels) | 🔒 Plánováno |
-| `/[lang]/groups` | Skupiny — přehled, vytvoření, pozvánka kódem | 🔒 Plánováno |
-| `/[lang]/groups/[id]` | Detail skupiny — leaderboard, sdílené recepty, challenges | 🔒 Plánováno |
-
----
-
-### Nástroje (vyžaduje přihlášení)
-
-| Route | Název | Stav |
-|-------|-------|------|
-| `/[lang]/meal-plan` | Generátor jídelníčku — AI generuje plán na 1–14 dní | 🔒 Plánováno |
-| `/[lang]/shopping-list` | Nákupní seznam — checklist, integrace s recepty a špajzí | 🔒 Plánováno |
-| `/[lang]/pantry` | Špajz — evidence zásob, OCR skenování účtenek | 🔒 Plánováno |
-| `/[lang]/kitchen-ai` | Recept z ledničky — AI navrhne recept z dostupných ingrediencí | 🔒 Plánováno |
-| `/[lang]/recipes/new` | Tvorba vlastního receptu — formulář + AI asistent | 🔒 Plánováno |
-| `/[lang]/recipes/[id]/edit` | Úprava vlastního receptu | 🔒 Plánováno |
-
----
-
-### Legenda
-
-| Symbol | Význam |
-|--------|--------|
-| ✅ Hotovo | Stránka je implementována a funkční |
-| 🚧 Coming soon | Route existuje, stránka je placeholder |
-| 🔒 Plánováno | Route zatím neexistuje, v plánu pro produkci |
-
----
-
-## Getting Started
-
-First, run the development server:
+### 1. Klonování repozitáře
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <url-repozitáře>
+cd funnovation2026
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Dev režim (hot reload)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+docker compose -f docker-compose.dev.yml up
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Aplikace poběží na **http://localhost:3000**. Změny v kódu se projeví okamžitě bez restartu. PostgreSQL databáze se inicializuje automaticky ze `schema.sql` a `seed.sql`.
 
-## Learn More
+### 3. Produkční režim
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+docker compose up --build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Aplikace poběží na **http://localhost:3003**.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Zastavení
 
-## Deploy on Vercel
+```bash
+# Ctrl+C v terminálu, nebo:
+docker compose down                             # produkce
+docker compose -f docker-compose.dev.yml down   # dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Reset databáze
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# funnovation2026
+Smazat data a začít od nuly:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+## Bez Dockeru
+
+```bash
+npm install
+npm run dev
+```
+
+Aplikace poběží na **http://localhost:3000**. PostgreSQL musí běžet zvlášť — nastav `DATABASE_URL` v `.env`.
+
+## Příkazy
+
+| Příkaz | Popis |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Produkční build |
+| `npm run start` | Produkční server |
+| `npm run lint` | ESLint |
+
+## Struktura aplikace
+
+| Cesta | Popis |
+|---|---|
+| `/cs`, `/en` | Landing page |
+| `/cs/game` | Herní prostředí — výběr herního módu |
+| `/cs/game/campaign` | Kampaň — interaktivní příběh s větvením |
+| `/cs/game/world` | Svět — kulinářské regiony |
+| `/cs/game/freeplay` | Freeplay — volné vaření |
+| `/cs/game/social` | Social — komunita |
+| `/cs/game/profile` | Profil hráče |
+
+## Barevná paleta
+
+| Barva | Použití |
+|---|---|
+| `#FFF3E0` | Pozadí (landing page) |
+| `#FEDC56` | Hlavní akcent (žlutá/zlatá) |
+| `#E57373` | Sekundární (červená/korálová) |
+| `#6D4C41` | Text (hnědá) |
+| `#4E342E` | Nadpisy (tmavě hnědá) |
+| `#4FC3F7` | Odkazy (světle modrá) |
+| `#2C3E50` | Pozadí herního prostředí (tmavá) |
+
+## Tech stack
+
+- Next.js 16 (App Router, standalone output)
+- React 19, TypeScript 5, Tailwind CSS v4
+- PostgreSQL 16 (Docker)
+- Leaflet + react-leaflet (mapa)

@@ -55,5 +55,27 @@
     "Easy": "Easy",
     "Medium": "Medium",
     "Hard": "Hard"
+  },
+  "game": {
+    "play": "Play",
+    "campaign": "Campaign",
+    "world": "World",
+    "freeplay": "Freeplay",
+    "social": "Social",
+    "profile": "Profile",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "chef": "Chef AI",
+    "chefDescription": "Your AI cooking assistant",
+    "comingSoon": "Coming soon",
+    "campaignDescription": "Interactive story with branching paths",
+    "worldDescription": "Explore culinary regions of the world",
+    "freeplayDescription": "Cook whatever you want — no story",
+    "badges": "Badges",
+    "pantry": "Pantry",
+    "shoppingList": "Shopping list",
+    "mealPlan": "Meal plan",
+    "reels": "Reels",
+    "groups": "Groups"
   }
 }
