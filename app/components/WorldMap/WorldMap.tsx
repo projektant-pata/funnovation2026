@@ -8,183 +8,83 @@ import styles from './WorldMap.module.css';
 const GEO_URL =
   'https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/DATA/world.geojson';
 
-// ─── Brand palette ────────────────────────────────────────────────────────────
+// ─── Brand palette ─────────────────────────────────────────────────────────
 const PALETTE = {
   ocean:  '#4FC3F7',
   border: '#4E342E',
 };
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+// ─── GeoJSON name aliases per ISO-2 code ───────────────────────────────────
+// The GeoJSON file uses non-standard country name strings.
+const ISO2_GEO_NAMES: Record<string, string[]> = {
+  CZ: ['Czech Rep.', 'Czechia', 'Czech Republic'],
+  SK: ['Slovakia'],
+  PL: ['Poland'],
+  DE: ['Germany'],
+  AT: ['Austria'],
+  HU: ['Hungary'],
+  IT: ['Italy'],
+  FR: ['France'],
+  BE: ['Belgium'],
+  ES: ['Spain'],
+  PT: ['Portugal'],
+  MX: ['Mexico'],
+  GR: ['Greece'],
+  TH: ['Thailand'],
+  VN: ['Vietnam', 'Viet Nam'],
+  ID: ['Indonesia'],
+  MY: ['Malaysia'],
+  JP: ['Japan'],
+  IN: ['India'],
+  KR: ['South Korea', 'S. Korea', 'Korea'],
+};
+
+// ─── Types ─────────────────────────────────────────────────────────────────
 interface Recipe {
-  name: string;
-  emoji: string;
+  title: string;
   description: string;
-  ingredients: string[];
+  ingredients: string[] | null;
+}
+
+interface ApiGroup {
+  code:        string;
+  name_cs:     string;
+  name_en:     string;
+  emoji:       string;
+  color:       string;
+  hover_color: string;
+  countries:   { iso2: string; name_cs: string; name_en: string }[];
+  recipes:     Recipe[] | null;
 }
 
 interface Group {
-  id: string;
-  name: string;
-  emoji: string;
-  color: string;
+  id:         string;
+  name:       string;
+  emoji:      string;
+  color:      string;
   hoverColor: string;
-  countries: string[];
-  geoNames: Set<string>;
-  recipes: Recipe[];
+  countries:  string[];
+  geoNames:   Set<string>;
+  recipes:    Recipe[];
 }
 
-const GROUPS: Group[] = [
-  {
-    id: 'srdce-evropy',
-    name: 'Srdce Evropy',
-    emoji: '🏰',
-    color: '#FFB74D',
-    hoverColor: '#F57C00',
-    countries: ['Česká republika', 'Slovensko', 'Polsko', 'Německo', 'Rakousko', 'Maďarsko'],
-    geoNames: new Set(['Czech Rep.', 'Czechia', 'Czech Republic', 'Slovakia', 'Poland', 'Germany', 'Austria', 'Hungary']),
-    recipes: [
-      {
-        name: 'Svíčková na smetaně',
-        emoji: '🥩',
-        description: 'Tradiční české hovězí svíčkové na smetaně s knedlíky a brusinkami — nedělní klasika každé české rodiny.',
-        ingredients: ['hovězí svíčková', 'smetana', 'mrkev', 'celer', 'cibule', 'máslo', 'knedlíky', 'brusinky'],
-      },
-      {
-        name: 'Pierogi Ruskie',
-        emoji: '🥟',
-        description: 'Polské plněné těstové knedlíčky s bramborovým a tvarohovým plněním, smažené na másle s cibulkou.',
-        ingredients: ['pšeničná mouka', 'brambory', 'tvaroh', 'cibule', 'máslo', 'sůl', 'zakysaná smetana'],
-      },
-      {
-        name: 'Wiener Schnitzel',
-        emoji: '🍖',
-        description: 'Vídeňský řízeček z telecího masa, obalený ve strouhance a smažený do zlatova na přepuštěném másle.',
-        ingredients: ['telecí plátky', 'vejce', 'mouka', 'strouhanka', 'přepuštěné máslo', 'citron', 'petržel'],
-      },
-    ],
-  },
-  {
-    id: 'italska-vassen',
-    name: 'Italská vášeň',
-    emoji: '🍕',
-    color: '#81C784',
-    hoverColor: '#43A047',
-    countries: ['Itálie'],
-    geoNames: new Set(['Italy']),
-    recipes: [
-      {
-        name: 'Pizza Margherita',
-        emoji: '🍕',
-        description: 'Klasická neapolská pizza s rajčatovou omáčkou, mozzarellou di bufala a čerstvou bazalkou. Certifikovaná STG.',
-        ingredients: ['těsto na pizzu', 'rajčata San Marzano', 'mozzarella di bufala', 'čerstvá bazalka', 'extra panenský olivový olej'],
-      },
-      {
-        name: 'Cacio e Pepe',
-        emoji: '🍝',
-        description: 'Zdánlivě jednoduchá římská pasta — jen tři suroviny, ale technika přípravy krémové emulze rozhoduje o vše.',
-        ingredients: ['tonnarelli', 'Pecorino Romano DOP', 'Parmigiano-Reggiano', 'čerstvě mletý černý pepř'],
-      },
-      {
-        name: 'Tiramisù',
-        emoji: '🍮',
-        description: 'Ikonický italský dezert ze savoiardi piškotů namočených v espressu a krému z mascarpone.',
-        ingredients: ['mascarpone', 'vejce', 'espresso', 'piškoty savoiardi', 'kakao', 'cukr', 'marsala (volitelně)'],
-      },
-    ],
-  },
-  {
-    id: 'francouzska-elegance',
-    name: 'Francouzská elegance',
-    emoji: '🥐',
-    color: '#BA68C8',
-    hoverColor: '#9C27B0',
-    countries: ['Francie', 'Belgie'],
-    geoNames: new Set(['France', 'Belgium']),
-    recipes: [
-      {
-        name: 'Boeuf Bourguignon',
-        emoji: '🥩',
-        description: 'Pomalý hovězí guláš dušený v burgundském víně s houbami a perlovou cibulkou. Recept Julie Child.',
-        ingredients: ['hovězí plec', 'burgundské červené víno', 'slanina lardon', 'žampiony', 'perlová cibulka', 'mrkev', 'tymián', 'bobkový list'],
-      },
-      {
-        name: 'Moules-Frites',
-        emoji: '🦪',
-        description: 'Belgické slávky dušené v bílém víně s česnekovým máslem, podávané s dvojitě smaženými hranolkami.',
-        ingredients: ['slávky', 'bílé víno', 'šalotka', 'máslo', 'petržel', 'česnek', 'smetana', 'hranolky'],
-      },
-      {
-        name: 'Croissant au Beurre',
-        emoji: '🥐',
-        description: 'Máslový croissant s laminovaným těstem — 27 vrstev másla v každém soustu.',
-        ingredients: ['pšeničná mouka T45', 'máslo tourage 84%', 'mléko', 'droždí', 'cukr', 'sůl'],
-      },
-    ],
-  },
-  {
-    id: 'ibersky-temperament',
-    name: 'Iberský temperament',
-    emoji: '💃',
-    color: '#FEDC56',
-    hoverColor: '#FBC02D',
-    countries: ['Španělsko', 'Portugalsko', 'México'],
-    geoNames: new Set(['Spain', 'Portugal', 'Mexico']),
-    recipes: [
-      {
-        name: 'Paella Valenciana',
-        emoji: '🥘',
-        description: 'Španělská rýžová paella se šafránem, kuřetem a králíkem — připravovaná na otevřeném ohni v tradiční pánvi.',
-        ingredients: ['rýže Bomba', 'kuřecí stehna', 'králík', 'zelené fazolky', 'šafrán', 'paprika pimentón', 'olivový olej', 'vývar'],
-      },
-      {
-        name: 'Tacos al Pastor',
-        emoji: '🌮',
-        description: 'Mexické tacos s marinovaným vepřovým masem na vertikálním rožni a karamelizovaným ananasem. Pouliční jídlo royalty.',
-        ingredients: ['vepřová plec', 'chilli guajillo & ancho', 'achiote pasta', 'ananas', 'kukuřičné tortilly', 'koriandr', 'bílá cibule', 'limetka'],
-      },
-      {
-        name: 'Pastéis de Nata',
-        emoji: '🧁',
-        description: 'Lisabonské listové košíčky s hedvábným krémem ze žloutků, skořicí a citronovou kůrou. Vynalezeny mnichy v Belém.',
-        ingredients: ['listové těsto', 'žloutky', 'smetana', 'cukr', 'skořice', 'citronová kůra', 'vanilka'],
-      },
-    ],
-  },
-  {
-    id: 'exploze-chuti',
-    name: 'Exploze chutí',
-    emoji: '🌶️',
-    color: '#D4E157',
-    hoverColor: '#C0CA33',
-    countries: ['Thajsko', 'Vietnam', 'Indonésie', 'Malajsie'],
-    geoNames: new Set(['Thailand', 'Vietnam', 'Indonesia', 'Malaysia']),
-    recipes: [
-      {
-        name: 'Pad Thai',
-        emoji: '🍜',
-        description: 'Thajské smažené rýžové nudle s krevetami, tofu, tamarindovou omáčkou a drcenými arašídy.',
-        ingredients: ['rýžové nudle', 'krevety', 'tofu', 'tamarindová pasta', 'rybí omáčka', 'arašídy', 'limetka', 'klíčky'],
-      },
-      {
-        name: 'Phở Bò',
-        emoji: '🍲',
-        description: 'Vietnamská hovězí polévka s rýžovými nudlemi, hvězdičkovým anýzem a čerstvými bylinkami — duše ve šálku.',
-        ingredients: ['hovězí kosti', 'rýžové nudle', 'hvězdičkový anýz', 'skořice', 'zázvor', 'cibule', 'thajská bazalka', 'klíčky mungo'],
-      },
-      {
-        name: 'Nasi Goreng',
-        emoji: '🍳',
-        description: 'Indonéská smažená rýže s krevetami, vajíčkem, kecap manis omáčkou a sambalem — národní pokrm Indonésie.',
-        ingredients: ['vařená rýže', 'krevety', 'vejce', 'kecap manis', 'sambal oelek', 'jarní cibulka', 'česnek', 'okurka'],
-      },
-    ],
-  },
-];
+function apiGroupToGroup(ag: ApiGroup): Group {
+  const geoNames = new Set(
+    (ag.countries ?? []).flatMap((c) => ISO2_GEO_NAMES[c.iso2] ?? [c.name_en])
+  );
+  return {
+    id:         ag.code,
+    name:       ag.name_cs,
+    emoji:      ag.emoji,
+    color:      ag.color,
+    hoverColor: ag.hover_color,
+    countries:  (ag.countries ?? []).map((c) => c.name_cs),
+    geoNames,
+    recipes:    ag.recipes ?? [],
+  };
+}
 
-const getCountryGroup = (name: string): Group | null =>
-  GROUPS.find((g) => g.geoNames.has(name)) ?? null;
-
-// ─── Zoom controls ────────────────────────────────────────────────────────────
+// ─── Zoom controls ─────────────────────────────────────────────────────────
 function ZoomControls({ onReset }: { onReset: () => void }) {
   const map = useMap();
   return (
@@ -196,8 +96,16 @@ function ZoomControls({ onReset }: { onReset: () => void }) {
   );
 }
 
-// ─── Left sidebar ─────────────────────────────────────────────────────────────
-function LeftSidebar({ lang, onSelectGroup }: { lang: string; onSelectGroup: (g: Group) => void }) {
+// ─── Left sidebar ──────────────────────────────────────────────────────────
+function LeftSidebar({
+  lang,
+  groups,
+  onSelectGroup,
+}: {
+  lang: string;
+  groups: Group[];
+  onSelectGroup: (g: Group) => void;
+}) {
   return (
     <div className={styles.sidebar}>
       <a href={`/${lang}`} className={styles.sidebarLogo}>
@@ -214,7 +122,7 @@ function LeftSidebar({ lang, onSelectGroup }: { lang: string; onSelectGroup: (g:
 
       <p className={styles.sidebarSectionTitle}>Kulinářské regiony</p>
       <div className={styles.sidebarLegend}>
-        {GROUPS.map((group) => (
+        {groups.map((group) => (
           <button
             key={group.id}
             className={styles.sidebarLegendItem}
@@ -229,7 +137,7 @@ function LeftSidebar({ lang, onSelectGroup }: { lang: string; onSelectGroup: (g:
   );
 }
 
-// ─── Right side panel ─────────────────────────────────────────────────────────
+// ─── Right side panel ──────────────────────────────────────────────────────
 function SidePanel({ group, onClose }: { group: Group | null; onClose: () => void }) {
   return (
     <div
@@ -258,16 +166,18 @@ function SidePanel({ group, onClose }: { group: Group | null; onClose: () => voi
             <h3 className={styles.panelSectionTitle}>🍽️ Recepty</h3>
             <div className={styles.recipesList}>
               {group.recipes.map((r) => (
-                <div key={r.name} className={styles.recipeCard}>
+                <div key={r.title} className={styles.recipeCard}>
                   <div className={styles.recipeCardHeader}>
-                    <span className={styles.recipeEmoji}>{r.emoji}</span>
-                    <h4 className={styles.recipeName}>{r.name}</h4>
+                    <span className={styles.recipeEmoji}>🍽️</span>
+                    <h4 className={styles.recipeName}>{r.title}</h4>
                   </div>
                   <p className={styles.recipeDesc}>{r.description}</p>
-                  <div className={styles.ingredientsWrap}>
-                    <span className={styles.ingredientsLabel}>Suroviny:</span>
-                    <span className={styles.ingredientsList}>{r.ingredients.join(' · ')}</span>
-                  </div>
+                  {r.ingredients && r.ingredients.length > 0 && (
+                    <div className={styles.ingredientsWrap}>
+                      <span className={styles.ingredientsLabel}>Suroviny:</span>
+                      <span className={styles.ingredientsList}>{r.ingredients.join(' · ')}</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -278,9 +188,10 @@ function SidePanel({ group, onClose }: { group: Group | null; onClose: () => voi
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Main component ────────────────────────────────────────────────────────
 export default function WorldMap({ lang }: { lang: string }) {
   const [geoData, setGeoData]        = useState<GeoJSON.FeatureCollection | null>(null);
+  const [groups, setGroups]          = useState<Group[]>([]);
   const [selectedGroup, setSelected] = useState<Group | null>(null);
   const mapRef                       = useRef<L.Map | null>(null);
   const layersByGroup                = useRef<Map<string, L.Path[]>>(new Map());
@@ -292,6 +203,18 @@ export default function WorldMap({ lang }: { lang: string }) {
       .then(setGeoData)
       .catch((err) => console.error('Failed to load world GeoJSON:', err));
   }, []);
+
+  useEffect(() => {
+    fetch('/api/map-groups')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success) setGroups((json.data as ApiGroup[]).map(apiGroupToGroup));
+      })
+      .catch((err) => console.error('Failed to load map groups:', err));
+  }, []);
+
+  const getCountryGroup = (name: string): Group | null =>
+    groups.find((g) => g.geoNames.has(name)) ?? null;
 
   const styleFeature = (feature: GeoJSON.Feature | undefined) => {
     const group = feature ? getCountryGroup(feature.properties?.name) : null;
@@ -340,11 +263,14 @@ export default function WorldMap({ lang }: { lang: string }) {
     });
   };
 
+  // Re-render GeoJSON when groups load so colors apply correctly
+  const geoKey = groups.map((g) => g.id).join(',');
+
   const handleReset = () => mapRef.current?.setView([20, 10], 2);
 
   return (
     <div className={styles.mapContainer}>
-      <LeftSidebar lang={lang} onSelectGroup={setSelected} />
+      <LeftSidebar lang={lang} groups={groups} onSelectGroup={setSelected} />
 
       <div ref={tooltipRef} className={styles.tooltip} style={{ opacity: 0 }} aria-live="polite" />
 
@@ -363,6 +289,7 @@ export default function WorldMap({ lang }: { lang: string }) {
       >
         {geoData && (
           <GeoJSON
+            key={geoKey}
             data={geoData}
             style={styleFeature}
             onEachFeature={onEachFeature}
