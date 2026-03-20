@@ -16,8 +16,8 @@ export default async function ProfilePage({ params }: Props) {
           <circle cx="12" cy="7" r="4" />
         </svg>
       </div>
-      <h1 className="text-3xl font-black text-white mb-3">{d.game.profile}</h1>
-      <p className="text-white/40 text-sm text-center max-w-sm">{d.game.comingSoon}</p>
+      <h1 className="text-3xl font-black text-[#4E342E] mb-3">{d.game.profile}</h1>
+      <p className="text-[#6D4C41]/60 text-sm text-center max-w-sm">{d.game.comingSoon}</p>
     </div>
   )
 }

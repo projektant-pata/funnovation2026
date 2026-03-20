@@ -23,15 +23,15 @@ export default async function GameHomePage({ params }: Props) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-6 py-12">
-      <h1 className="text-3xl font-black text-white mb-2">{d.game.play}</h1>
-      <p className="text-white/40 text-sm mb-10">{d.hero.subtitle}</p>
+      <h1 className="text-3xl font-black text-[#4E342E] mb-2">{d.game.play}</h1>
+      <p className="text-[#6D4C41]/60 text-sm mb-10">{d.hero.subtitle}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full max-w-2xl">
         {modes.map(({ key, path, icon: Icon, color }) => (
           <Link
             key={key}
             href={`/${lang}/game${path}`}
-            className="group flex flex-col items-center gap-4 p-8 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+            className="group flex flex-col items-center gap-4 p-8 rounded-2xl bg-white border border-[#4E342E]/8 hover:shadow-md transition-shadow"
           >
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center"
@@ -39,8 +39,8 @@ export default async function GameHomePage({ params }: Props) {
             >
               <Icon className="w-8 h-8" style={{ color }} />
             </div>
-            <span className="text-white font-bold text-lg">{d.game[key]}</span>
-            <span className="text-white/40 text-sm text-center leading-relaxed">
+            <span className="text-[#4E342E] font-bold text-lg">{d.game[key]}</span>
+            <span className="text-[#6D4C41]/60 text-sm text-center leading-relaxed">
               {descriptions[key]}
             </span>
           </Link>

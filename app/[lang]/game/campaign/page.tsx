@@ -16,8 +16,8 @@ export default async function CampaignPage({ params }: Props) {
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
         </svg>
       </div>
-      <h1 className="text-3xl font-black text-white mb-3">{d.game.campaign}</h1>
-      <p className="text-white/40 text-sm text-center max-w-sm">{d.game.campaignDescription}</p>
+      <h1 className="text-3xl font-black text-[#4E342E] mb-3">{d.game.campaign}</h1>
+      <p className="text-[#6D4C41]/60 text-sm text-center max-w-sm">{d.game.campaignDescription}</p>
     </div>
   )
 }

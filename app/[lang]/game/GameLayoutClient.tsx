@@ -36,9 +36,9 @@ export default function GameLayoutClient({ lang, labels, children }: Props) {
   const [profileOpen, setProfileOpen] = useState(false)
 
   return (
-    <div className="bg-[#2C3E50] min-h-screen font-[family-name:var(--font-geist-sans)] flex flex-col">
+    <div className="bg-[#FFF3E0] min-h-screen font-[family-name:var(--font-geist-sans)] flex flex-col">
       {/* Top bar */}
-      <header className="flex items-center justify-between px-5 py-3 bg-[#2C3E50] border-b border-white/5 z-40">
+      <header className="flex items-center justify-between px-5 py-3 bg-[#FFF3E0] border-b border-[#4E342E]/10 z-40">
         {/* Left: logo */}
         <Link
           href={`/${lang}`}
@@ -47,14 +47,14 @@ export default function GameLayoutClient({ lang, labels, children }: Props) {
           <img
             src="/logo.png"
             alt="žemLOVEka"
-            className="h-8 brightness-0 invert"
+            className="h-8"
           />
         </Link>
 
         {/* Right: notification + profile avatar */}
         <div className="flex items-center gap-2">
           <button
-            className="p-2 rounded-lg text-[#FEDC56] hover:bg-white/10 transition-colors duration-150"
+            className="p-2 rounded-lg text-[#4E342E] hover:bg-[#4E342E]/10 transition-colors duration-150"
             aria-label={labels.notifications}
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

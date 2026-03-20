@@ -19,8 +19,8 @@ export default async function FreeplayPage({ params }: Props) {
           <path d="M12 18v4" />
         </svg>
       </div>
-      <h1 className="text-3xl font-black text-white mb-3">{d.game.freeplay}</h1>
-      <p className="text-white/40 text-sm text-center max-w-sm">{d.game.freeplayDescription}</p>
+      <h1 className="text-3xl font-black text-[#4E342E] mb-3">{d.game.freeplay}</h1>
+      <p className="text-[#6D4C41]/60 text-sm text-center max-w-sm">{d.game.freeplayDescription}</p>
     </div>
   )
 }

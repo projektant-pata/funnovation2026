@@ -45,7 +45,7 @@ export default function ProfilePopover({ lang, open, onClose, labels }: Props) {
   return (
     <div
       ref={ref}
-      className={`absolute top-full right-0 mt-2 w-56 bg-[#2C3E50] border border-white/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out origin-top-right ${
+      className={`absolute top-full right-0 mt-2 w-56 bg-white border border-[#4E342E]/10 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out origin-top-right ${
         open
           ? 'opacity-100 translate-y-0 scale-100'
           : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
@@ -56,7 +56,7 @@ export default function ProfilePopover({ lang, open, onClose, labels }: Props) {
           key={label}
           href={href}
           onClick={onClose}
-          className="flex items-center gap-3 px-4 py-3 text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm"
+          className="flex items-center gap-3 px-4 py-3 text-[#6D4C41] hover:bg-[#FFF3E0] hover:text-[#4E342E] transition-colors text-sm"
         >
           <Icon className="w-5 h-5 text-[#FEDC56]" />
           <span>{label}</span>

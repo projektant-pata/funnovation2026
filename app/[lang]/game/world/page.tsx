@@ -17,8 +17,8 @@ export default async function WorldPage({ params }: Props) {
           <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
         </svg>
       </div>
-      <h1 className="text-3xl font-black text-white mb-3">{d.game.world}</h1>
-      <p className="text-white/40 text-sm text-center max-w-sm">{d.game.worldDescription}</p>
+      <h1 className="text-3xl font-black text-[#4E342E] mb-3">{d.game.world}</h1>
+      <p className="text-[#6D4C41]/60 text-sm text-center max-w-sm">{d.game.worldDescription}</p>
     </div>
   )
 }

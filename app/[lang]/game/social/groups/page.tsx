@@ -18,8 +18,8 @@ export default async function GroupsPage({ params }: Props) {
           <path d="M16 3.13a4 4 0 010 7.75" />
         </svg>
       </div>
-      <h1 className="text-3xl font-black text-white mb-3">{d.game.groups}</h1>
-      <p className="text-white/40 text-sm text-center max-w-sm">{d.game.comingSoon}</p>
+      <h1 className="text-3xl font-black text-[#4E342E] mb-3">{d.game.groups}</h1>
+      <p className="text-[#6D4C41]/60 text-sm text-center max-w-sm">{d.game.comingSoon}</p>
     </div>
   )
 }
