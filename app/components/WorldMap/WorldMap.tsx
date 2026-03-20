@@ -36,7 +36,7 @@ interface Group {
 const GROUPS: Group[] = [
   {
     id: 'srdce-evropy',
-    name: 'Srdce Evropy',
+    name: 'Prdel Evropy',
     emoji: '🏰',
     color: '#FFB74D',
     hoverColor: '#F57C00',
