@@ -16,9 +16,26 @@ BEGIN
 		WHERE table_schema = 'auth' AND table_name = 'users'
 	) THEN
 		CREATE TABLE auth.users (
-			id uuid PRIMARY KEY,
-			email text
+			id            uuid PRIMARY KEY,
+			email         text NOT NULL UNIQUE,
+			password_hash text NOT NULL,
+			created_at    timestamptz NOT NULL DEFAULT timezone('utc', now())
 		);
+	END IF;
+END
+$$;
+
+-- Add columns to auth.users if migrating from the old stub
+DO $$
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='auth' AND table_name='users' AND column_name='password_hash') THEN
+		ALTER TABLE auth.users ADD COLUMN password_hash text NOT NULL DEFAULT '';
+	END IF;
+	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='auth' AND table_name='users' AND column_name='created_at') THEN
+		ALTER TABLE auth.users ADD COLUMN created_at timestamptz NOT NULL DEFAULT timezone('utc', now());
+	END IF;
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='users_email_key' AND conrelid='auth.users'::regclass) THEN
+		ALTER TABLE auth.users ADD CONSTRAINT users_email_key UNIQUE (email);
 	END IF;
 END
 $$;

@@ -1,6 +1,41 @@
 BEGIN;
 
 -- ---------------------------------------------------------------------------
+-- Seed users (password = heslo123 for pata/niki/stefy, demo1234 for demo)
+-- ---------------------------------------------------------------------------
+INSERT INTO auth.users (id, email, password_hash)
+VALUES
+	('00000000-0000-0000-0001-000000000001', 'pata@zemloveka.cz',  '$2b$10$VFZPztpANeFAnVzDgg6DFOzcn1WOa37TTq4lctI9Pu8BUdZVm4MMa'),
+	('00000000-0000-0000-0001-000000000002', 'niki@zemloveka.cz',  '$2b$10$JTdQhAZ/i1Fog872NoT5leOwzKlj32olTf/xeamibbNlcuHHEicti'),
+	('00000000-0000-0000-0001-000000000003', 'stefy@zemloveka.cz', '$2b$10$t20NwNaUR5hkVvRWIycNw.E0fx0aqDw6bSNuJC/k7jChmz9ShuJES'),
+	('00000000-0000-0000-0001-000000000004', 'demo@zemloveka.cz',  '$2b$10$sMfnGmTLnotN1u4ZGbE1tOdqGYMtygVEhKWMp3RegBHS3p1LxAYUG')
+ON CONFLICT (email) DO UPDATE
+SET password_hash = EXCLUDED.password_hash;
+
+INSERT INTO public.profiles (user_id, username, display_name, bio, preferred_language, current_level, total_xp, streak_days)
+VALUES
+	('00000000-0000-0000-0001-000000000001', 'pata',  'Pata',        'Hlavní vývojář žemLOVEky 👨‍💻',         'cs', 5, 2400, 12),
+	('00000000-0000-0000-0001-000000000002', 'niki',  'Niki',        'UX designérka a milovnice sushi 🍣',    'cs', 4, 1800,  7),
+	('00000000-0000-0000-0001-000000000003', 'stefy', 'Stefy',       'Kuchařka srdcem, cukrářka duší 🍰',     'cs', 3,  900,  3),
+	('00000000-0000-0000-0001-000000000004', 'demo',  'Demo účet',   'Testovací uživatel pro prezentace 🚀',  'cs', 1,    0,  0)
+ON CONFLICT (user_id) DO UPDATE
+SET
+	username     = EXCLUDED.username,
+	display_name = EXCLUDED.display_name,
+	bio          = EXCLUDED.bio,
+	total_xp     = EXCLUDED.total_xp,
+	streak_days  = EXCLUDED.streak_days,
+	updated_at   = timezone('utc', now());
+
+INSERT INTO public.user_preferences (user_id, cooking_frequency, time_budget, onboarding_completed_at)
+VALUES
+	('00000000-0000-0000-0001-000000000001', 'few_per_week', 'between_30_60',  timezone('utc', now())),
+	('00000000-0000-0000-0001-000000000002', 'few_per_week', 'under_30',       timezone('utc', now())),
+	('00000000-0000-0000-0001-000000000003', 'daily',        'between_60_120', timezone('utc', now())),
+	('00000000-0000-0000-0001-000000000004', 'never',        'under_30',       NULL)
+ON CONFLICT (user_id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
 -- Static dictionaries
 -- ---------------------------------------------------------------------------
 INSERT INTO public.continents (code, name_cs, name_en)

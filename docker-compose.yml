@@ -27,9 +27,10 @@ services:
       target: runner
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3003:3003"
     environment:
       DATABASE_URL: postgresql://zemloveka:${POSTGRES_PASSWORD:-zemloveka_dev}@db:5432/zemloveka
+      JWT_SECRET: ${JWT_SECRET:-zemloveka-dev-secret-change-in-prod}
       NODE_ENV: production
     depends_on:
       db:
