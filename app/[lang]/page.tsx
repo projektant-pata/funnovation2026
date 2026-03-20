@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getDictionary, hasLocale, type Locale } from './dictionaries'
-import LangSwitcher from '@/app/components/LangSwitcher'
 import TeamSlider from '@/app/components/TeamSlider'
-import { getSession } from '@/app/lib/auth'
+import Navbar from '@/app/components/Navbar'
+import Footer from '@/app/components/Footer'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -31,67 +31,11 @@ export default async function HomePage({ params }: Props) {
   const { lang } = await params
   if (!hasLocale(lang)) notFound()
   const d = await getDictionary(lang as Locale)
-  const session = await getSession()
-
-  const navLinks = [
-    { label: d.nav.map,        href: `/${lang}/map` },
-    { label: d.nav.sandbox,    href: `/${lang}/sandbox` },
-    { label: d.nav.campaign,   href: `/${lang}/campaign` },
-    { label: d.nav.dictionary, href: `/${lang}/dictionary` },
-  ]
-
-  const footerPages = [
-    { label: d.nav.map,           href: `/${lang}/map` },
-    { label: d.nav.sandbox,       href: `/${lang}/sandbox` },
-    { label: d.nav.campaign,      href: `/${lang}/campaign` },
-    { label: d.footer.dictionary, href: `/${lang}/dictionary` },
-  ]
-
-  const footerInfo = [
-    { label: d.footer.about,   href: `/${lang}/about` },
-    { label: d.footer.contact, href: `/${lang}/contact` },
-    { label: d.footer.gdpr,    href: `/${lang}/gdpr` },
-  ]
 
   return (
     <div className="bg-[#FFF3E0] min-h-screen font-[family-name:var(--font-geist-sans)]">
 
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-[#FFF3E0]/90 backdrop-blur border-b border-[#4E342E]/10 px-6 py-3 flex items-center gap-8">
-        <Link href={`/${lang}`} className="flex-shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="žemLOVEka" className="h-10 w-auto" />
-        </Link>
-        <div className="flex items-center gap-1 flex-1">
-          {navLinks.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              className="px-3 py-2 rounded-lg text-base font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8 transition-colors"
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
-          <LangSwitcher lang={lang} />
-          {session ? (
-            <Link
-              href={`/${lang}/profile`}
-              className="bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] font-bold text-sm px-4 py-2 rounded-full transition-colors shadow-sm"
-            >
-              @{session.username}
-            </Link>
-          ) : (
-            <Link
-              href={`/${lang}/login`}
-              className="bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] font-bold text-sm px-4 py-2 rounded-full transition-colors shadow-sm"
-            >
-              {d.nav.login}
-            </Link>
-          )}
-        </div>
-      </nav>
+      <Navbar lang={lang} />
 
       {/* Hero */}
       <section className="min-h-[calc(100vh-57px)] flex flex-col items-center justify-center text-center px-6 py-20">
@@ -242,55 +186,7 @@ export default async function HomePage({ params }: Props) {
         <TeamSlider />
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#4E342E] text-white pt-16 pb-8 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            {/* Brand */}
-            <div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="žemLOVEka" className="h-20 w-auto mb-4 brightness-0 invert" />
-              <p className="text-white/50 text-base leading-relaxed">{d.footer.tagline}</p>
-            </div>
-
-            {/* Pages */}
-            <div>
-              <div className="text-sm font-bold uppercase tracking-widest text-white/40 mb-5">
-                {d.footer.pages}
-              </div>
-              <ul className="flex flex-col gap-3">
-                {footerPages.map(({ label, href }) => (
-                  <li key={href}>
-                    <Link href={href} className="text-base text-white/60 hover:text-[#FEDC56] transition-colors">
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Info */}
-            <div>
-              <div className="text-sm font-bold uppercase tracking-widest text-white/40 mb-5">
-                {d.footer.info}
-              </div>
-              <ul className="flex flex-col gap-3">
-                {footerInfo.map(({ label, href }) => (
-                  <li key={href}>
-                    <Link href={href} className="text-base text-white/60 hover:text-[#FEDC56] transition-colors">
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 pt-6 text-center text-sm text-white/30">
-            {d.footer.copyright}
-          </div>
-        </div>
-      </footer>
+      <Footer lang={lang} />
 
     </div>
   )

@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { getSession } from '@/app/lib/auth';
 import pool from '@/app/lib/db';
+import Navbar from '@/app/components/Navbar';
+import Footer from '@/app/components/Footer';
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -117,17 +118,7 @@ export default async function ProfilePage({ params }: Props) {
   return (
     <div className="min-h-screen bg-[#FFF3E0]">
 
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-[#FFF3E0]/90 backdrop-blur border-b border-[#4E342E]/10 px-6 py-3 flex items-center gap-4">
-        <Link href={`/${lang}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="žemLOVEka" className="h-10 w-auto" />
-        </Link>
-        <div className="flex-1" />
-        <Link href={`/${lang}/map`}      className="px-3 py-2 rounded-lg text-sm font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8">Mapa</Link>
-        <Link href={`/${lang}/sandbox`}  className="px-3 py-2 rounded-lg text-sm font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8">Sandbox</Link>
-        <Link href={`/${lang}/campaign`} className="px-3 py-2 rounded-lg text-sm font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8">Kampaň</Link>
-      </nav>
+      <Navbar lang={lang} />
 
       <div className="max-w-3xl mx-auto px-4 py-10 flex flex-col gap-8">
 
@@ -264,6 +255,8 @@ export default async function ProfilePage({ params }: Props) {
         </div>
 
       </div>
+
+      <Footer lang={lang} />
     </div>
   );
 }
