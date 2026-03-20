@@ -231,6 +231,26 @@ CREATE TABLE public.countries (
 	updated_at timestamptz NOT NULL DEFAULT timezone('utc', now())
 );
 
+CREATE TABLE public.map_groups (
+	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+	code text NOT NULL UNIQUE,
+	name_cs text NOT NULL,
+	name_en text NOT NULL,
+	emoji text,
+	color text NOT NULL,
+	hover_color text NOT NULL,
+	sort_order integer NOT NULL DEFAULT 0,
+	created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+	updated_at timestamptz NOT NULL DEFAULT timezone('utc', now())
+);
+
+CREATE TABLE public.country_map_group (
+	country_id uuid NOT NULL REFERENCES public.countries(id) ON DELETE CASCADE,
+	map_group_id uuid NOT NULL REFERENCES public.map_groups(id) ON DELETE CASCADE,
+	created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+	PRIMARY KEY (country_id, map_group_id)
+);
+
 CREATE TABLE public.allergens (
 	id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	code text NOT NULL UNIQUE,
