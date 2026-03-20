@@ -1,0 +1,39 @@
+services:
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       zemloveka
+      POSTGRES_USER:     zemloveka
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zemloveka_dev}
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zemloveka -d zemloveka"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Next.js (frontend + API routes) ──────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://zemloveka:${POSTGRES_PASSWORD:-zemloveka_dev}@db:5432/zemloveka
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
