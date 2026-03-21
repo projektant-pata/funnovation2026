@@ -94,7 +94,13 @@ export default async function HomePage({ params }: Props) {
             </Link>
           </div>
           <div className="flex-1 flex justify-center items-center">
-            <div className="text-9xl select-none leading-none">🍳📖✨</div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/campaign.png"
+              alt="Campaign preview"
+              className="rounded-2xl border-4 border-[#FEDC56] shadow-2xl w-full max-w-md object-cover"
+              style={{ height: '300px' }}
+            />
           </div>
         </div>
       </section>

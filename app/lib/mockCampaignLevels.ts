@@ -12,6 +12,17 @@ export interface CampaignCutsceneCharacter {
 export interface CampaignCutsceneLine {
   speakerId: string
   text: LocalizedText
+  thought?: boolean
+}
+
+export type CampaignCutsceneSegment =
+  | { type: 'scene'; background: string; lines: CampaignCutsceneLine[] }
+  | { type: 'transition'; caption: LocalizedText }
+
+export interface CampaignCutsceneData {
+  title: LocalizedText
+  characters: CampaignCutsceneCharacter[]
+  segments: CampaignCutsceneSegment[]
 }
 
 export interface CampaignIngredient {
@@ -41,13 +52,8 @@ export interface CampaignLevelDefinition {
   xpReward: number
   requirements: LocalizedText[]
   ingredients: CampaignIngredient[]
-  cutscene: {
-    title: LocalizedText
-    setting: LocalizedText
-    backgroundOptions: string[]
-    characters: CampaignCutsceneCharacter[]
-    lines: CampaignCutsceneLine[]
-  }
+  cutscene: CampaignCutsceneData
+  postRecipeCutscene?: CampaignCutsceneData
   steps: CampaignStep[]
   completion: {
     title: LocalizedText
@@ -118,14 +124,6 @@ export const campaignLevels: CampaignLevelDefinition[] = [
         cs: 'První den na intru',
         en: 'First Day at the Dorm',
       },
-      setting: {
-        cs: 'Pátek odpoledne. Malý pokoj na internátě — dvě postele, skříň, výhled na parkoviště. Kufr ještě nerozbalený.',
-        en: 'Friday afternoon. A small dorm room — two beds, a wardrobe, a view of the parking lot. Suitcase still packed.',
-      },
-      backgroundOptions: [
-        '/scenes/first/dorm-room.jpg',
-        '/scenes/first/dorm-room-evening.jpg',
-      ],
       characters: [
         {
           id: 'hero',
@@ -134,34 +132,109 @@ export const campaignLevels: CampaignLevelDefinition[] = [
           avatar: '/chefs/stefy.png',
         },
       ],
-      lines: [
+      segments: [
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Vlastně to není žádné velké loučení. Za čtrnáct dní jsem zase doma.',
-            en: 'It is not really a big goodbye. I will be home again in two weeks.',
+          type: 'scene',
+          background: '/scenes/bedroom.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Vlastně to není žádné velké loučení. Za čtrnáct dní jsem zase doma.',
+                en: 'It is not really a big goodbye. I will be home again in two weeks.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Máma mi napakovala jídlo na celý měsíc. Salám, fazole, tři druhy těstovin. Vzal jsem si.',
+                en: 'Mom packed enough food for a month. Sausage, beans, three kinds of pasta. I took it.',
+              },
+              thought: true,
+            },
+          ],
+        },
+        {
+          type: 'transition',
+          caption: {
+            cs: 'Pátek odpoledne. Internát, pokoj.',
+            en: 'Friday afternoon. Dorm, room.',
           },
         },
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Máma mi napakovala jídlo na celý měsíc. Salám, fazole, tři druhy těstovin. Vzal jsem si.',
-            en: 'Mom packed enough food for a month. Sausage, beans, three kinds of pasta. I took it.',
-          },
+          type: 'scene',
+          background: '/scenes/intr.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Takže tohle je to. Deset metrů čtverečních, výhled na kontejnery. Krásné.',
+                en: 'So this is it. Ten square metres, a view of the bins. Beautiful.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Říkali, že tu je společná kuchyňka. Čas zjistit, co se dá udělat z těchhle věcí.',
+                en: 'They said there is a shared kitchen. Time to find out what I can make with this stuff.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Tak jdeme na to.',
+                en: 'Let\'s go.',
+              },
+            },
+          ],
         },
+      ],
+    },
+    postRecipeCutscene: {
+      title: {
+        cs: 'První den na intru',
+        en: 'First Day at the Dorm',
+      },
+      characters: [
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Takže tohle je to. Deset metrů čtverečních, výhled na kontejnery. Krásné.',
-            en: 'So this is it. Ten square metres, a view of the bins. Beautiful.',
-          },
+          id: 'hero',
+          name: { cs: 'Ty', en: 'You' },
+          side: 'right',
+          avatar: '/chefs/stefy.png',
         },
+      ],
+      segments: [
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Říkali, že tu je společná kuchyňka. Čas zjistit, co se dá udělat z těchhle věcí.',
-            en: 'They said there is a shared kitchen. Time to find out what I can make with this stuff.',
-          },
+          type: 'scene',
+          background: '/scenes/kitchen.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: '…No.',
+                en: '…Well.',
+              },
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Není to nic extra. Ale je to jedlé. Vlastnoručně uvařené, v cizí kuchyni, první den.',
+                en: 'It is nothing special. But it is edible. Made by hand, in someone else\'s kitchen, on day one.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'To se počítá.',
+                en: 'That counts.',
+              },
+              thought: true,
+            },
+          ],
         },
       ],
     },
@@ -314,14 +387,6 @@ export const campaignLevels: CampaignLevelDefinition[] = [
         cs: 'Spolubydlící',
         en: 'The Roommate',
       },
-      setting: {
-        cs: 'Druhý den. Spolubydlící přijel v noci, hodil věci na postel a spad. Ráno se potkáte na chodbě.',
-        en: 'Second day. Roommate arrived in the night, dumped his stuff and crashed. Morning, you meet in the hallway.',
-      },
-      backgroundOptions: [
-        '/scenes/second/dorm-hallway.jpg',
-        '/scenes/second/dorm-kitchen.jpg',
-      ],
       characters: [
         {
           id: 'hero',
@@ -336,48 +401,183 @@ export const campaignLevels: CampaignLevelDefinition[] = [
           avatar: '/chefs/pata.png',
         },
       ],
-      lines: [
+      segments: [
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Spolubydlící přijel v noci. Hodil věci na postel a spad. Já taky. Dobrej první den.',
-            en: 'Roommate arrived in the night. Dropped his stuff and crashed. Me too. Good first day.',
+          type: 'scene',
+          background: '/scenes/intr.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Spolubydlící přijel v noci. Hodil věci na postel a spad. Já taky. Dobrej první den.',
+                en: 'Roommate arrived in the night. Dropped his stuff and crashed. Me too. Good first day.',
+              },
+              thought: true,
+            },
+          ],
+        },
+        {
+          type: 'transition',
+          caption: {
+            cs: 'Druhý den, odpoledne. Chodba.',
+            en: 'Next day, afternoon. Hallway.',
           },
         },
         {
-          speakerId: 'pata',
-          text: {
-            cs: 'Čau, já jsem Páťa. Z Ostravy.',
-            en: 'Hey, I am Páťa. From Ostrava.',
+          type: 'scene',
+          background: '/scenes/spse.png',
+          lines: [
+            {
+              speakerId: 'pata',
+              text: {
+                cs: 'Čau, já jsem Páťa. Z Ostravy.',
+                en: 'Hey, I am Páťa. From Ostrava.',
+              },
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Čau. Já ze Ždírce.',
+                en: 'Hey. From Ždírec.',
+              },
+            },
+            {
+              speakerId: 'pata',
+              text: {
+                cs: 'Kde to je?',
+                en: 'Where is that?',
+              },
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Přesně.',
+                en: 'Exactly.',
+              },
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Zmínil, že měl k obědu tyčinku z automatu. Mohl bych uvařit pro oba.',
+                en: 'He mentioned his lunch was a vending machine bar. I could cook for both of us.',
+              },
+              thought: true,
+            },
+          ],
+        },
+        {
+          type: 'transition',
+          caption: {
+            cs: 'Odpoledne. Kuchyňka.',
+            en: 'Afternoon. Kitchen.',
           },
         },
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Čau. Já ze Ždírce.',
-            en: 'Hey. From Ždírec.',
+          type: 'scene',
+          background: '/scenes/kitchen.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Páťa má přednášky do šesti.',
+                en: 'Páťa has lectures until six.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Nevím co mu chutná, tak udělám něco normálního.',
+                en: 'No idea what he likes, so I will make something normal.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Jdem na to.',
+                en: 'Let\'s go.',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    postRecipeCutscene: {
+      title: {
+        cs: 'Spolubydlící',
+        en: 'The Roommate',
+      },
+      characters: [
+        {
+          id: 'hero',
+          name: { cs: 'Ty', en: 'You' },
+          side: 'right',
+          avatar: '/chefs/stefy.png',
+        },
+        {
+          id: 'pata',
+          name: { cs: 'Páťa', en: 'Páťa' },
+          side: 'left',
+          avatar: '/chefs/pata.png',
+        },
+      ],
+      segments: [
+        {
+          type: 'transition',
+          caption: {
+            cs: 'Večer. Pokoj.',
+            en: 'Evening. Room.',
           },
         },
         {
-          speakerId: 'pata',
-          text: {
-            cs: 'Kde to je?',
-            en: 'Where is that?',
-          },
-        },
-        {
-          speakerId: 'hero',
-          text: {
-            cs: 'Přesně.',
-            en: 'Exactly.',
-          },
-        },
-        {
-          speakerId: 'hero',
-          text: {
-            cs: 'Zmínil, že měl k obědu tyčinku z automatu. Mohl bych uvařit pro oba. Nevím co mu chutná, tak udělám něco normálního.',
-            en: 'He mentioned his lunch was a vending machine bar. I could cook for both of us. No idea what he likes, so I will make something normal.',
-          },
+          type: 'scene',
+          background: '/scenes/intr.png',
+          lines: [
+            {
+              speakerId: 'pata',
+              text: {
+                cs: 'Díky, člověče.',
+                en: 'Thanks, man.',
+              },
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Jo, v pohodě.',
+                en: 'Yeah, no worries.',
+              },
+            },
+            {
+              speakerId: 'pata',
+              text: {
+                cs: 'Fakt dobrý. Nečekal jsem to.',
+                en: 'Actually good. Did not expect that.',
+              },
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Já taky ne.',
+                en: 'Me neither.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'pata',
+              text: {
+                cs: 'Tak zítra já?',
+                en: 'So tomorrow me?',
+              },
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Fair.',
+                en: 'Fair.',
+              },
+            },
+          ],
         },
       ],
     },
@@ -545,14 +745,6 @@ export const campaignLevels: CampaignLevelDefinition[] = [
         cs: 'Víkend solo',
         en: 'Solo Weekend',
       },
-      setting: {
-        cs: 'Pátek odpoledne. Páťa odjel domů. Pokoj je divně tichý.',
-        en: 'Friday afternoon. Páťa went home. The room feels weirdly quiet.',
-      },
-      backgroundOptions: [
-        '/scenes/third/dorm-room.jpg',
-        '/scenes/third/dorm-kitchen.jpg',
-      ],
       characters: [
         {
           id: 'hero',
@@ -561,34 +753,116 @@ export const campaignLevels: CampaignLevelDefinition[] = [
           avatar: '/chefs/stefy.png',
         },
       ],
-      lines: [
+      segments: [
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Páťa odjel ve čtvrtek večer. Ostrava není za rohem.',
-            en: 'Páťa left Thursday night. Ostrava is not exactly around the corner.',
+          type: 'scene',
+          background: '/scenes/intr.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Páťa odjel ve čtvrtek večer. Ostrava není za rohem.',
+                en: 'Páťa left Thursday night. Ostrava is not exactly around the corner.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Pokoj je divně ticho. Ani jsem nevěděl, že si na něj za tejden zvyknu.',
+                en: 'The room is weirdly quiet. Did not know I would get used to him in just a week.',
+              },
+              thought: true,
+            },
+          ],
+        },
+        {
+          type: 'transition',
+          caption: {
+            cs: 'Pátek večer. Kuchyňka.',
+            en: 'Friday evening. Kitchen.',
           },
         },
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Pokoj je divně ticho. Ani jsem nevěděl, že si na něj za tejden zvyknu.',
-            en: 'The room is weirdly quiet. Did not know I would get used to him in just a week.',
+          type: 'scene',
+          background: '/scenes/kitchen.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Vařím sám. Zase. Ale teď je to jiný než první den. Tehdy jsem nevěděl co dělám. Teď… víceméně vím.',
+                en: 'Cooking alone. Again. But it feels different from day one. Back then I had no idea. Now… more or less I do.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Dám si něco, na co jsem měl celej týden chuť a Páťa by řekl že to zní divně.',
+                en: 'I will make something I have been craving all week that Páťa would say sounds weird.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Jeho loss.',
+                en: 'His loss.',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    postRecipeCutscene: {
+      title: {
+        cs: 'Víkend solo',
+        en: 'Solo Weekend',
+      },
+      characters: [
+        {
+          id: 'hero',
+          name: { cs: 'Ty', en: 'You' },
+          side: 'right',
+          avatar: '/chefs/stefy.png',
+        },
+      ],
+      segments: [
+        {
+          type: 'transition',
+          caption: {
+            cs: 'Po večeři. Pokoj.',
+            en: 'After dinner. Room.',
           },
         },
         {
-          speakerId: 'hero',
-          text: {
-            cs: 'Vařím sám. Zase. Ale teď je to jiný než první den. Tehdy jsem nevěděl co dělám. Teď… víceméně vím.',
-            en: 'Cooking alone. Again. But it feels different from day one. Back then I had no idea. Now… more or less I do.',
-          },
-        },
-        {
-          speakerId: 'hero',
-          text: {
-            cs: 'Dám si něco, na co jsem měl celej týden chuť a Páťa by řekl že to zní divně. Jeho loss.',
-            en: 'I will make something I have been craving all week that Páťa would say sounds weird. His loss.',
-          },
+          type: 'scene',
+          background: '/scenes/intr.png',
+          lines: [
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Jo. Tohle bylo dobrý rozhodnutí.',
+                en: 'Yeah. That was a good call.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: 'Dám Páťovi vědět, co jsem vařil. Ať se taky rozšíří.',
+                en: 'I will let Páťa know what I made. Let him broaden his horizons.',
+              },
+              thought: true,
+            },
+            {
+              speakerId: 'hero',
+              text: {
+                cs: "Odepsal: \u201Abruv\u2018.",
+                en: 'He replied: \'bruv\'.',
+              },
+            },
+          ],
         },
       ],
     },

@@ -13,14 +13,17 @@ type CutsceneCharacter = {
 type CutsceneLine = {
   speakerId: string
   text: string
+  thought?: boolean
 }
+
+type CutsceneSegment =
+  | { type: 'scene'; background: string; lines: CutsceneLine[] }
+  | { type: 'transition'; caption: string }
 
 type Props = {
   title: string
-  setting: string
-  backgroundOptions: string[]
   characters: CutsceneCharacter[]
-  lines: CutsceneLine[]
+  segments: CutsceneSegment[]
   modeLabel: string
   tapHintLabel: string
   skipLabel: string
@@ -29,12 +32,14 @@ type Props = {
   onContinue: () => void
 }
 
+type ScreenState =
+  | { kind: 'scene'; segIdx: number; lineIdx: number }
+  | { kind: 'caption'; text: string; nextSegIdx: number }
+
 export default function LevelCutscene({
   title,
-  setting,
-  backgroundOptions,
   characters,
-  lines,
+  segments,
   modeLabel,
   tapHintLabel,
   skipLabel,
@@ -42,22 +47,30 @@ export default function LevelCutscene({
   continueLabel,
   onContinue,
 }: Props) {
-  const [lineIndex, setLineIndex] = useState(0)
+  const [screen, setScreen] = useState<ScreenState>(() => {
+    if (segments[0]?.type === 'transition') {
+      return { kind: 'caption', text: segments[0].caption, nextSegIdx: 1 }
+    }
+    return { kind: 'scene', segIdx: 0, lineIdx: 0 }
+  })
   const [revealedChars, setRevealedChars] = useState(0)
-  const selectedBackground = backgroundOptions[0] ?? ''
-
-  const line = lines[lineIndex]
-  const fullText = line?.text ?? ''
+  const [overlayOpaque, setOverlayOpaque] = useState(false)
 
   const characterById = useMemo(() => {
     return new Map(characters.map((character) => [character.id, character]))
   }, [characters])
 
-  const activeCharacter = line ? characterById.get(line.speakerId) : characters[0]
-  const leftCharacter = characters.find((character) => character.side === 'left')
-  const rightCharacter = characters.find((character) => character.side === 'right')
+  // Derive current scene data for rendering
+  const currentScene =
+    screen.kind === 'scene' && segments[screen.segIdx]?.type === 'scene'
+      ? (segments[screen.segIdx] as { type: 'scene'; background: string; lines: CutsceneLine[] })
+      : null
+
+  const currentLine = currentScene ? currentScene.lines[screen.kind === 'scene' ? screen.lineIdx : 0] : null
+  const fullText = currentLine?.text ?? ''
 
   useEffect(() => {
+    if (screen.kind !== 'scene') return
     if (!fullText) return
     if (revealedChars >= fullText.length) return
 
@@ -66,29 +79,153 @@ export default function LevelCutscene({
     }, 20)
 
     return () => window.clearTimeout(id)
-  }, [fullText, revealedChars])
+  }, [screen.kind, fullText, revealedChars])
 
-  const isTextFullyVisible = revealedChars >= fullText.length
-  const isLastLine = lineIndex === lines.length - 1
+  // Reset typewriter when line changes
+  useEffect(() => {
+    setRevealedChars(0)
+  }, [screen])
+
+  function fadeTransition(afterFade: () => void) {
+    setOverlayOpaque(true)
+    setTimeout(() => {
+      afterFade()
+      requestAnimationFrame(() => requestAnimationFrame(() => setOverlayOpaque(false)))
+    }, 400)
+  }
 
   function handleAdvance() {
+    if (screen.kind === 'caption') {
+      fadeTransition(() => {
+        if (screen.nextSegIdx >= segments.length) {
+          onContinue()
+          return
+        }
+        const nextSeg = segments[screen.nextSegIdx]
+        if (nextSeg.type === 'scene') {
+          setScreen({ kind: 'scene', segIdx: screen.nextSegIdx, lineIdx: 0 })
+        } else {
+          setScreen({ kind: 'caption', text: nextSeg.caption, nextSegIdx: screen.nextSegIdx + 1 })
+        }
+      })
+      return
+    }
+
+    // screen.kind === 'scene'
+    const isTextFullyVisible = revealedChars >= fullText.length
+
     if (!isTextFullyVisible) {
       setRevealedChars(fullText.length)
       return
     }
 
+    if (!currentScene) return
+
+    const isLastLine = screen.lineIdx === currentScene.lines.length - 1
+
     if (!isLastLine) {
-      setRevealedChars(0)
-      setLineIndex((prev) => prev + 1)
+      setScreen({ kind: 'scene', segIdx: screen.segIdx, lineIdx: screen.lineIdx + 1 })
       return
     }
 
-    onContinue()
+    // Last line of scene — advance to next segment
+    const nextSegIdx = screen.segIdx + 1
+
+    if (nextSegIdx >= segments.length) {
+      onContinue()
+      return
+    }
+
+    const nextSeg = segments[nextSegIdx]
+    if (nextSeg.type === 'transition') {
+      fadeTransition(() => {
+        setScreen({ kind: 'caption', text: nextSeg.caption, nextSegIdx: nextSegIdx + 1 })
+      })
+    } else {
+      fadeTransition(() => {
+        setScreen({ kind: 'scene', segIdx: nextSegIdx, lineIdx: 0 })
+      })
+    }
   }
 
-  const backgroundStyle = selectedBackground
+  // Caption screen
+  if (screen.kind === 'caption') {
+    return (
+      <section className="w-full min-h-[100dvh]">
+        <div
+          className="relative w-full min-h-[100dvh] overflow-hidden bg-black flex flex-col items-center justify-center"
+          onClick={handleAdvance}
+        >
+          <p className="text-2xl md:text-4xl italic text-[#FFF8E1]/90 text-center max-w-2xl px-8 leading-snug">
+            {screen.text}
+          </p>
+          <p className="mt-8 text-sm text-[#FFF8E1]/45 tracking-widest uppercase">
+            {tapHintLabel}
+          </p>
+
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onContinue() }}
+            className="absolute bottom-6 left-4 rounded-xl bg-[#4E342E]/90 hover:bg-[#5D4037] text-[#FFF8E1] text-sm font-semibold px-4 py-2 transition-colors"
+          >
+            {skipLabel}
+          </button>
+
+          <div
+            className={`fixed inset-0 bg-black z-[200] pointer-events-none transition-opacity duration-[400ms] ${overlayOpaque ? 'opacity-100' : 'opacity-0'}`}
+          />
+        </div>
+
+        <style>{`
+          @keyframes vn-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-7px); }
+          }
+          .vn-float {
+            animation: vn-float 2.5s ease-in-out infinite;
+          }
+          @keyframes vn-cursor {
+            0%, 45% { opacity: 1; }
+            46%, 100% { opacity: 0; }
+          }
+          .vn-cursor {
+            display: inline-block;
+            margin-left: 2px;
+            animation: vn-cursor 0.9s linear infinite;
+          }
+        `}</style>
+      </section>
+    )
+  }
+
+  // Scene screen
+  if (!currentScene || !currentLine) return null
+
+  const activeCharacter = characterById.get(currentLine.speakerId)
+
+  // Only show sprites for characters that speak in this scene
+  const sceneCharacterIds = new Set(currentScene.lines.map((l) => l.speakerId))
+  const sceneCharacters = characters.filter((c) => sceneCharacterIds.has(c.id))
+  const leftCharacter = sceneCharacters.find((c) => c.side === 'left')
+  const rightCharacter = sceneCharacters.find((c) => c.side === 'right')
+
+  const isTextFullyVisible = revealedChars >= fullText.length
+  const isLastLine = screen.lineIdx === currentScene.lines.length - 1
+
+  // Count total lines seen across segments for progress display
+  const totalLines = segments.reduce((sum, seg) => {
+    if (seg.type === 'scene') return sum + seg.lines.length
+    return sum
+  }, 0)
+  const linesBeforeThisSegment = segments.slice(0, screen.segIdx).reduce((sum, seg) => {
+    if (seg.type === 'scene') return sum + seg.lines.length
+    return sum
+  }, 0)
+  const globalLineIndex = linesBeforeThisSegment + screen.lineIdx
+
+  const backgroundStyle = currentScene.background
     ? {
-        backgroundImage: `linear-gradient(180deg, rgba(18, 12, 10, 0.12), rgba(18, 12, 10, 0.72)), url(${selectedBackground})`,
+        backgroundImage: `linear-gradient(180deg, rgba(18, 12, 10, 0.12), rgba(18, 12, 10, 0.72)), url(${currentScene.background})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }
@@ -108,7 +245,6 @@ export default function LevelCutscene({
         <div className="relative z-10 px-5 pt-6 md:px-8">
           <p className="text-[11px] uppercase tracking-[0.2em] text-[#FFF8E1]/75">{modeLabel}</p>
           <h1 className="text-2xl md:text-3xl font-black text-[#FFF8E1] mt-1">{title}</h1>
-          <p className="text-sm md:text-base text-[#FFF8E1]/85 mt-2 max-w-2xl">{setting}</p>
         </div>
 
         <div className="hidden md:block absolute inset-x-0 bottom-0 top-[5.75rem] pointer-events-none">
@@ -155,13 +291,13 @@ export default function LevelCutscene({
                 {isLastLine && isTextFullyVisible ? continueLabel : tapHintLabel}
               </p>
             </div>
-            <p className="text-[15px] md:text-[17px] leading-relaxed text-[#FFF8E1] min-h-[4.5rem] md:min-h-[5rem]">
+            <p className={`text-[15px] md:text-[17px] leading-relaxed text-[#FFF8E1] min-h-[4.5rem] md:min-h-[5rem] ${currentLine.thought ? 'italic' : ''}`}>
               {fullText.slice(0, revealedChars)}
               {!isTextFullyVisible && <span className="vn-cursor">|</span>}
             </p>
             <div className="mt-3 flex items-center justify-between text-[11px] text-[#FFF8E1]/60">
               <span>
-                {lineIndex + 1}/{lines.length}
+                {globalLineIndex + 1}/{totalLines}
               </span>
               <span>{isTextFullyVisible ? '▼' : '...'}</span>
             </div>
@@ -175,6 +311,10 @@ export default function LevelCutscene({
             {skipLabel}
           </button>
         </div>
+
+        <div
+          className={`fixed inset-0 bg-black z-[200] pointer-events-none transition-opacity duration-[400ms] ${overlayOpaque ? 'opacity-100' : 'opacity-0'}`}
+        />
 
         <style>{`
           @keyframes vn-float {

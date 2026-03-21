@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import type {
+  CampaignCutsceneData,
+  CampaignCutsceneSegment,
   CampaignLevelDefinition,
   CampaignLocale,
   LocalizedText,
@@ -52,7 +54,7 @@ type Props = {
   backToTreeHref: string
 }
 
-type Phase = 'cutscene' | 'summary' | 'cooking' | 'completion'
+type Phase = 'cutscene' | 'summary' | 'cooking' | 'postcutscene' | 'completion'
 
 function pick(text: LocalizedText, locale: CampaignLocale): string {
   return text[locale]
@@ -62,6 +64,24 @@ function formatTimer(totalSeconds: number): string {
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
+
+function localizeSegments(
+  segments: CampaignCutsceneSegment[],
+  locale: CampaignLocale
+) {
+  return segments.map((seg) => {
+    if (seg.type === 'transition') return { type: 'transition' as const, caption: seg.caption[locale] }
+    return {
+      type: 'scene' as const,
+      background: seg.background,
+      lines: seg.lines.map((line) => ({
+        speakerId: line.speakerId,
+        text: line.text[locale],
+        thought: line.thought,
+      })),
+    }
+  })
 }
 
 export default function CampaignLevelExperience({
@@ -123,34 +143,46 @@ export default function CampaignLevelExperience({
     [lang, level.steps]
   )
 
-  const cutsceneLines = useMemo(
-    () =>
-      level.cutscene.lines.map((line) => ({
-        speakerId: line.speakerId,
-        text: pick(line.text, lang),
-      })),
-    [lang, level.cutscene.lines]
+  const cutsceneSegments = useMemo(
+    () => localizeSegments(level.cutscene.segments, lang),
+    [lang, level.cutscene.segments]
   )
 
   const cutsceneCharacters = useMemo(
     () =>
-      level.cutscene.characters.map((character) => ({
-        id: character.id,
-        name: pick(character.name, lang),
-        side: character.side,
-        avatar: character.avatar,
+      level.cutscene.characters.map((c) => ({
+        id: c.id,
+        name: pick(c.name, lang),
+        side: c.side,
+        avatar: c.avatar,
       })),
     [lang, level.cutscene.characters]
+  )
+
+  const postSegments = useMemo(
+    () => level.postRecipeCutscene ? localizeSegments(level.postRecipeCutscene.segments, lang) : [],
+    [lang, level.postRecipeCutscene]
+  )
+
+  const postCharacters = useMemo(
+    () =>
+      level.postRecipeCutscene
+        ? level.postRecipeCutscene.characters.map((c) => ({
+            id: c.id,
+            name: pick(c.name, lang),
+            side: c.side,
+            avatar: c.avatar,
+          }))
+        : [],
+    [lang, level.postRecipeCutscene]
   )
 
   if (phase === 'cutscene') {
     return (
       <LevelCutscene
         title={pick(level.cutscene.title, lang)}
-        setting={pick(level.cutscene.setting, lang)}
-        backgroundOptions={level.cutscene.backgroundOptions}
         characters={cutsceneCharacters}
-        lines={cutsceneLines}
+        segments={cutsceneSegments}
         modeLabel={labels.cutsceneModeLabel}
         tapHintLabel={labels.cutsceneTapHint}
         skipLabel={labels.cutsceneSkip}
@@ -237,11 +269,27 @@ export default function CampaignLevelExperience({
         onNextStep={() => setCurrentStepIndex((prev) => Math.min(prev + 1, steps.length - 1))}
         onFinish={() => {
           setIsTimerRunning(false)
-          setPhase('completion')
+          setPhase(level.postRecipeCutscene ? 'postcutscene' : 'completion')
         }}
         chefLabel={labels.chef}
         chefDescription={labels.chefDescription}
         chefComingSoon={labels.comingSoon}
+      />
+    )
+  }
+
+  if (phase === 'postcutscene') {
+    return (
+      <LevelCutscene
+        title={pick(level.postRecipeCutscene!.title, lang)}
+        characters={postCharacters}
+        segments={postSegments}
+        modeLabel={labels.cutsceneModeLabel}
+        tapHintLabel={labels.cutsceneTapHint}
+        skipLabel={labels.cutsceneSkip}
+        narratorLabel={labels.narrator}
+        continueLabel={labels.cutsceneContinue}
+        onContinue={() => setPhase('completion')}
       />
     )
   }
