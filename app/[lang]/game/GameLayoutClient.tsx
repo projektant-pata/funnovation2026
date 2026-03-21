@@ -1,10 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
 import BottomNav from '@/app/components/game/BottomNav'
 import ChefFab from '@/app/components/game/ChefFab'
-import ProfilePopover from '@/app/components/game/ProfilePopover'
 
 type Labels = {
   play: string
@@ -30,65 +27,14 @@ type Props = {
   lang: string
   labels: Labels
   children: React.ReactNode
+  navbar: React.ReactNode
 }
 
-export default function GameLayoutClient({ lang, labels, children }: Props) {
-  const [profileOpen, setProfileOpen] = useState(false)
+export default function GameLayoutClient({ lang, labels, children, navbar }: Props) {
 
   return (
     <div className="bg-[#FFF3E0] min-h-screen font-[family-name:var(--font-geist-sans)] flex flex-col">
-      {/* Top bar */}
-      <header className="flex items-center justify-between px-5 py-3 bg-[#FFF3E0] border-b border-[#4E342E]/10 z-40">
-        {/* Left: logo */}
-        <Link
-          href={`/${lang}`}
-          className="flex items-center"
-        >
-          <img
-            src="/logo.png"
-            alt="žemLOVEka"
-            className="h-8"
-          />
-        </Link>
-
-        {/* Right: notification + profile avatar */}
-        <div className="flex items-center gap-2">
-          <button
-            className="p-2 rounded-lg text-[#4E342E] hover:bg-[#4E342E]/10 transition-colors duration-150"
-            aria-label={labels.notifications}
-          >
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 01-3.46 0" />
-            </svg>
-          </button>
-          <div className="relative">
-            <button
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="w-9 h-9 rounded-full bg-[#FEDC56] flex items-center justify-center hover:bg-[#f5d430] transition-colors duration-150"
-              aria-label={labels.profile}
-            >
-              <svg className="w-5 h-5 text-[#4E342E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </button>
-            <ProfilePopover
-              lang={lang}
-              open={profileOpen}
-              onClose={() => setProfileOpen(false)}
-              labels={{
-                profile: labels.profile,
-                badges: labels.badges,
-                pantry: labels.pantry,
-                shoppingList: labels.shoppingList,
-                mealPlan: labels.mealPlan,
-                settings: labels.settings,
-              }}
-            />
-          </div>
-        </div>
-      </header>
+      {navbar}
 
       {/* Content with fade-in animation */}
       <main className="flex-1 overflow-auto pb-24 animate-[fadeIn_200ms_ease-out]">

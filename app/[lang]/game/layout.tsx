@@ -1,6 +1,7 @@
 import { getDictionary, hasLocale, type Locale } from '../dictionaries'
 import { notFound } from 'next/navigation'
 import GameLayoutClient from './GameLayoutClient'
+import Navbar from '@/app/components/Navbar'
 
 type Props = {
   children: React.ReactNode
@@ -15,6 +16,7 @@ export default async function GameLayout({ children, params }: Props) {
   return (
     <GameLayoutClient
       lang={lang}
+      navbar={<Navbar lang={lang} />}
       labels={{
         play: d.game.play,
         campaign: d.game.campaign,
