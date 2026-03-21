@@ -55,7 +55,7 @@ export default function ChefFab({ labels }: Props) {
       {/* FAB */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-24 right-6 z-[60] w-14 h-14 rounded-full bg-[#FEDC56] hover:bg-[#f5d430] hover:scale-105 text-[#4E342E] shadow-lg flex items-center justify-center transition-all duration-200"
+        className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-[#FEDC56] hover:bg-[#f5d430] hover:scale-105 text-[#4E342E] shadow-lg flex items-center justify-center transition-all duration-200"
         aria-label={labels.chef}
       >
         <ChefHatIcon className={`w-7 h-7 transition-transform duration-300 ${open ? 'rotate-12' : ''}`} />

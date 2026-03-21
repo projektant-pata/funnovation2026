@@ -1,0 +1,656 @@
+export type CampaignLocale = 'cs' | 'en'
+
+export type LocalizedText = Record<CampaignLocale, string>
+
+export interface CampaignCutsceneCharacter {
+  id: string
+  name: LocalizedText
+  side: 'left' | 'right'
+  avatar?: string
+  spriteScale?: number
+}
+
+export interface CampaignCutsceneLine {
+  speakerId: string
+  text: LocalizedText
+}
+
+export interface CampaignIngredient {
+  id: string
+  name: LocalizedText
+  amount: LocalizedText
+}
+
+export interface CampaignStep {
+  id: string
+  title: LocalizedText
+  instruction: LocalizedText
+  tip?: LocalizedText
+  suggestedSeconds?: number
+}
+
+export interface CampaignLevelDefinition {
+  nodeId: string
+  title: LocalizedText
+  subtitle: LocalizedText
+  recipeName: LocalizedText
+  objective: LocalizedText
+  estimatedTime: LocalizedText
+  difficulty: number
+  xpReward: number
+  requirements: LocalizedText[]
+  ingredients: CampaignIngredient[]
+  cutscene: {
+    title: LocalizedText
+    setting: LocalizedText
+    backgroundOptions: string[]
+    characters: CampaignCutsceneCharacter[]
+    lines: CampaignCutsceneLine[]
+  }
+  steps: CampaignStep[]
+  completion: {
+    title: LocalizedText
+    subtitle: LocalizedText
+    reflectionPrompts: LocalizedText[]
+  }
+}
+
+export const campaignLevels: CampaignLevelDefinition[] = [
+  {
+    nodeId: 'n1',
+    title: {
+      cs: 'První večeře',
+      en: 'First Dinner',
+    },
+    subtitle: {
+      cs: 'Kde to všechno začalo',
+      en: 'Where it all began',
+    },
+    recipeName: {
+      cs: 'Špagety aglio e olio',
+      en: 'Spaghetti Aglio e Olio',
+    },
+    objective: {
+      cs: 'Uvař první plnohodnotnou večeři a zvládni práci s česnekem a těstovinou.',
+      en: 'Cook your first complete dinner and master garlic and pasta timing.',
+    },
+    estimatedTime: {
+      cs: '15-20 min',
+      en: '15-20 min',
+    },
+    difficulty: 1,
+    xpReward: 100,
+    requirements: [
+      {
+        cs: 'Základní hrnec a pánev',
+        en: 'Basic pot and pan',
+      },
+      {
+        cs: 'Sporák',
+        en: 'Stove',
+      },
+    ],
+    ingredients: [
+      {
+        id: 'n1-i1',
+        name: { cs: 'Špagety', en: 'Spaghetti' },
+        amount: { cs: '120 g', en: '120 g' },
+      },
+      {
+        id: 'n1-i2',
+        name: { cs: 'Česnek', en: 'Garlic' },
+        amount: { cs: '2 stroužky', en: '2 cloves' },
+      },
+      {
+        id: 'n1-i3',
+        name: { cs: 'Olivový olej', en: 'Olive oil' },
+        amount: { cs: '2 lžíce', en: '2 tbsp' },
+      },
+      {
+        id: 'n1-i4',
+        name: { cs: 'Petržel', en: 'Parsley' },
+        amount: { cs: '1 lžíce', en: '1 tbsp' },
+      },
+    ],
+    cutscene: {
+      title: {
+        cs: 'Večer, kdy to zlomíš',
+        en: 'The Evening You Turn It Around',
+      },
+      setting: {
+        cs: 'Malá kuchyňka po dlouhém dni. Venku prší a v bytě je ticho.',
+        en: 'A small kitchen after a long day. It is raining outside and quiet inside.',
+      },
+      backgroundOptions: [
+        '/cutscenes/apartment-kitchen-evening.jpg',
+        '/cutscenes/rainy-window-kitchen.jpg',
+        '/cutscenes/cozy-studio-kitchen.jpg',
+      ],
+      characters: [
+        {
+          id: 'hero',
+          name: { cs: 'Adam', en: 'Adam' },
+          side: 'right',
+          avatar: '/chefs/pata.png',
+          spriteScale: 1.55,
+        },
+      ],
+      lines: [
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Dneska to zase stálo za nic. A první myšlenka? Objednat si něco a neřešit to.',
+            en: 'Today was rough. My first instinct was to order food and call it a day.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Jenže přesně takhle jsem se nikam neposunul. Potřebuju začít od úplného základu.',
+            en: 'But that is exactly why I never improve. I need to start from the basics.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Tak jo. Špagety aglio e olio. Pár surovin, jedna pánev, a žádné výmluvy.',
+            en: 'Alright. Spaghetti aglio e olio. Few ingredients, one pan, no excuses.',
+          },
+        },
+      ],
+    },
+    steps: [
+      {
+        id: 'n1-s1',
+        title: { cs: 'Připrav vodu', en: 'Prep the water' },
+        instruction: {
+          cs: 'Dej vařit osolenou vodu na těstoviny.',
+          en: 'Bring salted water to a boil for pasta.',
+        },
+      },
+      {
+        id: 'n1-s2',
+        title: { cs: 'Nakrájej česnek', en: 'Slice garlic' },
+        instruction: {
+          cs: 'Česnek nakrájej na tenké plátky.',
+          en: 'Slice garlic into thin pieces.',
+        },
+      },
+      {
+        id: 'n1-s3',
+        title: { cs: 'Uvař špagety', en: 'Cook spaghetti' },
+        instruction: {
+          cs: 'Špagety vař al dente podle obalu.',
+          en: 'Cook spaghetti al dente according to package instructions.',
+        },
+        tip: {
+          cs: 'Schovej si půl hrnku vody z těstovin.',
+          en: 'Reserve half a cup of pasta water.',
+        },
+      },
+      {
+        id: 'n1-s4',
+        title: { cs: 'Rozehřej olej', en: 'Heat oil' },
+        instruction: {
+          cs: 'Na pánvi zahřej olivový olej na mírném plameni.',
+          en: 'Heat olive oil in a pan over low heat.',
+        },
+      },
+      {
+        id: 'n1-s5',
+        title: { cs: 'Krátce orestuj česnek', en: 'Quickly saute garlic' },
+        instruction: {
+          cs: 'Přidej česnek a míchej 30-40 sekund.',
+          en: 'Add garlic and stir for 30-40 seconds.',
+        },
+      },
+      {
+        id: 'n1-s6',
+        title: { cs: 'Spoj s těstovinami', en: 'Combine with pasta' },
+        instruction: {
+          cs: 'Vmíchej špagety a trochu vody z těstovin.',
+          en: 'Toss in spaghetti and a bit of pasta water.',
+        },
+      },
+      {
+        id: 'n1-s7',
+        title: { cs: 'Dochucení', en: 'Final seasoning' },
+        instruction: {
+          cs: 'Přidej petržel a dochuť solí.',
+          en: 'Add parsley and season with salt.',
+        },
+      },
+    ],
+    completion: {
+      title: {
+        cs: 'První večeře hotová',
+        en: 'First dinner completed',
+      },
+      subtitle: {
+        cs: 'Skvělé. První samostatná večeře je za tebou.',
+        en: 'Great. Your first independent dinner is done.',
+      },
+      reflectionPrompts: [
+        {
+          cs: 'Co se povedlo nejvíc?',
+          en: 'What went best?',
+        },
+        {
+          cs: 'Který krok byl nejtěžší?',
+          en: 'Which step felt hardest?',
+        },
+      ],
+    },
+  },
+  {
+    nodeId: 'n2',
+    title: {
+      cs: 'Základní techniky',
+      en: 'Core Techniques',
+    },
+    subtitle: {
+      cs: 'Nůž, pánev, trouba',
+      en: 'Knife, pan, oven',
+    },
+    recipeName: {
+      cs: 'Francouzská omeleta s pažitkou',
+      en: 'French Omelette with Chives',
+    },
+    objective: {
+      cs: 'Nauč se kontrolovat teplotu pánve a načasování textury vajec.',
+      en: 'Learn to control pan temperature and egg texture timing.',
+    },
+    estimatedTime: {
+      cs: '12-15 min',
+      en: '12-15 min',
+    },
+    difficulty: 2,
+    xpReward: 100,
+    requirements: [
+      {
+        cs: 'Nepřilnavá pánev',
+        en: 'Non-stick pan',
+      },
+      {
+        cs: 'Stěrka',
+        en: 'Spatula',
+      },
+    ],
+    ingredients: [
+      {
+        id: 'n2-i1',
+        name: { cs: 'Vejce', en: 'Eggs' },
+        amount: { cs: '3 ks', en: '3 pcs' },
+      },
+      {
+        id: 'n2-i2',
+        name: { cs: 'Máslo', en: 'Butter' },
+        amount: { cs: '10 g', en: '10 g' },
+      },
+      {
+        id: 'n2-i3',
+        name: { cs: 'Sůl', en: 'Salt' },
+        amount: { cs: 'Špetka', en: 'Pinch' },
+      },
+      {
+        id: 'n2-i4',
+        name: { cs: 'Pažitka', en: 'Chives' },
+        amount: { cs: '1 lžíce', en: '1 tbsp' },
+      },
+      {
+        id: 'n2-i5',
+        name: { cs: 'Chléb', en: 'Bread' },
+        amount: { cs: '1 krajíc', en: '1 slice' },
+      },
+    ],
+    cutscene: {
+      title: {
+        cs: 'Když se ti nechce vařit',
+        en: 'When You Do Not Feel Like Cooking',
+      },
+      setting: {
+        cs: 'Pozdní podvečer. Adam stojí u linky, unavený a hladový, ale nechce to vzdát.',
+        en: 'Late afternoon. Adam stands by the counter, tired and hungry, but not giving up.',
+      },
+      backgroundOptions: [
+        '/cutscenes/late-afternoon-kitchen.jpg',
+        '/cutscenes/minimal-home-kitchen.jpg',
+        '/cutscenes/sunset-kitchen.jpg',
+      ],
+      characters: [
+        {
+          id: 'hero',
+          name: { cs: 'Adam', en: 'Adam' },
+          side: 'right',
+          avatar: '/chefs/pata.png',
+          spriteScale: 1.55,
+        },
+      ],
+      lines: [
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Dneska se mi fakt nedařilo. Hlava by nejradši otevřela appku na rozvoz.',
+            en: 'Today really did not go my way. My brain wants to open a delivery app.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Ale jestli zvládnu omeletu i teď, bude to znamenat, že to myslím vážně.',
+            en: 'But if I can make an omelette even now, it means I am serious about this.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Klid. Teplota. Trpělivost. Tři věci a mám vyhráno.',
+            en: 'Calm. Heat control. Patience. Three things and I win this round.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Jdu do toho. Francouzská omeleta, žádné zkratky.',
+            en: 'I am doing it. French omelette, no shortcuts.',
+          },
+        },
+      ],
+    },
+    steps: [
+      {
+        id: 'n2-s1',
+        title: { cs: 'Příprava stanice', en: 'Prep your station' },
+        instruction: {
+          cs: 'Připrav misku, metličku, pánev a stěrku.',
+          en: 'Set out a bowl, whisk, pan, and spatula.',
+        },
+      },
+      {
+        id: 'n2-s2',
+        title: { cs: 'Vejce do misky', en: 'Eggs in the bowl' },
+        instruction: {
+          cs: 'Rozklep 3 vejce, přidej špetku soli a krátce prošlehej.',
+          en: 'Crack 3 eggs, add a pinch of salt, whisk briefly.',
+        },
+      },
+      {
+        id: 'n2-s3',
+        title: { cs: 'Kontrola teploty', en: 'Heat check' },
+        instruction: {
+          cs: 'Rozehřej pánev na střední výkon.',
+          en: 'Heat the pan to medium.',
+        },
+        tip: {
+          cs: 'Pánev má být teplá, ne kouřící.',
+          en: 'The pan should be warm, not smoking.',
+        },
+        suggestedSeconds: 60,
+      },
+      {
+        id: 'n2-s4',
+        title: { cs: 'Přidej máslo', en: 'Add butter' },
+        instruction: {
+          cs: 'Rozpusť máslo a hned sniž plamen.',
+          en: 'Melt butter and lower heat right away.',
+        },
+      },
+      {
+        id: 'n2-s5',
+        title: { cs: 'Vlij vejce', en: 'Pour in eggs' },
+        instruction: {
+          cs: 'Vlij vejce a jemně míchej stěrkou po dně pánve.',
+          en: 'Pour eggs in and stir gently across the pan bottom.',
+        },
+        suggestedSeconds: 90,
+      },
+      {
+        id: 'n2-s6',
+        title: { cs: 'Tvarování', en: 'Shape it' },
+        instruction: {
+          cs: 'Jakmile vejce houstnou, přestaň míchat a omeletu vytvaruj.',
+          en: 'When eggs thicken, stop stirring and shape the omelette.',
+        },
+      },
+      {
+        id: 'n2-s7',
+        title: { cs: 'Přeložení', en: 'Fold' },
+        instruction: {
+          cs: 'Přelož omeletu na třetiny a nech dojít 20-30 sekund.',
+          en: 'Fold into thirds and let it finish for 20-30 seconds.',
+        },
+        suggestedSeconds: 30,
+      },
+      {
+        id: 'n2-s8',
+        title: { cs: 'Servírování', en: 'Serve' },
+        instruction: {
+          cs: 'Posyp pažitkou, přidej opečený chléb a podávej.',
+          en: 'Top with chives, add toasted bread, and serve.',
+        },
+      },
+    ],
+    completion: {
+      title: {
+        cs: 'Technika zvládnuta',
+        en: 'Technique mastered',
+      },
+      subtitle: {
+        cs: 'Skvělá práce. Udržel jsi kontrolu nad teplotou i texturou.',
+        en: 'Great job. You kept control of heat and texture.',
+      },
+      reflectionPrompts: [
+        {
+          cs: 'Kdy sis byl jistý, že je pánev správně nahřátá?',
+          en: 'When did you know the pan was at the right heat?',
+        },
+        {
+          cs: 'Co bys příště udělal ještě jemněji?',
+          en: 'What would you do more gently next time?',
+        },
+        {
+          cs: 'Který krok tě nejvíc posunul?',
+          en: 'Which step improved your skill the most?',
+        },
+      ],
+    },
+  },
+  {
+    nodeId: 'n3',
+    title: {
+      cs: 'Odstěhování',
+      en: 'Moving Out',
+    },
+    subtitle: {
+      cs: 'Čas se postavit na vlastní nohy',
+      en: 'Time to stand on your own feet',
+    },
+    recipeName: {
+      cs: 'Jednohrncové rajčatové těstoviny',
+      en: 'One-Pot Tomato Pasta',
+    },
+    objective: {
+      cs: 'Uvař praktické jídlo z minima nádobí a naplánuj si porci i na zítra.',
+      en: 'Cook a practical meal with minimal dishes and plan one portion for tomorrow.',
+    },
+    estimatedTime: {
+      cs: '20-25 min',
+      en: '20-25 min',
+    },
+    difficulty: 2,
+    xpReward: 100,
+    requirements: [
+      {
+        cs: 'Jeden větší hrnec',
+        en: 'One medium-large pot',
+      },
+      {
+        cs: 'Základní suroviny ze spíže',
+        en: 'Basic pantry staples',
+      },
+    ],
+    ingredients: [
+      {
+        id: 'n3-i1',
+        name: { cs: 'Penne', en: 'Penne' },
+        amount: { cs: '160 g', en: '160 g' },
+      },
+      {
+        id: 'n3-i2',
+        name: { cs: 'Drcená rajčata', en: 'Crushed tomatoes' },
+        amount: { cs: '200 g', en: '200 g' },
+      },
+      {
+        id: 'n3-i3',
+        name: { cs: 'Cibule', en: 'Onion' },
+        amount: { cs: '1/2 ks', en: '1/2 piece' },
+      },
+      {
+        id: 'n3-i4',
+        name: { cs: 'Česnek', en: 'Garlic' },
+        amount: { cs: '1 stroužek', en: '1 clove' },
+      },
+      {
+        id: 'n3-i5',
+        name: { cs: 'Parmezán', en: 'Parmesan' },
+        amount: { cs: 'dle chuti', en: 'to taste' },
+      },
+    ],
+    cutscene: {
+      title: {
+        cs: 'První večer po stěhování',
+        en: 'First Evening After Moving',
+      },
+      setting: {
+        cs: 'Krabice ještě nejsou vybalené. Adam otevírá šuplík a hledá aspoň jednu funkční vařečku.',
+        en: 'Boxes are still unpacked. Adam opens a drawer looking for at least one usable spatula.',
+      },
+      backgroundOptions: [
+        '/cutscenes/new-apartment-kitchen.jpg',
+        '/cutscenes/unpacked-boxes-kitchen.jpg',
+        '/cutscenes/night-small-kitchen.jpg',
+      ],
+      characters: [
+        {
+          id: 'hero',
+          name: { cs: 'Adam', en: 'Adam' },
+          side: 'left',
+          avatar: '/chefs/pata.png',
+          spriteScale: 1.85,
+        },
+        {
+          id: 'roommate',
+          name: { cs: 'Marek', en: 'Marek' },
+          side: 'right',
+          avatar: '/chefs/stefy.png',
+          spriteScale: 1.8,
+        },
+      ],
+      lines: [
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Tak jo, nový byt, nový režim. Potřebuju jídlo, které zvládnu i v chaosu.',
+            en: 'Alright, new apartment, new routine. I need food I can make even in chaos.',
+          },
+        },
+        {
+          speakerId: 'roommate',
+          text: {
+            cs: 'Jestli chceš, mám hlad taky. Ale prosím něco, co neznamená tři hodiny nádobí.',
+            en: 'If you want, I am hungry too. But please, nothing that means three hours of dishes.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Jednohrncovky. Rychlé, levné, bez dramatu. Přesně to dneska potřebuju.',
+            en: 'One-pot meals. Fast, affordable, no drama. Exactly what I need tonight.',
+          },
+        },
+      ],
+    },
+    steps: [
+      {
+        id: 'n3-s1',
+        title: { cs: 'Nakrájej základ', en: 'Chop base ingredients' },
+        instruction: {
+          cs: 'Nadrobno nakrájej cibuli a česnek.',
+          en: 'Finely chop onion and garlic.',
+        },
+      },
+      {
+        id: 'n3-s2',
+        title: { cs: 'Krátké orestování', en: 'Quick saute' },
+        instruction: {
+          cs: 'Na troše oleje orestuj cibuli a česnek.',
+          en: 'Saute onion and garlic in a bit of oil.',
+        },
+      },
+      {
+        id: 'n3-s3',
+        title: { cs: 'Přidej rajčata', en: 'Add tomatoes' },
+        instruction: {
+          cs: 'Vmíchej drcená rajčata a krátce provař.',
+          en: 'Stir in crushed tomatoes and simmer briefly.',
+        },
+      },
+      {
+        id: 'n3-s4',
+        title: { cs: 'Těstoviny přímo do hrnce', en: 'Pasta straight in' },
+        instruction: {
+          cs: 'Přidej penne a zalij vodou tak, aby byly ponořené.',
+          en: 'Add penne and pour water until covered.',
+        },
+      },
+      {
+        id: 'n3-s5',
+        title: { cs: 'Kontroluj konzistenci', en: 'Control consistency' },
+        instruction: {
+          cs: 'Vař na mírném ohni a občas promíchej.',
+          en: 'Cook on low heat and stir occasionally.',
+        },
+        tip: {
+          cs: 'Když je tekutiny málo, přidej trochu vody.',
+          en: 'If liquid is low, add a splash of water.',
+        },
+      },
+      {
+        id: 'n3-s6',
+        title: { cs: 'Dokončení', en: 'Finish' },
+        instruction: {
+          cs: 'Dochut solí, naservíruj a přidej parmezán.',
+          en: 'Season with salt, plate, and add parmesan.',
+        },
+      },
+    ],
+    completion: {
+      title: {
+        cs: 'Samostatnost potvrzena',
+        en: 'Independence unlocked',
+      },
+      subtitle: {
+        cs: 'Zvládl jsi praktické jídlo, které funguje i druhý den.',
+        en: 'You cooked a practical meal that also works for tomorrow.',
+      },
+      reflectionPrompts: [
+        {
+          cs: 'Kolik nádobí jsi použil?',
+          en: 'How many dishes did you use?',
+        },
+        {
+          cs: 'Co by sis příště připravil dopředu?',
+          en: 'What would you prep ahead next time?',
+        },
+      ],
+    },
+  },
+]
+
+export function getCampaignLevelByNodeId(nodeId: string): CampaignLevelDefinition | null {
+  return campaignLevels.find((level) => level.nodeId === nodeId) ?? null
+}
+
+export function hasDecision(nodeId: string): boolean {
+  return nodeId === 'n3'
+}

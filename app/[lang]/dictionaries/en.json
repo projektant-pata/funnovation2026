@@ -76,6 +76,37 @@
     "shoppingList": "Shopping list",
     "mealPlan": "Meal plan",
     "reels": "Reels",
-    "groups": "Groups"
+    "groups": "Groups",
+    "level": {
+      "playLevel": "Play level",
+      "cutsceneModeLabel": "Visual novel",
+      "cutsceneTapHint": "Tap",
+      "cutsceneSkip": "Skip cutscene",
+      "narrator": "Narrator",
+      "cutsceneContinue": "Continue",
+      "summaryTitle": "Level summary",
+      "objective": "Objective",
+      "estimatedTime": "Time",
+      "difficulty": "Difficulty",
+      "xpReward": "Reward",
+      "requirements": "Requirements",
+      "ingredients": "Ingredients",
+      "startCooking": "Start cooking",
+      "timer": "Timer",
+      "add30s": "+30 s",
+      "add1m": "+1 min",
+      "reset": "Reset",
+      "pause": "Pause",
+      "resume": "Resume",
+      "step": "Step",
+      "prevStep": "Previous",
+      "nextStep": "Next",
+      "finishLevel": "Finish level",
+      "done": "Finish and return to tree",
+      "noteLabel": "Result note",
+      "notePlaceholder": "What worked? What would you do differently next time?",
+      "photoLabel": "Result photo",
+      "aiReflectionTitle": "Reflection with Chef AI"
+    }
   }
 }

@@ -2,6 +2,7 @@
 
 import BottomNav from '@/app/components/game/BottomNav'
 import ChefFab from '@/app/components/game/ChefFab'
+import { usePathname } from 'next/navigation'
 
 type Labels = {
   play: string
@@ -31,37 +32,46 @@ type Props = {
 }
 
 export default function GameLayoutClient({ lang, labels, children, navbar }: Props) {
+  const pathname = usePathname()
+  const segments = pathname.split('/').filter(Boolean)
+  const isCampaignLevelRoute =
+    segments.length === 4 &&
+    segments[0] === lang &&
+    segments[1] === 'game' &&
+    segments[2] === 'campaign'
 
   return (
     <div className="bg-[#FFF3E0] min-h-screen font-[family-name:var(--font-geist-sans)] flex flex-col">
-      {navbar}
+      {!isCampaignLevelRoute && navbar}
 
       {/* Content with fade-in animation */}
-      <main className="flex-1 overflow-auto pb-24 animate-[fadeIn_200ms_ease-out]">
+      <main className={`flex-1 overflow-auto animate-[fadeIn_200ms_ease-out] ${isCampaignLevelRoute ? '' : 'pb-24'}`}>
         {children}
       </main>
 
-      {/* Bottom nav */}
-      <BottomNav
-        lang={lang}
-        labels={{
-          play: labels.play,
-          campaign: labels.campaign,
-          world: labels.world,
-          freeplay: labels.freeplay,
-          reels: labels.reels,
-          groups: labels.groups,
-        }}
-      />
+      {!isCampaignLevelRoute && (
+        <>
+          <BottomNav
+            lang={lang}
+            labels={{
+              play: labels.play,
+              campaign: labels.campaign,
+              world: labels.world,
+              freeplay: labels.freeplay,
+              reels: labels.reels,
+              groups: labels.groups,
+            }}
+          />
 
-      {/* Chef FAB */}
-      <ChefFab
-        labels={{
-          chef: labels.chef,
-          chefDescription: labels.chefDescription,
-          comingSoon: labels.comingSoon,
-        }}
-      />
+          <ChefFab
+            labels={{
+              chef: labels.chef,
+              chefDescription: labels.chefDescription,
+              comingSoon: labels.comingSoon,
+            }}
+          />
+        </>
+      )}
     </div>
   )
 }

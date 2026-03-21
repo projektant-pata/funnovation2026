@@ -76,6 +76,37 @@
     "shoppingList": "Nákupní seznam",
     "mealPlan": "Jídelníček",
     "reels": "Reels",
-    "groups": "Skupiny"
+    "groups": "Skupiny",
+    "level": {
+      "playLevel": "Hrát level",
+      "cutsceneModeLabel": "Vizuální novela",
+      "cutsceneTapHint": "Tapni",
+      "cutsceneSkip": "Přeskočit cutscénu",
+      "narrator": "Vypravěč",
+      "cutsceneContinue": "Pokračovat",
+      "summaryTitle": "Přehled levelu",
+      "objective": "Cíl",
+      "estimatedTime": "Čas",
+      "difficulty": "Obtížnost",
+      "xpReward": "Odměna",
+      "requirements": "Požadavky",
+      "ingredients": "Ingredience",
+      "startCooking": "Začít vařit",
+      "timer": "Timer",
+      "add30s": "+30 s",
+      "add1m": "+1 min",
+      "reset": "Reset",
+      "pause": "Pauza",
+      "resume": "Pokračovat",
+      "step": "Krok",
+      "prevStep": "Předchozí",
+      "nextStep": "Další",
+      "finishLevel": "Hotovo",
+      "done": "Dokončit a zpět na strom",
+      "noteLabel": "Poznámka k výsledku",
+      "notePlaceholder": "Co se povedlo? Co bys příště udělal/a jinak?",
+      "photoLabel": "Fotka výsledku",
+      "aiReflectionTitle": "Reflexe se Šéfkuchařem"
+    }
   }
 }
