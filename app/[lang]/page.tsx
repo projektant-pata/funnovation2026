@@ -62,9 +62,6 @@ export default async function HomePage({ params }: Props) {
 
       {/* Hero */}
       <section className="min-h-[calc(100vh-57px)] flex flex-col items-center justify-center text-center px-6 py-20">
-        <div className="inline-block bg-[#FEDC56] text-[#4E342E] text-sm font-bold uppercase tracking-widest px-5 py-2 rounded-full mb-10">
-          Funnovation Hack 2026
-        </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="žemLOVEka" className="h-24 md:h-36 w-auto mb-8" />
         <p className="text-2xl md:text-3xl text-[#6D4C41] mb-4 font-semibold">{d.hero.subtitle}</p>
@@ -84,8 +81,8 @@ export default async function HomePage({ params }: Props) {
             [
               { value: '5',   label: d.stats.regions },
               { value: '20+', label: d.stats.recipes },
-              { value: '3',   label: d.stats.chapters },
-              { value: '1',   label: d.stats.ai },
+              { value: '6',   label: d.stats.chapters },
+              { value: '3',   label: d.stats.ai },
             ] as { value: string; label: string }[]
           ).map(({ value, label }) => (
             <div key={label}>

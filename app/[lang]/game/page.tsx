@@ -26,25 +26,50 @@ export default async function GameHomePage({ params }: Props) {
       <h1 className="text-3xl font-black text-[#4E342E] mb-2">{d.game.play}</h1>
       <p className="text-[#6D4C41]/60 text-sm mb-10">{d.hero.subtitle}</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full max-w-2xl">
-        {modes.map(({ key, path, icon: Icon, color }) => (
-          <Link
-            key={key}
-            href={`/${lang}/game${path}`}
-            className="group flex flex-col items-center gap-4 p-8 rounded-2xl bg-white border border-[#4E342E]/8 hover:shadow-md transition-shadow"
-          >
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{ backgroundColor: color + '20' }}
+      <div className="flex flex-col gap-5 w-full max-w-2xl">
+        {/* Campaign + World — side by side */}
+        <div className="grid grid-cols-2 gap-5">
+          {modes.slice(0, 2).map(({ key, path, icon: Icon, color }) => (
+            <Link
+              key={key}
+              href={`/${lang}/game${path}`}
+              className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-white border border-[#4E342E]/8 hover:shadow-md transition-shadow"
             >
-              <Icon className="w-8 h-8" style={{ color }} />
-            </div>
-            <span className="text-[#4E342E] font-bold text-lg">{d.game[key]}</span>
-            <span className="text-[#6D4C41]/60 text-sm text-center leading-relaxed">
-              {descriptions[key]}
-            </span>
-          </Link>
-        ))}
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                style={{ backgroundColor: color + '20' }}
+              >
+                <Icon className="w-7 h-7" style={{ color }} />
+              </div>
+              <span className="text-[#4E342E] font-bold text-base">{d.game[key]}</span>
+              <span className="text-[#6D4C41]/60 text-sm text-center leading-relaxed">
+                {descriptions[key]}
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Freeplay — full width below */}
+        {(() => {
+          const { key, path, icon: Icon, color } = modes[2]
+          return (
+            <Link
+              href={`/${lang}/game${path}`}
+              className="group flex flex-col sm:flex-row items-center gap-4 p-6 rounded-2xl bg-white border border-[#4E342E]/8 hover:shadow-md transition-shadow"
+            >
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: color + '40' }}
+              >
+                <Icon className="w-7 h-7" style={{ color: '#4E342E' }} />
+              </div>
+              <div className="flex flex-col items-center sm:items-start gap-1 text-center sm:text-left">
+                <span className="text-[#4E342E] font-bold text-base">{d.game[key]}</span>
+                <span className="text-[#6D4C41]/60 text-sm leading-relaxed">{descriptions[key]}</span>
+              </div>
+            </Link>
+          )
+        })()}
       </div>
     </div>
   )

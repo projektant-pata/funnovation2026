@@ -1,0 +1,71 @@
+MYŠLENKA A PŘÍNOS — žemLOVEka
+=====================================
+
+
+1. JASNÝ PROBLÉM A CÍLOVÁ SKUPINA
+----------------------------------
+
+Třetina Čechů nevaří vůbec. Ti, kteří vaří, hledají inspiraci nejčastěji na internetu.
+→ https://globe24.cz/domov/64631-jak-jsou-na-tom-cesi-s-varenim-pruzkum-prinesl-zajimava-zjisteni
+
+Průměrná domácnost platí za restaurace ~15 200 Kč ročně vs. ~3 000 Kč/měsíc za vaření doma.
+→ https://csu.gov.cz/produkty/spotrebni-vydaje-domacnosti-2024
+
+Problém není absence receptů. Je to absence strukturované cesty od nuly k sebejistému kuchaři.
+
+Cílová skupina: 18–35 let, čerstvě samostatní, digitálně nativní, zvyklí na gamifikaci.
+
+
+2. HODNOTA A ODLIŠENÍ
+----------------------
+
+Motivační mezera ve vaření existuje a nikdo ji dosud nevyplnil.
+
+                        Cookpad / Tasty   žemLOVEka
+Strukturovaná výuka          NE             ANO
+Skutečné vaření              ANO            ANO
+Příběh s větvením            NE             ANO
+AI adaptace                  NE             ANO
+Gamifikace                Minimální         ANO
+Sociální prvky            Omezeně           ANO
+
+AI není doplněk — je jádro. Adaptuje recepty na alergie, generuje jídelníčky, provází
+každým krokem vaření, vyhodnocuje výkon. V reálném čase, pro konkrétního uživatele.
+
+
+3. MONETIZACE
+--------------
+
+Freemium:
+- Zdarma: Freeplay + celá kampaň + základní regiony světové mapy
+- Premium (149 Kč/měsíc): prémiové regionální balíčky (exotické kuchyně, speciální recepty
+  za paywall) + pokročilé AI funkce
+
+B2B:
+- Licence pro školy a kuchařské kurzy
+- Branded recepty pro supermarkety a foodbrands
+- Spolupráce s rozvážkovými službami (Rohlik, Košík, Bolt Food) — nákupní seznam přímo
+  propojený s objednávkou ingrediencí
+
+Výhledově (roadmapa):
+- Plánování týdenního jídelníčku
+- Špajz (správa zásob doma)
+- Nákupní seznam generovaný z receptů
+- Kuchařský slovník (AI vysvětluje termíny v kontextu)
+- Rodinné skupiny (sdílení receptů, jídelníčků a nákupních seznamů)
+- Vlastní recepty (uživatel tvoří a spravuje)
+- Komunitní recepty (sdílení, hodnocení, ověřování)
+- Marketplace ověřených uživatelských receptů (podíl pro tvůrce)
+- Firemní benefitní předplatné (wellbeing programy)
+
+
+4. PŘÍNOS PRO SPOLEČNOST
+-------------------------
+
+→ Zdraví: domácí vaření = nižší kalorický příjem, méně ultra-zpracovaných potravin.
+→ Finance: vaření doma ušetří průměrně 1 500–2 500 Kč/měsíc na osobu oproti restauracím.
+→ Osobní rozvoj: vaření jako sebevědomí — každý zvládnutý recept je měřitelný pokrok,
+  aplikace ho viditelně uznává (XP, odznaky, příběh). Uživatel si buduje identitu kuchaře.
+→ Potravinový odpad: AI generuje recepty z toho, co máš doma — 52 % mladých plýtvá každý týden.
+→ Kulturní dědictví: každý region světové mapy nese vlastní kulinářský příběh a tradice.
+→ Inkluze: AI adaptuje recepty na alergie a diety — bariéry mizí automaticky.

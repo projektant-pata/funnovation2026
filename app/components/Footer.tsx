@@ -18,7 +18,7 @@ export default async function Footer({ lang }: { lang: string }) {
   return (
     <footer className="bg-[#4E342E] text-white pt-16 pb-8 px-6">
       <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
 
           {/* Brand */}
           <div>
