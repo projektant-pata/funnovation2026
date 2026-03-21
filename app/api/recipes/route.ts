@@ -1,11 +1,10 @@
-import { notFound } from 'next/navigation'
-import { hasLocale, type Locale } from '../../dictionaries'
+import { NextResponse } from 'next/server'
 import pool from '@/app/lib/db'
-import RecipeGrid from '@/app/components/RecipeGrid'
 
-type Props = { params: Promise<{ lang: string }> }
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const locale = searchParams.get('locale') ?? 'cs'
 
-async function getRecipes(locale: string) {
   const { rows } = await pool.query(`
     SELECT
       r.id,
@@ -52,26 +51,6 @@ async function getRecipes(locale: string) {
       r.difficulty, r.prep_time_minutes, r.cook_time_minutes
     ORDER BY r.difficulty, rt.title
   `, [locale])
-  return rows
-}
 
-export default async function FreeplayPage({ params }: Props) {
-  const { lang } = await params
-  if (!hasLocale(lang)) notFound()
-
-  const recipes = await getRecipes(lang as Locale)
-
-  return (
-    <div className="px-6 py-10 max-w-6xl mx-auto">
-      <div className="mb-10">
-        <div className="text-xs font-bold uppercase tracking-widest text-[#6D4C41]/40 mb-2">
-          Freeplay
-        </div>
-        <h1 className="text-4xl font-black text-[#4E342E] mb-2">Všechny recepty</h1>
-        <p className="text-[#6D4C41]/60">Vař, co chceš — bez příběhu. Filtruj, hledej, vař.</p>
-      </div>
-
-      <RecipeGrid recipes={recipes} lang={lang} />
-    </div>
-  )
+  return NextResponse.json({ success: true, data: rows })
 }

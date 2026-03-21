@@ -172,6 +172,8 @@ CREATE TABLE public.profiles (
 
 CREATE TABLE public.user_preferences (
 	user_id uuid PRIMARY KEY REFERENCES public.profiles(user_id) ON DELETE CASCADE,
+	gender text CHECK (gender IN ('male', 'female', 'other', 'prefer_not_to_say')),
+	age_range text CHECK (age_range IN ('under_18', '18_25', '26_35', '36_50', '51_plus')),
 	cooking_frequency public.cooking_frequency,
 	time_budget public.time_budget_bucket,
 	motivations text[] NOT NULL DEFAULT '{}',
@@ -1901,6 +1903,18 @@ BEGIN
 	] LOOP
 		EXECUTE format('ALTER TABLE public.%I FORCE ROW LEVEL SECURITY', table_name);
 	END LOOP;
+END
+$$;
+
+-- Add columns to user_preferences if migrating from older schema
+DO $$
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='user_preferences' AND column_name='gender') THEN
+		ALTER TABLE public.user_preferences ADD COLUMN gender text CHECK (gender IN ('male', 'female', 'other', 'prefer_not_to_say'));
+	END IF;
+	IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='user_preferences' AND column_name='age_range') THEN
+		ALTER TABLE public.user_preferences ADD COLUMN age_range text CHECK (age_range IN ('under_18', '18_25', '26_35', '36_50', '51_plus'));
+	END IF;
 END
 $$;
 

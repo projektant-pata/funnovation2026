@@ -15,38 +15,53 @@ export default async function Navbar({ lang }: { lang: string }) {
   const session = await getSession()
   const d = hasLocale(lang) ? await getDictionary(lang as Locale) : null
 
-  const navLinks = d ? [
-    { label: 'Objevuj',        href: `/${lang}/game` },
-    { label: d.nav.dictionary, href: `/${lang}/dictionary` },
-  ] : []
-
   const initial = session ? session.username[0].toUpperCase() : ''
   const color   = session ? avatarColor(session.username) : ''
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#FFF3E0]/90 backdrop-blur border-b border-[#4E342E]/10 px-6 py-3 flex items-center gap-8">
+    <nav className="sticky top-0 z-50 bg-[#FFF3E0]/90 backdrop-blur border-b border-[#4E342E]/10 px-6 py-3 flex items-center gap-6">
+
+      {/* Left — logo + links */}
       <Link href={`/${lang}`} className="flex-shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="žemLOVEka" className="h-10 w-auto" />
       </Link>
 
       <div className="flex items-center gap-1 flex-1">
-        {navLinks.map(({ label, href }) => (
-          <Link
-            key={href}
-            href={href}
-            className="px-3 py-2 rounded-lg text-base font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8 transition-colors"
-          >
-            {label}
-          </Link>
-        ))}
+        <Link
+          href={`/${lang}/game`}
+          className="px-3 py-2 rounded-lg text-base font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8 transition-colors"
+        >
+          Objevuj
+        </Link>
+        <Link
+          href={`/${lang}/dictionary`}
+          className="px-3 py-2 rounded-lg text-base font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8 transition-colors"
+        >
+          {d?.nav.dictionary ?? 'Slovník'}
+        </Link>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Right — lang | divider | bell / login */}
+      <div className="flex items-center gap-3">
         <LangSwitcher lang={lang} />
 
+        <div className="w-px h-5 bg-[#4E342E]/15" />
+
         {session ? (
-          <NavbarUserMenu lang={lang} initial={initial} color={color} />
+          <div className="flex items-center gap-2">
+            {/* Bell */}
+            <button
+              aria-label="Oznámení"
+              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#4E342E]/8 transition-colors text-[#6D4C41]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </button>
+            <NavbarUserMenu lang={lang} initial={initial} color={color} />
+          </div>
         ) : (
           <Link
             href={`/${lang}/login`}

@@ -26,7 +26,7 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (data.success) {
-        router.push(`/${lang}`);
+        router.push(`/${lang}/setup`);
         router.refresh();
       } else {
         setError(data.message ?? 'Přihlášení selhalo.');
@@ -94,8 +94,9 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-[#4E342E]/10" />
           </div>
 
-          <a
-            href={`/api/auth/google?lang=${lang}`}
+          <button
+            type="button"
+            onClick={() => alert('Není implementováno – nemáme public URL.')}
             className="flex items-center justify-center gap-3 w-full border border-[#4E342E]/20 rounded-xl px-4 py-3 text-sm font-semibold text-[#4E342E] hover:bg-[#FFF3E0] transition-colors"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true">
@@ -105,7 +106,7 @@ export default function LoginPage() {
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
             Přihlásit se přes Google
-          </a>
+          </button>
 
           <p className="text-center text-sm text-[#6D4C41]/60 mt-4">
             Nemáš účet?{' '}

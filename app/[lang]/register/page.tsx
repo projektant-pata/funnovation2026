@@ -29,7 +29,7 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (data.success) {
-        router.push(`/${lang}`);
+        router.push(`/${lang}/setup`);
         router.refresh();
       } else {
         setError(data.message ?? 'Registrace selhala.');
