@@ -113,46 +113,52 @@ export const campaignLevels: CampaignLevelDefinition[] = [
     ],
     cutscene: {
       title: {
-        cs: 'Večer, kdy to zlomíš',
-        en: 'The Evening You Turn It Around',
+        cs: 'První den na intru',
+        en: 'First Day at the Dorm',
       },
       setting: {
-        cs: 'Malá kuchyňka po dlouhém dni. Venku prší a v bytě je ticho.',
-        en: 'A small kitchen after a long day. It is raining outside and quiet inside.',
+        cs: 'Pátek odpoledne. Malý pokoj na internátě — dvě postele, skříň, výhled na parkoviště. Kufr ještě nerozbalený.',
+        en: 'Friday afternoon. A small dorm room — two beds, a wardrobe, a view of the parking lot. Suitcase still packed.',
       },
       backgroundOptions: [
-        '/cutscenes/apartment-kitchen-evening.jpg',
-        '/cutscenes/rainy-window-kitchen.jpg',
-        '/cutscenes/cozy-studio-kitchen.jpg',
+        '/scenes/first/dorm-room.jpg',
+        '/scenes/first/dorm-room-evening.jpg',
       ],
       characters: [
         {
           id: 'hero',
-          name: { cs: 'Adam', en: 'Adam' },
+          name: { cs: 'Ty', en: 'You' },
           side: 'right',
-          avatar: '/chefs/pata.png',
+          avatar: '/chefs/stefy.png',
         },
       ],
       lines: [
         {
           speakerId: 'hero',
           text: {
-            cs: 'Dneska to zase stálo za nic. A první myšlenka? Objednat si něco a neřešit to.',
-            en: 'Today was rough. My first instinct was to order food and call it a day.',
+            cs: 'Vlastně to není žádné velké loučení. Za čtrnáct dní jsem zase doma.',
+            en: 'It is not really a big goodbye. I will be home again in two weeks.',
           },
         },
         {
           speakerId: 'hero',
           text: {
-            cs: 'Jenže přesně takhle jsem se nikam neposunul. Potřebuju začít od úplného základu.',
-            en: 'But that is exactly why I never improve. I need to start from the basics.',
+            cs: 'Máma mi napakovala jídlo na celý měsíc. Salám, fazole, tři druhy těstovin. Vzal jsem si.',
+            en: 'Mom packed enough food for a month. Sausage, beans, three kinds of pasta. I took it.',
           },
         },
         {
           speakerId: 'hero',
           text: {
-            cs: 'Tak jo. Špagety aglio e olio. Pár surovin, jedna pánev, a žádné výmluvy.',
-            en: 'Alright. Spaghetti aglio e olio. Few ingredients, one pan, no excuses.',
+            cs: 'Takže tohle je to. Deset metrů čtverečních, výhled na kontejnery. Krásné.',
+            en: 'So this is it. Ten square metres, a view of the bins. Beautiful.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Říkali, že tu je společná kuchyňka. Čas zjistit, co se dá udělat z těchhle věcí.',
+            en: 'They said there is a shared kitchen. Time to find out what I can make with this stuff.',
           },
         },
       ],
@@ -303,23 +309,28 @@ export const campaignLevels: CampaignLevelDefinition[] = [
     ],
     cutscene: {
       title: {
-        cs: 'Když se ti nechce vařit',
-        en: 'When You Do Not Feel Like Cooking',
+        cs: 'Spolubydlící',
+        en: 'The Roommate',
       },
       setting: {
-        cs: 'Pozdní podvečer. Adam stojí u linky, unavený a hladový, ale nechce to vzdát.',
-        en: 'Late afternoon. Adam stands by the counter, tired and hungry, but not giving up.',
+        cs: 'Druhý den. Spolubydlící přijel v noci, hodil věci na postel a spad. Ráno se potkáte na chodbě.',
+        en: 'Second day. Roommate arrived in the night, dumped his stuff and crashed. Morning, you meet in the hallway.',
       },
       backgroundOptions: [
-        '/cutscenes/late-afternoon-kitchen.jpg',
-        '/cutscenes/minimal-home-kitchen.jpg',
-        '/cutscenes/sunset-kitchen.jpg',
+        '/scenes/second/dorm-hallway.jpg',
+        '/scenes/second/dorm-kitchen.jpg',
       ],
       characters: [
         {
           id: 'hero',
-          name: { cs: 'Adam', en: 'Adam' },
+          name: { cs: 'Ty', en: 'You' },
           side: 'right',
+          avatar: '/chefs/stefy.png',
+        },
+        {
+          id: 'pata',
+          name: { cs: 'Páťa', en: 'Páťa' },
+          side: 'left',
           avatar: '/chefs/pata.png',
         },
       ],
@@ -327,29 +338,43 @@ export const campaignLevels: CampaignLevelDefinition[] = [
         {
           speakerId: 'hero',
           text: {
-            cs: 'Dneska se mi fakt nedařilo. Hlava by nejradši otevřela appku na rozvoz.',
-            en: 'Today really did not go my way. My brain wants to open a delivery app.',
+            cs: 'Spolubydlící přijel v noci. Hodil věci na postel a spad. Já taky. Dobrej první den.',
+            en: 'Roommate arrived in the night. Dropped his stuff and crashed. Me too. Good first day.',
+          },
+        },
+        {
+          speakerId: 'pata',
+          text: {
+            cs: 'Čau, já jsem Páťa. Z Ostravy.',
+            en: 'Hey, I am Páťa. From Ostrava.',
           },
         },
         {
           speakerId: 'hero',
           text: {
-            cs: 'Ale jestli zvládnu omeletu i teď, bude to znamenat, že to myslím vážně.',
-            en: 'But if I can make an omelette even now, it means I am serious about this.',
+            cs: 'Čau. Já ze Ždírce.',
+            en: 'Hey. From Ždírec.',
+          },
+        },
+        {
+          speakerId: 'pata',
+          text: {
+            cs: 'Kde to je?',
+            en: 'Where is that?',
           },
         },
         {
           speakerId: 'hero',
           text: {
-            cs: 'Klid. Teplota. Trpělivost. Tři věci a mám vyhráno.',
-            en: 'Calm. Heat control. Patience. Three things and I win this round.',
+            cs: 'Přesně.',
+            en: 'Exactly.',
           },
         },
         {
           speakerId: 'hero',
           text: {
-            cs: 'Jdu do toho. Francouzská omeleta, žádné zkratky.',
-            en: 'I am doing it. French omelette, no shortcuts.',
+            cs: 'Zmínil, že měl k obědu tyčinku z automatu. Mohl bych uvařit pro oba. Nevím co mu chutná, tak udělám něco normálního.',
+            en: 'He mentioned his lunch was a vending machine bar. I could cook for both of us. No idea what he likes, so I will make something normal.',
           },
         },
       ],
@@ -515,28 +540,21 @@ export const campaignLevels: CampaignLevelDefinition[] = [
     ],
     cutscene: {
       title: {
-        cs: 'První večer po stěhování',
-        en: 'First Evening After Moving',
+        cs: 'Víkend solo',
+        en: 'Solo Weekend',
       },
       setting: {
-        cs: 'Krabice ještě nejsou vybalené. Adam otevírá šuplík a hledá aspoň jednu funkční vařečku.',
-        en: 'Boxes are still unpacked. Adam opens a drawer looking for at least one usable spatula.',
+        cs: 'Pátek odpoledne. Páťa odjel domů. Pokoj je divně tichý.',
+        en: 'Friday afternoon. Páťa went home. The room feels weirdly quiet.',
       },
       backgroundOptions: [
-        '/cutscenes/new-apartment-kitchen.jpg',
-        '/cutscenes/unpacked-boxes-kitchen.jpg',
-        '/cutscenes/night-small-kitchen.jpg',
+        '/scenes/third/dorm-room.jpg',
+        '/scenes/third/dorm-kitchen.jpg',
       ],
       characters: [
         {
           id: 'hero',
-          name: { cs: 'Adam', en: 'Adam' },
-          side: 'left',
-          avatar: '/chefs/pata.png',
-        },
-        {
-          id: 'roommate',
-          name: { cs: 'Marek', en: 'Marek' },
+          name: { cs: 'Ty', en: 'You' },
           side: 'right',
           avatar: '/chefs/stefy.png',
         },
@@ -545,22 +563,29 @@ export const campaignLevels: CampaignLevelDefinition[] = [
         {
           speakerId: 'hero',
           text: {
-            cs: 'Tak jo, nový byt, nový režim. Potřebuju jídlo, které zvládnu i v chaosu.',
-            en: 'Alright, new apartment, new routine. I need food I can make even in chaos.',
-          },
-        },
-        {
-          speakerId: 'roommate',
-          text: {
-            cs: 'Jestli chceš, mám hlad taky. Ale prosím něco, co neznamená tři hodiny nádobí.',
-            en: 'If you want, I am hungry too. But please, nothing that means three hours of dishes.',
+            cs: 'Páťa odjel ve čtvrtek večer. Ostrava není za rohem.',
+            en: 'Páťa left Thursday night. Ostrava is not exactly around the corner.',
           },
         },
         {
           speakerId: 'hero',
           text: {
-            cs: 'Jednohrncovky. Rychlé, levné, bez dramatu. Přesně to dneska potřebuju.',
-            en: 'One-pot meals. Fast, affordable, no drama. Exactly what I need tonight.',
+            cs: 'Pokoj je divně ticho. Ani jsem nevěděl, že si na něj za tejden zvyknu.',
+            en: 'The room is weirdly quiet. Did not know I would get used to him in just a week.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Vařím sám. Zase. Ale teď je to jiný než první den. Tehdy jsem nevěděl co dělám. Teď… víceméně vím.',
+            en: 'Cooking alone. Again. But it feels different from day one. Back then I had no idea. Now… more or less I do.',
+          },
+        },
+        {
+          speakerId: 'hero',
+          text: {
+            cs: 'Dám si něco, na co jsem měl celej týden chuť a Páťa by řekl že to zní divně. Jeho loss.',
+            en: 'I will make something I have been craving all week that Páťa would say sounds weird. His loss.',
           },
         },
       ],
