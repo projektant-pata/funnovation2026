@@ -1,0 +1,116 @@
+SCÉNA 1 — POKOJ, DRUHÝ DEN RÁNO
+[Pozadí: intr]
+
+Ty (v duchu):
+„Spolubydlící přijel v noci. Hodil věci na postel a spad."
+
+
+
+Ty:
+„Já taky. Dobrej první den."
+
+
+
+
+---
+
+
+SCÉNA 2 — CHODBA, ODPOLEDNE
+[Pozadí: spse]
+
+Spolubydlící:
+„Čau, já jsem Páťa. Z Ostravy."
+
+Ty:
+„Čau. Já ze Ždírce."
+
+Páťa:
+„Kde to je?"
+
+Ty:
+„Přesně."
+
+
+
+Páťa:
+„Co studuješ?"
+
+Ty:
+„Informatiku."
+
+Páťa:
+„Taky. Pohoda."
+
+
+
+Páťa:
+„Jdu na přednášku. Večer jsem zpátky."
+
+Ty:
+„Ok."
+
+
+
+Ty (v duchu):
+„Zmínil, že měl k obědu tyčinku z automatu.
+Mohl bych uvařit pro oba."
+
+
+
+
+---
+
+
+SCÉNA 3 — KUCHYŇKA, ODPOLEDNE
+[Pozadí: kitchen]
+
+Ty:
+„Páťa má přednášky do šesti. Dost času."
+
+
+
+Ty (v duchu):
+„Nevím co mu chutná, tak udělám něco normálního."
+
+Ty:
+„Jdem na to."
+
+[→ přechod do výběru receptu]
+
+
+---
+
+
+SCÉNA 4 — POKOJ, VEČER
+[Pozadí: kitchen]
+
+[Zvuk: klíč v zámku]
+
+Páťa:
+„Čau — hele, co to voní?"
+
+Ty:
+„Uvařil jsem. Máš tam porci."
+
+
+
+Páťa:
+„Vážně? Díky, člověče."
+
+[Páťa si sedne a jí.]
+
+Páťa:
+„Jo, to je dobrý. Odkud jsi tohle uměl?"
+
+Ty:
+„Učím se."
+
+
+
+Páťa:
+„Příště koupím suroviny já. Fair?"
+
+Ty:
+„Fair."
+
+[→ konec druhé kapitoly]
