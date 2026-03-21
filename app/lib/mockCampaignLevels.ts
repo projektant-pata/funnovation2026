@@ -7,7 +7,6 @@ export interface CampaignCutsceneCharacter {
   name: LocalizedText
   side: 'left' | 'right'
   avatar?: string
-  spriteScale?: number
 }
 
 export interface CampaignCutsceneLine {
@@ -132,7 +131,6 @@ export const campaignLevels: CampaignLevelDefinition[] = [
           name: { cs: 'Adam', en: 'Adam' },
           side: 'right',
           avatar: '/chefs/pata.png',
-          spriteScale: 1.55,
         },
       ],
       lines: [
@@ -323,7 +321,6 @@ export const campaignLevels: CampaignLevelDefinition[] = [
           name: { cs: 'Adam', en: 'Adam' },
           side: 'right',
           avatar: '/chefs/pata.png',
-          spriteScale: 1.55,
         },
       ],
       lines: [
@@ -536,14 +533,12 @@ export const campaignLevels: CampaignLevelDefinition[] = [
           name: { cs: 'Adam', en: 'Adam' },
           side: 'left',
           avatar: '/chefs/pata.png',
-          spriteScale: 1.85,
         },
         {
           id: 'roommate',
           name: { cs: 'Marek', en: 'Marek' },
           side: 'right',
           avatar: '/chefs/stefy.png',
-          spriteScale: 1.8,
         },
       ],
       lines: [

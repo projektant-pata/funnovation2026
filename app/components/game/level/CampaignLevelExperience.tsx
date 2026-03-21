@@ -120,7 +120,6 @@ export default function CampaignLevelExperience({
         name: pick(character.name, lang),
         side: character.side,
         avatar: character.avatar,
-        spriteScale: character.spriteScale,
       })),
     [lang, level.cutscene.characters]
   )

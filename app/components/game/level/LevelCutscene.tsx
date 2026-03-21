@@ -8,7 +8,6 @@ type CutsceneCharacter = {
   name: string
   side: 'left' | 'right'
   avatar?: string
-  spriteScale?: number
 }
 
 type CutsceneLine = {
@@ -209,50 +208,36 @@ function CharacterSprite({
   active: boolean
   side: 'left' | 'right' | 'center'
 }) {
-  const sideClass =
+  const positionClass =
     side === 'left'
-      ? 'left-[-3vw] items-start'
+      ? 'left-[-11vw]'
       : side === 'right'
-        ? 'right-[-3vw] items-end'
-        : 'relative items-center'
-  const overlapBottomClass = side === 'center' ? 'bottom-[-2.5rem]' : 'bottom-[-4.5rem]'
+        ? 'right-[-11vw]'
+        : 'left-1/2 -translate-x-1/2'
 
-  const widthClass = side === 'center' ? 'w-[86vw] max-w-[560px]' : 'w-[52vw] max-w-[760px]'
-  const spriteScale = character.spriteScale ?? 1.5
+  const sizeClass = side === 'center' ? 'h-[65vh] w-[65vh]' : 'h-[95vh] w-[95vh]'
 
   return (
-    <div className={`absolute ${overlapBottomClass} ${sideClass} flex flex-col pointer-events-none`}>
-      <div
-        className={`relative ${widthClass} aspect-[3/5] overflow-visible transition-all duration-500 ${
-          active
-            ? 'vn-float opacity-100 grayscale-0 brightness-110 saturate-125'
-            : 'opacity-55 grayscale brightness-50 saturate-0'
-        }`}
-      >
-        {character.avatar ? (
-          <div
-            className="absolute inset-0"
-            style={{ transform: `scale(${spriteScale})`, transformOrigin: 'bottom center' }}
-          >
-            <Image
-              src={character.avatar}
-              alt={character.name}
-              fill
-              sizes="(max-width: 768px) 86vw, 52vw"
-              className="object-contain object-bottom drop-shadow-[0_18px_22px_rgba(0,0,0,0.38)]"
-            />
-          </div>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-20 w-20 rounded-full bg-[#FFF8E1]/30 flex items-center justify-center text-[#FFF8E1] text-3xl font-bold">
-              {character.name.charAt(0)}
-            </div>
-          </div>
-        )}
-      </div>
-      <p className={`mt-2 text-xs font-semibold tracking-[0.12em] uppercase ${active ? 'text-[#FFF8E1]' : 'text-[#FFF8E1]/65'}`}>
-        {character.name}
-      </p>
+    <div
+      className={`absolute bottom-[2rem] ${positionClass} pointer-events-none transition-all duration-500 ${
+        active
+          ? 'vn-float opacity-100 grayscale-0 brightness-110 saturate-125'
+          : 'opacity-55 grayscale brightness-50 saturate-0'
+      }`}
+    >
+      {character.avatar ? (
+        <Image
+          src={character.avatar}
+          alt={character.name}
+          width={600}
+          height={600}
+          className={`${sizeClass} object-contain drop-shadow-[0_18px_22px_rgba(0,0,0,0.38)]`}
+        />
+      ) : (
+        <div className="h-20 w-20 rounded-full bg-[#FFF8E1]/30 flex items-center justify-center text-[#FFF8E1] text-3xl font-bold">
+          {character.name.charAt(0)}
+        </div>
+      )}
     </div>
   )
 }
