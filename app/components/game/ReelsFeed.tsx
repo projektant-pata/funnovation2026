@@ -18,8 +18,8 @@ type Reel = {
 const REELS: Reel[] = [
   {
     id: '1',
-    src: '/reels/1.jpg',
-    type: 'image',
+    src: '/reels/1.mp4',
+    type: 'video',
     author: { name: 'Stefy', handle: '@stefy_vari', avatar: '/chefs/stefy.png' },
     caption:
       'Snídaňové avokádo s vejcem na toastu. Tohle si dávám každé ráno před školou — jednoduchý, rychlý a plný energie. Zvládnete to za 10 minut a zbyde čas na kafe.',
@@ -31,8 +31,8 @@ const REELS: Reel[] = [
   },
   {
     id: '2',
-    src: '/reels/2.mp4',
-    type: 'video',
+    src: '/reels/2.jpg',
+    type: 'image',
     author: { name: 'Páťa', handle: '@pata_ostrava', avatar: '/chefs/pata.png' },
     caption:
       'Carbonara bez smetany — tohle je the real deal. Žloutek + pecorino + guanciale. Žádný cheaty a žádná smetana. Tohle je jediná správná verze.',
@@ -44,8 +44,8 @@ const REELS: Reel[] = [
   },
   {
     id: '3',
-    src: '/reels/3.jpg',
-    type: 'image',
+    src: '/reels/3.mp4',
+    type: 'video',
     author: { name: 'Niki', handle: '@niki_cooks', avatar: '/chefs/niki.png' },
     caption:
       'Nedělní oběd hotový. Svíčková z pomalého hrnce — maso se rozpadá samo a omáčka je hustá jak má být. Recept v profilu.',
@@ -69,15 +69,26 @@ const REELS: Reel[] = [
   },
 ]
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 export default function ReelsFeed() {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [reels] = useState<Reel[]>(() => shuffle(REELS))
   const [liked, setLiked] = useState<Record<string, boolean>>({})
   const [commentOpen, setCommentOpen] = useState<string | null>(null)
   const [captionExpanded, setCaptionExpanded] = useState<Record<string, boolean>>({})
   const [commentText, setCommentText] = useState('')
   const [extraComments, setExtraComments] = useState<Record<string, Comment[]>>({})
+  const [muted, setMuted] = useState(true)
 
-  const activeReel = REELS.find((r) => r.id === commentOpen)
+  const activeReel = reels.find((r) => r.id === commentOpen)
 
   function handleSubmitComment() {
     if (!commentText.trim() || !commentOpen) return
@@ -109,19 +120,21 @@ export default function ReelsFeed() {
           scrollbarWidth: 'none',
         }}
       >
-        {REELS.map((reel) => (
+        {reels.map((reel) => (
           <ReelItem
             key={reel.id}
             reel={reel}
             scrollRoot={scrollRef}
             liked={!!liked[reel.id]}
             captionExpanded={!!captionExpanded[reel.id]}
+            muted={muted}
             onLike={() => setLiked((p) => ({ ...p, [reel.id]: !p[reel.id] }))}
             onComment={() => setCommentOpen(reel.id)}
             onShare={() => alert('Sdílení není implementováno.')}
             onExpandCaption={() =>
               setCaptionExpanded((p) => ({ ...p, [reel.id]: !p[reel.id] }))
             }
+            onToggleMute={() => setMuted((p) => !p)}
           />
         ))}
       </div>
@@ -192,10 +205,12 @@ type ReelItemProps = {
   scrollRoot: React.RefObject<HTMLDivElement | null>
   liked: boolean
   captionExpanded: boolean
+  muted: boolean
   onLike: () => void
   onComment: () => void
   onShare: () => void
   onExpandCaption: () => void
+  onToggleMute: () => void
 }
 
 function ReelItem({
@@ -203,16 +218,23 @@ function ReelItem({
   scrollRoot,
   liked,
   captionExpanded,
+  muted,
   onLike,
   onComment,
   onShare,
   onExpandCaption,
+  onToggleMute,
 }: ReelItemProps) {
   const itemRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  // Muted must be set via DOM ref — React's `muted` prop is broken
-  // Also attempt immediate play for the first visible video
+  // Sync muted state to video element
+  useEffect(() => {
+    if (reel.type !== 'video' || !videoRef.current) return
+    videoRef.current.muted = muted
+  }, [muted, reel.type])
+
+  // Initial setup: mute + attempt play
   useEffect(() => {
     if (reel.type !== 'video' || !videoRef.current) return
     videoRef.current.muted = true
@@ -228,7 +250,6 @@ function ReelItem({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        video.muted = true
         if (entry.isIntersecting) {
           video.play().catch(() => {})
         } else {
@@ -269,7 +290,16 @@ function ReelItem({
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
 
       {/* Right action buttons */}
-      <div className="absolute right-3 bottom-28 flex flex-col items-center gap-5 z-10">
+      <div className="absolute right-3 bottom-4 flex flex-col items-center gap-5 z-10">
+        {/* Mute toggle — only for videos */}
+        {reel.type === 'video' && (
+          <button onClick={onToggleMute} className="flex flex-col items-center gap-1.5">
+            <div className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-white">
+              {muted ? <VolumeOffIcon className="w-5 h-5" /> : <VolumeOnIcon className="w-5 h-5" />}
+            </div>
+          </button>
+        )}
+
         <button onClick={onLike} className="flex flex-col items-center gap-1.5">
           <div
             className={`w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center transition-all duration-200 ${liked ? 'scale-110' : ''}`}
@@ -298,7 +328,7 @@ function ReelItem({
       </div>
 
       {/* Bottom info */}
-      <div className="absolute bottom-20 left-3 right-14 z-10">
+      <div className="absolute bottom-4 left-3 right-14 z-10">
         <div className="flex items-center gap-2 mb-2">
           <Image
             src={reel.author.avatar}
@@ -374,6 +404,42 @@ function ShareIcon({ className }: { className?: string }) {
       <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
       <polyline points="16 6 12 2 8 6" />
       <line x1="12" y1="2" x2="12" y2="15" />
+    </svg>
+  )
+}
+
+function VolumeOffIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <line x1="23" y1="9" x2="17" y2="15" />
+      <line x1="17" y1="9" x2="23" y2="15" />
+    </svg>
+  )
+}
+
+function VolumeOnIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <path d="M19.07 4.93a10 10 0 010 14.14" />
+      <path d="M15.54 8.46a5 5 0 010 7.07" />
     </svg>
   )
 }

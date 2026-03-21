@@ -52,8 +52,11 @@ export default async function CampaignLevelPage({ params }: Props) {
         photoLabel: d.game.level.photoLabel,
         aiReflectionTitle: d.game.level.aiReflectionTitle,
         chef: d.game.chef,
-        chefDescription: d.game.chefDescription,
-        comingSoon: d.game.comingSoon,
+        chefGreeting: d.game.chefGreeting,
+        chefInputPlaceholder: d.game.chefInputPlaceholder,
+        chefSend: d.game.chefSend,
+        chefThinking: d.game.chefThinking,
+        chefError: d.game.chefError,
       }}
       backToTreeHref={`/${lang}/game/campaign`}
     />

@@ -48,8 +48,11 @@ type Labels = {
   photoLabel: string
   aiReflectionTitle: string
   chef: string
-  chefDescription: string
-  comingSoon: string
+  chefGreeting: string
+  chefInputPlaceholder: string
+  chefSend: string
+  chefThinking: string
+  chefError: string
   completionTitle: string
   completionSubtitle: string
 }
@@ -58,6 +61,7 @@ type Props = {
   recipe: FreeplayRecipeDetail
   labels: Labels
   backHref: string
+  lang: string
 }
 
 type Phase = 'cooking' | 'completion'
@@ -68,7 +72,7 @@ function formatTimer(totalSeconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-export default function FreeplayRecipeExperience({ recipe, labels, backHref }: Props) {
+export default function FreeplayRecipeExperience({ recipe, labels, backHref, lang }: Props) {
   const [phase, setPhase] = useState<Phase>('cooking')
   const [checkedIngredients, setCheckedIngredients] = useState<Set<string>>(new Set())
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
@@ -137,9 +141,13 @@ export default function FreeplayRecipeExperience({ recipe, labels, backHref }: P
         onPrevStep={() => setCurrentStepIndex((p) => Math.max(p - 1, 0))}
         onNextStep={() => setCurrentStepIndex((p) => Math.min(p + 1, recipe.steps.length - 1))}
         onFinish={() => { setIsTimerRunning(false); setPhase('completion') }}
+        lang={lang}
         chefLabel={labels.chef}
-        chefDescription={labels.chefDescription}
-        chefComingSoon={labels.comingSoon}
+        chefGreeting={labels.chefGreeting}
+        chefInputPlaceholder={labels.chefInputPlaceholder}
+        chefSend={labels.chefSend}
+        chefThinking={labels.chefThinking}
+        chefError={labels.chefError}
       />
     )
   }

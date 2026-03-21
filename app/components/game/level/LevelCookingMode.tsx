@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 
 type Ingredient = {
   id: string
@@ -47,9 +47,13 @@ type Props = {
   onPrevStep: () => void
   onNextStep: () => void
   onFinish: () => void
+  lang: string
   chefLabel: string
-  chefDescription: string
-  chefComingSoon: string
+  chefGreeting: string
+  chefInputPlaceholder: string
+  chefSend: string
+  chefThinking: string
+  chefError: string
 }
 
 export default function LevelCookingMode({
@@ -82,14 +86,66 @@ export default function LevelCookingMode({
   onPrevStep,
   onNextStep,
   onFinish,
+  lang,
   chefLabel,
-  chefDescription,
-  chefComingSoon,
+  chefGreeting,
+  chefInputPlaceholder,
+  chefSend,
+  chefThinking,
+  chefError,
 }: Props) {
+  type ChatMessage = { id: string; role: 'assistant' | 'user'; text: string }
+
   const step = steps[currentStepIndex]
   const isFirst = currentStepIndex === 0
   const isLast = currentStepIndex === steps.length - 1
   const [chefCollapsed, setChefCollapsed] = useState(false)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    { id: 'greeting', role: 'assistant', text: chefGreeting },
+  ])
+  const [chatInput, setChatInput] = useState('')
+  const [chatLoading, setChatLoading] = useState(false)
+  const chatListRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (chatListRef.current) {
+      chatListRef.current.scrollTop = chatListRef.current.scrollHeight
+    }
+  }, [chatMessages, chatLoading])
+
+  async function handleChatSend() {
+    const text = chatInput.trim()
+    if (!text || chatLoading) return
+    setChatInput('')
+    const userMsg: ChatMessage = { id: crypto.randomUUID(), role: 'user', text }
+    const next = [...chatMessages, userMsg]
+    setChatMessages(next)
+    setChatLoading(true)
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          locale: lang,
+          message: text,
+          screen: `/game/freeplay`,
+          history: next.slice(-8).map((m) => ({ role: m.role, content: m.text })),
+        }),
+      })
+      const json = await res.json()
+      const reply = typeof json.data?.reply === 'string' && json.data.reply.length > 0
+        ? json.data.reply : chefError
+      setChatMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: reply }])
+    } catch {
+      setChatMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: chefError }])
+    } finally {
+      setChatLoading(false)
+    }
+  }
+
+  function onChatKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleChatSend() }
+  }
 
   return (
     <section className="relative min-h-[100dvh] overflow-hidden">
@@ -294,30 +350,45 @@ export default function LevelCookingMode({
                   </button>
                 </div>
 
-                {/* Chat messages area */}
-                <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col items-center justify-center text-center">
-                  <ChefHatIcon className="w-10 h-10 text-[#E57373]/20 mb-2" />
-                  <p className="text-xs text-[#6D4C41]/50 leading-relaxed">{chefDescription}</p>
-                  <p className="text-[10px] text-[#6D4C41]/30 mt-1">{chefComingSoon}</p>
+                {/* Chat messages */}
+                <div ref={chatListRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-[#FFF8EC]">
+                  {chatMessages.map((m) => (
+                    <div
+                      key={m.id}
+                      className={`max-w-[92%] rounded-2xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap ${
+                        m.role === 'assistant'
+                          ? 'bg-white border border-[#4E342E]/10 text-[#4E342E]'
+                          : 'bg-[#FEDC56]/80 text-[#4E342E] ml-auto'
+                      }`}
+                    >
+                      {m.text}
+                    </div>
+                  ))}
+                  {chatLoading && (
+                    <div className="max-w-[92%] rounded-2xl px-3 py-2 text-xs bg-white border border-[#4E342E]/10 text-[#6D4C41]/60">
+                      {chefThinking}
+                    </div>
+                  )}
                 </div>
 
-                {/* Chat input + voice */}
+                {/* Chat input */}
                 <div className="border-t border-[#4E342E]/10 px-3 py-3">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      disabled
-                      placeholder={chefComingSoon}
-                      className="flex-1 rounded-xl border border-[#4E342E]/15 bg-[#FFF8E1]/60 px-3 py-2.5 text-sm text-[#4E342E] placeholder:text-[#6D4C41]/35 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#F5A623]/40"
+                  <div className="flex gap-2 items-end">
+                    <textarea
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyDown={onChatKeyDown}
+                      rows={2}
+                      placeholder={chefInputPlaceholder}
+                      className="flex-1 resize-none rounded-xl border border-[#4E342E]/15 bg-white px-3 py-2 text-sm text-[#4E342E] placeholder-[#6D4C41]/45 focus:outline-none focus:border-[#FEDC56]"
                     />
-                    {/* Voice button */}
                     <button
                       type="button"
-                      disabled
-                      className="w-10 h-10 rounded-full bg-[#4E342E] text-[#FFF8E1] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#5D4037] transition-colors"
-                      aria-label="Voice"
+                      onClick={() => void handleChatSend()}
+                      disabled={chatLoading || chatInput.trim().length === 0}
+                      className="h-10 px-3 rounded-xl bg-[#FEDC56] text-[#4E342E] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <MicIcon className="w-5 h-5" />
+                      {chefSend}
                     </button>
                   </div>
                 </div>

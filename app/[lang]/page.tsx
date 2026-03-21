@@ -4,6 +4,7 @@ import { getDictionary, hasLocale, type Locale } from './dictionaries'
 import TeamSlider from '@/app/components/TeamSlider'
 import Navbar from '@/app/components/Navbar'
 import Footer from '@/app/components/Footer'
+import FeaturedRecipes from '@/app/components/FeaturedRecipes'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -172,36 +173,7 @@ export default async function HomePage({ params }: Props) {
             {d.sandbox.description}
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {featuredRecipes.map((recipe) => (
-              <Link
-                key={recipe.id}
-                href={`/${lang}/game/freeplay/${recipe.dbId}`}
-                className="bg-white rounded-3xl overflow-hidden shadow-sm border border-[#4E342E]/8 hover:shadow-md transition-shadow flex flex-col cursor-pointer"
-              >
-                <div className="relative h-44 bg-[#FFF3E0] overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover" />
-                  <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full ${recipe.difficultyColor}`}>
-                    {recipe.difficultyLabel}
-                  </span>
-                </div>
-                <div className="p-5 flex flex-col gap-3 flex-1">
-                  <h3 className="text-lg font-black text-[#4E342E] leading-tight">{recipe.title}</h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold bg-[#4E342E]/6 text-[#4E342E] px-2.5 py-1 rounded-full">
-                      {recipe.flag} {recipe.country}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-[#6D4C41]/60 font-medium">
-                    <span>⏱ příprava {recipe.prep} min</span>
-                    <span>🍳 vaření {recipe.cook} min</span>
-                  </div>
-                  <p className="text-sm text-[#6D4C41]/70 leading-relaxed line-clamp-3 flex-1">{recipe.description}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <FeaturedRecipes recipes={featuredRecipes} lang={lang} />
 
           <div className="text-center">
             <Link

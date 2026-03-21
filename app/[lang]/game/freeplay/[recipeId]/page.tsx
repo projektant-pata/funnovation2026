@@ -121,11 +121,15 @@ export default async function FreeplayRecipePage({ params }: Props) {
         photoLabel: l.photoLabel,
         aiReflectionTitle: l.aiReflectionTitle,
         chef: d.game.chef,
-        chefDescription: d.game.chefDescription,
-        comingSoon: d.game.comingSoon,
+        chefGreeting: d.game.chefGreeting,
+        chefInputPlaceholder: d.game.chefInputPlaceholder,
+        chefSend: d.game.chefSend,
+        chefThinking: d.game.chefThinking,
+        chefError: d.game.chefError,
         completionTitle: lang === 'cs' ? 'Recept dokončen!' : 'Recipe completed!',
         completionSubtitle: lang === 'cs' ? `Skvělá práce s receptem ${recipe.title}.` : `Great job cooking ${recipe.title}.`,
       }}
+      lang={lang}
       backHref={`/${lang}/game/freeplay`}
     />
   )

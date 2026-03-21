@@ -43,8 +43,11 @@ type LevelLabels = {
   photoLabel: string
   aiReflectionTitle: string
   chef: string
-  chefDescription: string
-  comingSoon: string
+  chefGreeting: string
+  chefInputPlaceholder: string
+  chefSend: string
+  chefThinking: string
+  chefError: string
 }
 
 type Props = {
@@ -271,9 +274,13 @@ export default function CampaignLevelExperience({
           setIsTimerRunning(false)
           setPhase(level.postRecipeCutscene ? 'postcutscene' : 'completion')
         }}
+        lang={lang}
         chefLabel={labels.chef}
-        chefDescription={labels.chefDescription}
-        chefComingSoon={labels.comingSoon}
+        chefGreeting={labels.chefGreeting}
+        chefInputPlaceholder={labels.chefInputPlaceholder}
+        chefSend={labels.chefSend}
+        chefThinking={labels.chefThinking}
+        chefError={labels.chefError}
       />
     )
   }
