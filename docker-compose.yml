@@ -29,8 +29,8 @@ services:
     environment:
       DATABASE_URL: postgresql://zemloveka:${POSTGRES_PASSWORD:-zemloveka_dev}@db:5432/zemloveka
       JWT_SECRET: ${JWT_SECRET:-zemloveka-dev-secret-change-in-prod}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      # GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      # GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       APP_URL: ${APP_URL:-http://localhost:4030}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_API_BASE_URL: ${GEMINI_API_BASE_URL:-https://generativelanguage.googleapis.com/v1beta}

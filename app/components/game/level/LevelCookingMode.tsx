@@ -59,7 +59,6 @@ type Props = {
   chefError?: string
 
   chefDescription?: string
-  chefComingSoon?: string
   chefVoiceStartLabel?: string
   chefVoiceStopLabel?: string
   chefVoiceConnectingLabel?: string
@@ -118,7 +117,6 @@ export default function LevelCookingMode({
   chefThinking,
   chefError,
   chefDescription,
-  chefComingSoon,
   chefVoiceStartLabel,
   chefVoiceStopLabel,
   chefVoiceConnectingLabel,
@@ -153,7 +151,6 @@ export default function LevelCookingMode({
   const resolvedChefTextLoading = chefTextLoading ?? false
 
   const resolvedDescription = chefDescription ?? chefGreeting ?? ''
-  const resolvedComingSoon = chefComingSoon ?? ''
   const resolvedVoiceStartLabel = chefVoiceStartLabel ?? 'Start voice'
   const resolvedVoiceStopLabel = chefVoiceStopLabel ?? 'Stop voice'
   const resolvedVoiceConnectingLabel = chefVoiceConnectingLabel ?? 'Connecting...'
@@ -479,7 +476,6 @@ export default function LevelCookingMode({
                         <>
                           <ChefHatIcon className="w-10 h-10 text-[#E57373]/20 mb-2" />
                           <p className="text-xs text-[#6D4C41]/50 leading-relaxed">{resolvedDescription}</p>
-                          <p className="text-[10px] text-[#6D4C41]/30 mt-1">{resolvedComingSoon}</p>
                         </>
                       ) : (
                         resolvedTranscriptEvents.map((event) => (

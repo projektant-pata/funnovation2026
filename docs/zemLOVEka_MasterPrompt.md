@@ -47,7 +47,7 @@ Většina mladých lidí (18–35) neumí efektivně vařit. Existující řeše
 | Vrstva | Technologie |
 |--------|-------------|
 | Frontend | Next.js 14+ (App Router), React, TypeScript, Tailwind CSS, shadcn/ui |
-| Backend / DB | PostgreSQL 16 (self-hosted), vlastní Auth vrstva (JWT + Google OAuth), media storage, RLS |
+| Backend / DB | PostgreSQL 16 (self-hosted), vlastní Auth vrstva (JWT), media storage, RLS |
 | AI | Google Gemini API — Gemini 3 Flash (hlavní funkce), Gemini 3.1 Flash-Lite (lehké úlohy), Gemini 2.5 Flash Native Audio (live voice/image) |
 | i18n | next-intl, JSON klíče per locale (`/messages/cs.json`, `/messages/en.json`) |
 | State management | Zustand |
@@ -72,7 +72,7 @@ Většina mladých lidí (18–35) neumí efektivně vařit. Existující řeše
 ### 4.2 S účtem (registrace)
 
 - Povinné pro: kampaň, challenges, tvorba receptů, nákupní seznam, jídelníček, sociální sekce, skupiny, špajz.
-- Registrace: email + heslo nebo OAuth (Google). Minimum tření.
+- Registrace: email + heslo. Minimum tření.
 - Po registraci: povinný onboarding dotazník (viz 4.3).
 
 ### 4.3 Onboarding dotazník

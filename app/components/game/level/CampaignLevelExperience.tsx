@@ -533,7 +533,6 @@ export default function CampaignLevelExperience({
         }}
         chefLabel={labels.chef}
         chefDescription={labels.chefDescription}
-        chefComingSoon={labels.comingSoon}
         chefVoiceStartLabel={labels.chefVoiceStart}
         chefVoiceStopLabel={labels.chefVoiceStop}
         chefVoiceConnectingLabel={labels.chefVoiceConnecting}

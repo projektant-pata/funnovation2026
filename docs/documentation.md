@@ -58,7 +58,7 @@ Všechna volání Gemini API probíhají výhradně přes Next.js API routes na 
 | **Backend** | Next.js API Routes (Node.js 20) |
 | **Databáze** | PostgreSQL 16 (Docker), `pg` connection pool |
 | **AI** | Google Gemini API (`@google/genai`) |
-| **Autentizace** | JWT (`jsonwebtoken` 9.0.3), bcryptjs, Google OAuth (konfigurováno) |
+| **Autentizace** | JWT (`jsonwebtoken` 9.0.3), bcryptjs |
 | **Kontejnerizace** | Docker (multi-stage build), docker-compose |
 | **i18n** | Vlastní dictionary loader (cs / en JSON soubory) |
 | **Mapy** | Leaflet 1.9.4 + react-leaflet 5.0.0 (legacy), SVG mapa (nová) |
@@ -84,7 +84,6 @@ tailwindcss v4
 - **JWT tokeny** s 7denní expirací (MAX_AGE = 604 800 s)
 - Session cookie: `zl_session` — nastavena jako `HttpOnly`, `SameSite=Lax`, `Secure` v produkci
 - **bcryptjs** — hashování hesel, žádné plain-text heslo v databázi
-- Google OAuth integration (client ID/secret přes proměnné prostředí)
 - Výchozí JWT secret v dev: `zemloveka-dev-secret-change-in-prod` — **musí být změněn v produkci**
 
 ### 3.2 Zabezpečení API
@@ -238,7 +237,7 @@ Plochý prohlížeč receptů s filtry:
 
 ### 5.3 Onboarding
 
-1. Registrace (email + heslo nebo Google OAuth)
+1. Registrace (email + heslo)
 2. Dotazník (5–7 otázek): frekvence vaření, techniky, alergie, diety, motivace, časový budget
 3. Gemini vyhodnotí skill level 1–7 a doporučí startovní uzel kampaně
 4. Uložení do `user_skill_assessments`
