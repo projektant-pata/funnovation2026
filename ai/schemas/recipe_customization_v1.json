@@ -1,0 +1,65 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"summary": { "type": "string" },
+		"change_log": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"request": { "type": "string" },
+					"resolution": { "type": "string" },
+					"status": { "type": "string", "enum": ["applied", "partially_applied", "rejected"] }
+				},
+				"required": ["request", "resolution", "status"]
+			}
+		},
+		"customized_recipe": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"title": { "type": "string" },
+				"description": { "type": "string" },
+				"difficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+				"prep_time_minutes": { "type": "integer", "minimum": 0 },
+				"cook_time_minutes": { "type": "integer", "minimum": 0 },
+				"servings": { "type": "integer", "minimum": 1 },
+				"ingredients": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"name": { "type": "string" },
+							"amount": { "type": "number", "minimum": 0 },
+							"unit": { "type": "string" },
+							"prep_note": { "type": "string" },
+							"is_optional": { "type": "boolean" }
+						},
+						"required": ["name", "amount", "unit", "prep_note", "is_optional"]
+					}
+				},
+				"steps": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"step_number": { "type": "integer", "minimum": 1 },
+							"instruction": { "type": "string" },
+							"tip": { "type": "string" },
+							"default_timer_seconds": { "type": "integer", "minimum": 0 }
+						},
+						"required": ["step_number", "instruction", "tip", "default_timer_seconds"]
+					}
+				}
+			},
+			"required": ["title", "description", "difficulty", "prep_time_minutes", "cook_time_minutes", "servings", "ingredients", "steps"]
+		},
+		"warnings": { "type": "array", "items": { "type": "string" } }
+	},
+	"required": ["schema_version", "summary", "change_log", "customized_recipe", "warnings"]
+}

@@ -1,0 +1,42 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"reply": { "type": "string", "minLength": 1 },
+		"tone": { "type": "string", "enum": ["coach", "neutral", "celebratory", "warning"] },
+		"actions": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"action_type": {
+						"type": "string",
+						"enum": ["none", "timer_start", "timer_set", "timer_pause", "timer_resume", "timer_cancel", "step_next", "step_previous", "step_go_to"]
+					},
+					"timer_seconds": { "type": "integer", "minimum": 0 },
+					"target_step_number": { "type": "integer", "minimum": 0 },
+					"reason": { "type": "string" }
+				},
+				"required": ["action_type", "timer_seconds", "target_step_number", "reason"]
+			}
+		},
+		"safety": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"should_refuse": { "type": "boolean" },
+				"risk_flags": {
+					"type": "array",
+					"items": { "type": "string", "enum": ["none", "allergy", "burn", "knife", "cross_contamination", "food_spoilage", "other"] }
+				},
+				"refusal_reason": { "type": "string" }
+			},
+			"required": ["should_refuse", "risk_flags", "refusal_reason"]
+		},
+		"requires_clarification": { "type": "boolean" },
+		"clarification_question": { "type": "string" }
+	},
+	"required": ["schema_version", "reply", "tone", "actions", "safety", "requires_clarification", "clarification_question"]
+}

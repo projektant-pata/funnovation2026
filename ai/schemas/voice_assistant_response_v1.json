@@ -1,0 +1,29 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"spoken_reply": { "type": "string", "minLength": 1 },
+		"display_reply": { "type": "string", "minLength": 1 },
+		"should_repeat": { "type": "boolean" },
+		"repeat_prompt": { "type": "string" },
+		"actions": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"action_type": {
+						"type": "string",
+						"enum": ["none", "timer_start", "timer_set", "timer_pause", "timer_resume", "timer_cancel", "step_next", "step_previous", "step_go_to"]
+					},
+					"timer_seconds": { "type": "integer", "minimum": 0 },
+					"target_step_number": { "type": "integer", "minimum": 0 },
+					"reason": { "type": "string" }
+				},
+				"required": ["action_type", "timer_seconds", "target_step_number", "reason"]
+			}
+		}
+	},
+	"required": ["schema_version", "spoken_reply", "display_reply", "should_repeat", "repeat_prompt", "actions"]
+}

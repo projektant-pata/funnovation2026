@@ -1,0 +1,28 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"skill_level": { "type": "integer", "minimum": 1, "maximum": 7 },
+		"confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+		"normalized_profile": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"cooking_frequency": { "type": "string", "enum": ["never", "few_per_month", "few_per_week", "daily"] },
+				"time_budget": { "type": "string", "enum": ["under_30", "between_30_60", "between_60_120", "no_limit"] },
+				"motivations": {
+					"type": "array",
+					"items": { "type": "string", "enum": ["learn_basics", "healthy_cooking", "world_cuisines", "cook_for_others", "save_money"] }
+				},
+				"diets": { "type": "array", "items": { "type": "string" } },
+				"allergies_used_for_personalization": { "type": "boolean" }
+			},
+			"required": ["cooking_frequency", "time_budget", "motivations", "diets", "allergies_used_for_personalization"]
+		},
+		"campaign_start_node_key": { "type": "string" },
+		"rationale": { "type": "string" },
+		"warnings": { "type": "array", "items": { "type": "string" } }
+	},
+	"required": ["schema_version", "skill_level", "confidence", "normalized_profile", "campaign_start_node_key", "rationale", "warnings"]
+}

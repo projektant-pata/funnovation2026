@@ -16,7 +16,19 @@ git clone <url-repozitáře>
 cd funnovation2026
 ```
 
-### 2. Dev režim (hot reload)
+### 2. Nastavení `.env` a API klíče
+
+Nejdřív si vytvoř lokální `.env` z šablony:
+
+```bash
+cp .env.example .env
+```
+
+Potom doplň vlastní hodnoty (hlavně `GEMINI_API_KEY`) do `.env`.
+
+Poznámka: `.env` je gitignore a necommitujeme ho.
+
+### 3. Dev režim (hot reload)
 
 ```bash
 docker compose -f docker-compose.dev.yml up
@@ -24,7 +36,7 @@ docker compose -f docker-compose.dev.yml up
 
 Aplikace poběží na **http://localhost:3000**. Změny v kódu se projeví okamžitě bez restartu. PostgreSQL databáze se inicializuje automaticky ze `schema.sql` a `seed.sql`.
 
-### 3. Produkční režim
+### 4. Produkční režim
 
 ```bash
 docker compose up --build
@@ -57,6 +69,34 @@ npm run dev
 ```
 
 Aplikace poběží na **http://localhost:3000**. PostgreSQL musí běžet zvlášť — nastav `DATABASE_URL` v `.env`.
+
+## SOPS decrypt (2 způsoby)
+
+Šifrovaný secret soubor je `secrets/runtime.env.sops`.
+
+### Způsob 1: default SSH klíč (lokální účet)
+
+Pokud máš soukromý klíč v běžné SSH lokaci (`~/.ssh/...`) a odpovídá tvému GitHub public key:
+
+```bash
+sops -d --input-type dotenv --output-type dotenv secrets/runtime.env.sops
+```
+
+### Způsob 2: explicitní cesta ke klíči
+
+Použij, když klíč není v default lokaci (typicky deploy klíč):
+
+```bash
+export SOPS_AGE_SSH_PRIVATE_KEY_FILE=/path/to/private_key
+sops -d --input-type dotenv --output-type dotenv secrets/runtime.env.sops
+```
+
+Příklad deploy klíče v tomto projektu:
+
+```bash
+export SOPS_AGE_SSH_PRIVATE_KEY_FILE=~/.config/sops/deploy_team_sops_ed25519
+sops -d --input-type dotenv --output-type dotenv secrets/runtime.env.sops
+```
 
 ## Příkazy
 

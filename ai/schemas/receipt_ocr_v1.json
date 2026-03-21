@@ -1,0 +1,30 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"merchant_name": { "type": "string" },
+		"purchase_date_iso": { "type": "string" },
+		"currency_code": { "type": "string" },
+		"total_amount": { "type": "number", "minimum": 0 },
+		"parse_quality": { "type": "string", "enum": ["high", "medium", "low"] },
+		"items": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"detected_name": { "type": "string" },
+					"normalized_name": { "type": "string" },
+					"quantity": { "type": "number", "minimum": 0 },
+					"unit": { "type": "string" },
+					"confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+					"suggested_ingredient_code": { "type": "string" }
+				},
+				"required": ["detected_name", "normalized_name", "quantity", "unit", "confidence", "suggested_ingredient_code"]
+			}
+		},
+		"warnings": { "type": "array", "items": { "type": "string" } }
+	},
+	"required": ["schema_version", "merchant_name", "purchase_date_iso", "currency_code", "total_amount", "parse_quality", "items", "warnings"]
+}

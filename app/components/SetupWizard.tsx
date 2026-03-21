@@ -132,11 +132,13 @@ export default function SetupWizard({
   const [experience, setExperience] = useState<string | null>(null)
   const [selectedDiets,     setSelectedDiets]     = useState<string[]>([])
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([])
+  const [healthDataConsent, setHealthDataConsent] = useState(false)
 
   const canContinue = (() => {
     if (step === 1) return gender !== null
     if (step === 2) return ageRange !== null
     if (step === 3) return experience !== null
+    if (step === 5 && selectedAllergens.length > 0) return healthDataConsent
     return true // steps 4+5 are optional
   })()
 
@@ -147,10 +149,12 @@ export default function SetupWizard({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gender,
+        lang,
         age_range:         ageRange,
         cooking_frequency: experience,
         diet_codes:        selectedDiets,
         allergen_codes:    selectedAllergens,
+        health_data_consent: healthDataConsent,
       }),
     })
     router.push(`/${lang}`)
@@ -180,8 +184,28 @@ export default function SetupWizard({
     },
     {
       title: 'Máš nějaké alergie?',
-      subtitle: 'Upozorníme tě u každého receptu. Můžeš přeskočit.',
-      content: <MultiSelect options={allergens} values={selectedAllergens} onChange={setSelectedAllergens} />,
+      subtitle: 'Upozorníme tě u každého receptu. Pro uložení je nutný souhlas se zpracováním zdravotních dat.',
+      content: (
+        <div className="w-full flex flex-col gap-5">
+          <MultiSelect options={allergens} values={selectedAllergens} onChange={setSelectedAllergens} />
+          <label className="flex items-start gap-3 bg-white border border-[#4E342E]/10 rounded-2xl p-4 text-left">
+            <input
+              type="checkbox"
+              checked={healthDataConsent}
+              onChange={(e) => setHealthDataConsent(e.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#FEDC56]"
+            />
+            <span className="text-sm text-[#6D4C41] leading-relaxed">
+              Souhlasím se zpracováním údajů o alergiích a intolerancích pro personalizaci receptů.
+            </span>
+          </label>
+          {selectedAllergens.length > 0 && !healthDataConsent && (
+            <p className="text-xs text-[#E57373] font-semibold">
+              Pokud vybereš alergie, je potřeba potvrdit souhlas.
+            </p>
+          )}
+        </div>
+      ),
     },
   ]
 
@@ -240,8 +264,8 @@ export default function SetupWizard({
         ) : (
           <button
             onClick={handleFinish}
-            disabled={saving}
-            className="w-full bg-[#4E342E] hover:bg-[#3e2723] disabled:opacity-50 text-white font-black text-lg px-6 py-4 rounded-2xl transition-colors shadow-sm"
+            disabled={saving || !canContinue}
+            className="w-full bg-[#4E342E] hover:bg-[#3e2723] disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-lg px-6 py-4 rounded-2xl transition-colors shadow-sm"
           >
             {saving ? 'Ukládám…' : 'Hotovo! Jdeme vařit 🍳'}
           </button>

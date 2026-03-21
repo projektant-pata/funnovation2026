@@ -1,0 +1,52 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"pantry_match_percent": { "type": "number", "minimum": 0, "maximum": 100 },
+		"recipe": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"title": { "type": "string" },
+				"description": { "type": "string" },
+				"difficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+				"prep_time_minutes": { "type": "integer", "minimum": 0 },
+				"cook_time_minutes": { "type": "integer", "minimum": 0 },
+				"servings": { "type": "integer", "minimum": 1 },
+				"ingredients": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"name": { "type": "string" },
+							"amount": { "type": "number", "minimum": 0 },
+							"unit": { "type": "string" },
+							"from_pantry": { "type": "boolean" }
+						},
+						"required": ["name", "amount", "unit", "from_pantry"]
+					}
+				},
+				"steps": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"step_number": { "type": "integer", "minimum": 1 },
+							"instruction": { "type": "string" },
+							"tip": { "type": "string" },
+							"default_timer_seconds": { "type": "integer", "minimum": 0 }
+						},
+						"required": ["step_number", "instruction", "tip", "default_timer_seconds"]
+					}
+				}
+			},
+			"required": ["title", "description", "difficulty", "prep_time_minutes", "cook_time_minutes", "servings", "ingredients", "steps"]
+		},
+		"used_pantry_items": { "type": "array", "items": { "type": "string" } },
+		"missing_items": { "type": "array", "items": { "type": "string" } }
+	},
+	"required": ["schema_version", "pantry_match_percent", "recipe", "used_pantry_items", "missing_items"]
+}

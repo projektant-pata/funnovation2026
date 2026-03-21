@@ -1,0 +1,19 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"challenge_type": { "type": "string", "enum": ["personal", "community"] },
+		"difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
+		"title_cs": { "type": "string" },
+		"title_en": { "type": "string" },
+		"description_cs": { "type": "string" },
+		"description_en": { "type": "string" },
+		"success_criteria": { "type": "array", "items": { "type": "string" } },
+		"rules": { "type": "array", "items": { "type": "string" } },
+		"anti_abuse_hints": { "type": "array", "items": { "type": "string" } },
+		"recommended_xp": { "type": "integer", "minimum": 0 },
+		"estimated_duration_minutes": { "type": "integer", "minimum": 1 }
+	},
+	"required": ["schema_version", "challenge_type", "difficulty", "title_cs", "title_en", "description_cs", "description_en", "success_criteria", "rules", "anti_abuse_hints", "recommended_xp", "estimated_duration_minutes"]
+}

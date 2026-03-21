@@ -1,0 +1,51 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"title": { "type": "string" },
+		"locale": { "type": "string", "enum": ["cs", "en"] },
+		"days_count": { "type": "integer", "minimum": 1, "maximum": 14 },
+		"days": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"day_offset": { "type": "integer", "minimum": 0 },
+					"meals": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"meal_slot": { "type": "string", "enum": ["breakfast", "lunch", "dinner", "snack"] },
+								"source": { "type": "string", "enum": ["existing", "generated"] },
+								"recipe_id": { "type": "string" },
+								"generated_title": { "type": "string" },
+								"generated_description": { "type": "string" },
+								"reason": { "type": "string" }
+							},
+							"required": ["meal_slot", "source", "recipe_id", "generated_title", "generated_description", "reason"]
+						}
+					}
+				},
+				"required": ["day_offset", "meals"]
+			}
+		},
+		"shopping_list_estimate": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"name": { "type": "string" },
+					"quantity": { "type": "number", "minimum": 0 },
+					"unit": { "type": "string" }
+				},
+				"required": ["name", "quantity", "unit"]
+			}
+		}
+	},
+	"required": ["schema_version", "title", "locale", "days_count", "days", "shopping_list_estimate"]
+}

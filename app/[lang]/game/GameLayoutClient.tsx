@@ -15,7 +15,12 @@ type Labels = {
   notifications: string
   chef: string
   chefDescription: string
-  comingSoon: string
+  chefGreeting: string
+  chefInputPlaceholder: string
+  chefSend: string
+  chefThinking: string
+  chefError: string
+  chefClose: string
   badges: string
   pantry: string
   shoppingList: string
@@ -62,12 +67,17 @@ export default function GameLayoutClient({ lang, labels, children, navbar }: Pro
               groups: labels.groups,
             }}
           />
-
           <ChefFab
+            lang={lang as 'cs' | 'en'}
             labels={{
               chef: labels.chef,
               chefDescription: labels.chefDescription,
-              comingSoon: labels.comingSoon,
+              chefGreeting: labels.chefGreeting,
+              chefInputPlaceholder: labels.chefInputPlaceholder,
+              chefSend: labels.chefSend,
+              chefThinking: labels.chefThinking,
+              chefError: labels.chefError,
+              chefClose: labels.chefClose,
             }}
           />
         </>

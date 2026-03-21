@@ -1,0 +1,41 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": { "type": "string", "enum": ["v1"] },
+		"source_locale": { "type": "string", "enum": ["cs", "en"] },
+		"target_locale": { "type": "string", "enum": ["cs", "en"] },
+		"title": { "type": "string" },
+		"description": { "type": "string" },
+		"ingredients": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"name": { "type": "string" },
+					"amount_text": { "type": "string" },
+					"prep_note": { "type": "string" },
+					"is_optional": { "type": "boolean" }
+				},
+				"required": ["name", "amount_text", "prep_note", "is_optional"]
+			}
+		},
+		"steps": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"step_number": { "type": "integer", "minimum": 1 },
+					"instruction": { "type": "string" },
+					"tip": { "type": "string" },
+					"default_timer_seconds": { "type": "integer", "minimum": 0 }
+				},
+				"required": ["step_number", "instruction", "tip", "default_timer_seconds"]
+			}
+		},
+		"quality_notes": { "type": "array", "items": { "type": "string" } }
+	},
+	"required": ["schema_version", "source_locale", "target_locale", "title", "description", "ingredients", "steps", "quality_notes"]
+}

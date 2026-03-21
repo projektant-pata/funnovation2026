@@ -31,6 +31,11 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://zemloveka:zemloveka_dev@db:5432/zemloveka
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_API_BASE_URL: ${GEMINI_API_BASE_URL:-https://generativelanguage.googleapis.com/v1beta}
+      GEMINI_TEXT_MODEL: ${GEMINI_TEXT_MODEL:-gemini-3-flash-preview}
+      GEMINI_CHAT_MODEL: ${GEMINI_CHAT_MODEL:-gemini-3-flash-preview}
+      GEMINI_ONBOARDING_MODEL: ${GEMINI_ONBOARDING_MODEL:-gemini-3-flash-preview}
     command: sh -c "npm install && npm run dev"
     depends_on:
       db:
