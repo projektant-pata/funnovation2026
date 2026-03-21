@@ -1,38 +1,29 @@
-SCÉNA 1 — POKOJ, PÁTEK ODPOLEDNE
-[Pozadí: intr]
+# TŘETÍ KAPITOLA — VÍKEND SOLO
+
+SCÉNA 1
+[/scenes/intr.png]
 
 Ty (v duchu):
 „Páťa odjel ve čtvrtek večer. Ostrava není za rohem."
 
-
-
 Ty:
 „Pokoj je divně ticho. Ani jsem nevěděl, že si na něj za tejden zvyknu."
 
-
-
-
 ---
+Pátek večer. Kuchyňka.
 
-
-SCÉNA 2 — KUCHYŇKA, VEČER
-[Pozadí: kitchen]
+SCÉNA 2
+[/scenes/kitchen.png]
 
 Ty (v duchu):
 „Vařím sám. Zase."
-
-
 
 Ty:
 „Ale teď je to jiný než první den. Tehdy jsem nevěděl co dělám.
 Teď… víceméně vím."
 
-
-
 Ty (v duchu):
 „Skoro."
-
-
 
 Ty:
 „Dám si něco, na co jsem měl celej týden chuť a Páťa by řekl
@@ -43,28 +34,24 @@ Ty (v duchu):
 
 [→ přechod do výběru receptu]
 
-
 ---
+Po večeři. Pokoj.
 
-
-SCÉNA 3 — POKOJ, PO VEČEŘI
-[Pozadí: kitchen]
+SCÉNA 3
+[/scenes/intr.png]
 
 [Ticho. Jíš sám.]
 
 Ty (v duchu):
 „Jo. Tohle bylo dobrý rozhodnutí."
 
-
-
 Ty:
 „Páťa píše, jestli jsem přežil pátek."
-
 
 Ty:
 „Odpíšu mu fotku talíře."
 
-[vibrace nove zpravy]
+[vibrace nové zprávy]
 
 „Odepsal: ‚bruv'."
 

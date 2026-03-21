@@ -1,22 +1,19 @@
-SCÉNA 1 — POKOJ, DRUHÝ DEN RÁNO
-[Pozadí: intr]
+# DRUHÁ KAPITOLA — SPOLUBYDLÍCÍ
+
+SCÉNA 1
+[/scenes/intr.png]
 
 Ty (v duchu):
 „Spolubydlící přijel v noci. Hodil věci na postel a spad."
 
-
-
 Ty:
 „Já taky. Dobrej první den."
 
-
-
-
 ---
+Druhý den, odpoledne. Chodba.
 
-
-SCÉNA 2 — CHODBA, ODPOLEDNE
-[Pozadí: spse]
+SCÉNA 2
+[/scenes/spse.png]
 
 Spolubydlící:
 „Čau, já jsem Páťa. Z Ostravy."
@@ -30,8 +27,6 @@ Páťa:
 Ty:
 „Přesně."
 
-
-
 Páťa:
 „Co studuješ?"
 
@@ -41,33 +36,24 @@ Ty:
 Páťa:
 „Taky. Pohoda."
 
-
-
 Páťa:
 „Jdu na přednášku. Večer jsem zpátky."
 
 Ty:
 „Ok."
 
-
-
 Ty (v duchu):
 „Zmínil, že měl k obědu tyčinku z automatu.
 Mohl bych uvařit pro oba."
 
-
-
-
 ---
+Odpoledne. Kuchyňka.
 
-
-SCÉNA 3 — KUCHYŇKA, ODPOLEDNE
-[Pozadí: kitchen]
+SCÉNA 3
+[/scenes/kitchen.png]
 
 Ty:
 „Páťa má přednášky do šesti. Dost času."
-
-
 
 Ty (v duchu):
 „Nevím co mu chutná, tak udělám něco normálního."
@@ -77,12 +63,11 @@ Ty:
 
 [→ přechod do výběru receptu]
 
-
 ---
+Večer. Pokoj.
 
-
-SCÉNA 4 — POKOJ, VEČER
-[Pozadí: kitchen]
+SCÉNA 4
+[/scenes/intr.png]
 
 [Zvuk: klíč v zámku]
 
@@ -91,8 +76,6 @@ Páťa:
 
 Ty:
 „Uvařil jsem. Máš tam porci."
-
-
 
 Páťa:
 „Vážně? Díky, člověče."
@@ -104,8 +87,6 @@ Páťa:
 
 Ty:
 „Učím se."
-
-
 
 Páťa:
 „Příště koupím suroviny já. Fair?"
