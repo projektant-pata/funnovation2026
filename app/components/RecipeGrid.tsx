@@ -1,9 +1,18 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import LevelSummary from '@/app/components/game/level/LevelSummary'
 
-const FOOD_IMAGES = ['/food/prej_syr.webp', '/food/uhlik.webp', '/food/404.jpg']
 const PAGE_SIZE = 9
+
+function getRecipeImage(title: string): string {
+  const t = title.toLowerCase()
+  if (t.includes('guláš') || t.includes('gulas') || t.includes('gulash')) return '/food/gulas.png'
+  if (t.includes('pad thai') || t.includes('pad-thai')) return '/food/pad-thai.png'
+  if (t.includes('bourguignon')) return '/food/Boeuf-Bourguignon.jpg'
+  return '/food/404.jpg'
+}
 
 const DIET_LABELS: Record<string, string> = {
   vegan:       'Vegan',
@@ -50,45 +59,47 @@ type Recipe = {
   tags: string[]
 }
 
-function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
-  const img = FOOD_IMAGES[index % FOOD_IMAGES.length]
+type RecipeDetail = {
+  id: string
+  title: string
+  description: string
+  difficulty: number
+  prep_time_minutes: number
+  cook_time_minutes: number
+  ingredients: { id: string; label: string }[]
+  steps: { id: string }[]
+}
+
+function RecipeCard({ recipe, onOpen }: { recipe: Recipe; onOpen: () => void }) {
+  const img = getRecipeImage(recipe.title)
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden border border-[#4E342E]/8 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-      {/* Image */}
+    <button
+      onClick={onOpen}
+      className="bg-white rounded-3xl overflow-hidden border border-[#4E342E]/8 shadow-sm hover:shadow-md transition-shadow flex flex-col cursor-pointer text-left w-full"
+    >
       <div className="relative h-44 bg-[#FFF3E0] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={img}
-          alt={recipe.title}
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-        {/* Difficulty badge */}
+        <img src={img} alt={recipe.title} className="w-full h-full object-cover" loading="lazy" />
         <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full ${DIFF_COLOR[recipe.difficulty]}`}>
           {DIFF_LABEL[recipe.difficulty]}
         </span>
       </div>
 
       <div className="p-5 flex flex-col gap-3 flex-1">
-        {/* Title */}
         <h3 className="text-lg font-black text-[#4E342E] leading-tight">{recipe.title}</h3>
 
-        {/* Tags row */}
         <div className="flex flex-wrap gap-1.5">
-          {/* Country tag */}
           {recipe.country_cs && (
             <span className="inline-flex items-center gap-1 text-xs font-semibold bg-[#4E342E]/6 text-[#4E342E] px-2.5 py-1 rounded-full">
               {recipe.group_emoji} {recipe.country_cs}
             </span>
           )}
-          {/* Diet tags */}
           {recipe.diets.filter(Boolean).map((d) => (
             <span key={d} className={`text-xs font-semibold px-2.5 py-1 rounded-full ${DIET_COLORS[d] ?? 'bg-gray-100 text-gray-600'}`}>
               {DIET_LABELS[d] ?? d}
             </span>
           ))}
-          {/* Allergen tags */}
           {recipe.allergens.filter(Boolean).map((a) => (
             <span key={a} className="text-xs font-medium bg-red-50 text-red-600 px-2.5 py-1 rounded-full">
               {ALLERGEN_LABELS[a] ?? a}
@@ -96,16 +107,69 @@ function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
           ))}
         </div>
 
-        {/* Time */}
         <div className="flex items-center gap-3 text-xs text-[#6D4C41]/60 font-medium">
           <span>⏱ příprava {recipe.prep_time_minutes} min</span>
           <span>🍳 vaření {recipe.cook_time_minutes} min</span>
         </div>
 
-        {/* Description */}
         <p className="text-sm text-[#6D4C41]/70 leading-relaxed line-clamp-3 flex-1">
           {recipe.description}
         </p>
+      </div>
+    </button>
+  )
+}
+
+function RecipeSummaryModal({
+  recipeId,
+  lang,
+  onClose,
+}: {
+  recipeId: string
+  lang: string
+  onClose: () => void
+}) {
+  const router = useRouter()
+  const [detail, setDetail] = useState<RecipeDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    fetch(`/api/recipes/${recipeId}?locale=${lang}`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success) setDetail(json.data)
+      })
+      .finally(() => setLoading(false))
+  }, [recipeId, lang])
+
+  return (
+    <div className="fixed inset-0 z-[60] overflow-y-auto">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+
+      {/* LevelSummary directly — no extra wrapper */}
+      <div className="relative z-10">
+        {loading || !detail ? (
+          <div className="min-h-[100dvh] flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-[#FEDC56] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <LevelSummary
+            recipeName={detail.title}
+            onClose={onClose}
+            objectiveLabel={lang === 'cs' ? 'Popis' : 'Description'}
+            objective={detail.description}
+            estimatedTimeLabel={lang === 'cs' ? 'Čas' : 'Time'}
+            estimatedTime={`${detail.prep_time_minutes + detail.cook_time_minutes} min`}
+            difficultyLabel={lang === 'cs' ? 'Obtížnost' : 'Difficulty'}
+            difficulty={detail.difficulty}
+            ingredientsLabel={lang === 'cs' ? 'Ingredience' : 'Ingredients'}
+            ingredients={detail.ingredients}
+            startCookingLabel={lang === 'cs' ? 'Začít vařit' : 'Start cooking'}
+            onStartCooking={() => router.push(`/${lang}/game/freeplay/${recipeId}`)}
+          />
+        )}
       </div>
     </div>
   )
@@ -126,10 +190,10 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
   const [diet,       setDiet]       = useState('')
   const [difficulty, setDifficulty] = useState(0)
   const [shown,      setShown]      = useState(PAGE_SIZE)
+  const [openId,     setOpenId]     = useState<string | null>(null)
 
   const loaderRef = useRef<HTMLDivElement>(null)
 
-  // Compute unique groups for filter
   const groups = Array.from(
     new Map(
       recipes
@@ -147,10 +211,8 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
     return true
   })
 
-  // Reset shown count when filters change
   useEffect(() => { setShown(PAGE_SIZE) }, [search, groupCode, diet, difficulty])
 
-  // Intersection observer for lazy loading
   const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
     if (entries[0].isIntersecting) {
       setShown((s) => Math.min(s + PAGE_SIZE, filtered.length))
@@ -171,7 +233,6 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
     <div>
       {/* Filters */}
       <div className="flex flex-col gap-3 mb-8">
-        {/* Search */}
         <div className="relative">
           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6D4C41]/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
@@ -185,9 +246,7 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
           />
         </div>
 
-        {/* Row of pill filters */}
         <div className="flex flex-wrap gap-2">
-          {/* Group filter */}
           <div className="flex gap-1.5 flex-wrap">
             <button
               onClick={() => setGroupCode('')}
@@ -208,7 +267,6 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
 
           <div className="w-full h-px bg-[#4E342E]/6" />
 
-          {/* Diet filter */}
           <div className="flex gap-1.5 flex-wrap">
             <button
               onClick={() => setDiet('')}
@@ -225,7 +283,6 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
                 {label}
               </button>
             ))}
-            {/* Difficulty */}
             {ALL_DIFFICULTIES.slice(1).map((d) => (
               <button
                 key={d.value}
@@ -239,14 +296,12 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
         </div>
       </div>
 
-      {/* Count */}
       <p className="text-sm font-semibold text-[#6D4C41]/60 mb-6">
         {filtered.length === recipes.length
           ? `${recipes.length} receptů celkem`
           : `${filtered.length} ${filtered.length === 1 ? 'shoda' : filtered.length < 5 ? 'shody' : 'shod'} nalezeno`}
       </p>
 
-      {/* Grid */}
       {filtered.length === 0 ? (
         <div className="text-center py-24 text-[#6D4C41]/40">
           <div className="text-5xl mb-4">🔍</div>
@@ -255,18 +310,25 @@ export default function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang:
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visible.map((recipe, i) => (
-              <RecipeCard key={recipe.id} recipe={recipe} index={i} />
+            {visible.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} onOpen={() => setOpenId(recipe.id)} />
             ))}
           </div>
 
-          {/* Lazy load sentinel */}
           {shown < filtered.length && (
             <div ref={loaderRef} className="flex justify-center py-10">
               <div className="w-8 h-8 border-3 border-[#FEDC56] border-t-transparent rounded-full animate-spin" />
             </div>
           )}
         </>
+      )}
+
+      {openId && (
+        <RecipeSummaryModal
+          recipeId={openId}
+          lang={lang}
+          onClose={() => setOpenId(null)}
+        />
       )}
     </div>
   )

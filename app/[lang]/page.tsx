@@ -7,25 +7,47 @@ import Footer from '@/app/components/Footer'
 
 type Props = { params: Promise<{ lang: string }> }
 
-type Difficulty = 'Easy' | 'Medium' | 'Hard'
-
-const sandboxRecipes: Array<{
-  id: number
-  flag: string
-  name: string
-  difficulty: Difficulty
-  time: string
-}> = [
-  { id: 1, flag: '🇯🇵', name: 'Tamagoyaki', difficulty: 'Easy', time: '15 min' },
-  { id: 2, flag: '🇮🇹', name: 'Pizza Margherita', difficulty: 'Medium', time: '40 min' },
-  { id: 3, flag: '🇫🇷', name: 'Boeuf Bourguignon', difficulty: 'Hard', time: '3.5h' },
+const featuredRecipes = [
+  {
+    id: 'gulas',
+    dbId: '10000000-0000-0000-0000-000000000017',
+    flag: '🇨🇿',
+    country: 'Česko',
+    title: 'Guláš',
+    description: 'Tradiční hovězí guláš s paprikou a cibulí. Podávejte s knedlíkem nebo čerstvým chlebem.',
+    image: '/food/gulas.png',
+    difficultyLabel: 'Střední',
+    difficultyColor: 'bg-yellow-100 text-yellow-700',
+    prep: 20,
+    cook: 90,
+  },
+  {
+    id: 'pad-thai',
+    dbId: '10000000-0000-0000-0000-000000000006',
+    flag: '🇹🇭',
+    country: 'Thajsko',
+    title: 'Pad Thai',
+    description: 'Thajské smažené rýžové nudle s vejcem, krevetami nebo tofu, arašídy a limetkou.',
+    image: '/food/pad-thai.png',
+    difficultyLabel: 'Snadné',
+    difficultyColor: 'bg-lime-100 text-lime-700',
+    prep: 20,
+    cook: 15,
+  },
+  {
+    id: 'boeuf',
+    dbId: '10000000-0000-0000-0000-000000000003',
+    flag: '🇫🇷',
+    country: 'Francie',
+    title: 'Boeuf Bourguignon',
+    description: 'Klasický francouzský hovězí guláš dušený v burgundském víně s houbami a mrkví.',
+    image: '/food/Boeuf-Bourguignon.jpg',
+    difficultyLabel: 'Těžké',
+    difficultyColor: 'bg-orange-100 text-orange-700',
+    prep: 30,
+    cook: 180,
+  },
 ]
-
-const difficultyColor: Record<Difficulty, string> = {
-  Easy: 'bg-green-100 text-green-700',
-  Medium: 'bg-yellow-100 text-yellow-700',
-  Hard: 'bg-red-100 text-red-700',
-}
 
 export default async function HomePage({ params }: Props) {
   const { lang } = await params
@@ -151,20 +173,33 @@ export default async function HomePage({ params }: Props) {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {sandboxRecipes.map((recipe) => (
-              <div
+            {featuredRecipes.map((recipe) => (
+              <Link
                 key={recipe.id}
-                className="bg-white rounded-3xl p-8 shadow-sm border border-[#4E342E]/8 hover:shadow-md transition-shadow"
+                href={`/${lang}/game/freeplay/${recipe.dbId}`}
+                className="bg-white rounded-3xl overflow-hidden shadow-sm border border-[#4E342E]/8 hover:shadow-md transition-shadow flex flex-col cursor-pointer"
               >
-                <div className="text-6xl mb-6">{recipe.flag}</div>
-                <h3 className="text-2xl font-bold text-[#4E342E] mb-4">{recipe.name}</h3>
-                <div className="flex items-center gap-2">
-                  <span className={`text-sm font-semibold px-3 py-1 rounded-full ${difficultyColor[recipe.difficulty]}`}>
-                    {d.difficulty[recipe.difficulty]}
+                <div className="relative h-44 bg-[#FFF3E0] overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover" />
+                  <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full ${recipe.difficultyColor}`}>
+                    {recipe.difficultyLabel}
                   </span>
-                  <span className="text-base text-[#6D4C41]/50">⏱ {recipe.time}</span>
                 </div>
-              </div>
+                <div className="p-5 flex flex-col gap-3 flex-1">
+                  <h3 className="text-lg font-black text-[#4E342E] leading-tight">{recipe.title}</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold bg-[#4E342E]/6 text-[#4E342E] px-2.5 py-1 rounded-full">
+                      {recipe.flag} {recipe.country}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-[#6D4C41]/60 font-medium">
+                    <span>⏱ příprava {recipe.prep} min</span>
+                    <span>🍳 vaření {recipe.cook} min</span>
+                  </div>
+                  <p className="text-sm text-[#6D4C41]/70 leading-relaxed line-clamp-3 flex-1">{recipe.description}</p>
+                </div>
+              </Link>
             ))}
           </div>
 

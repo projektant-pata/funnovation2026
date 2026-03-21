@@ -43,7 +43,8 @@ export default function GameLayoutClient({ lang, labels, children, navbar }: Pro
     segments[0] === lang &&
     segments[1] === 'game' &&
     ((segments.length === 4 && segments[2] === 'campaign') ||
-     (segments.length === 5 && segments[2] === 'world'))
+     (segments.length === 5 && segments[2] === 'world') ||
+     (segments.length === 4 && segments[2] === 'freeplay'))
 
   return (
     <div className="bg-[#FFF3E0] min-h-screen font-[family-name:var(--font-geist-sans)] flex flex-col">

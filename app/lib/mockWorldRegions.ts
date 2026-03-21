@@ -268,43 +268,40 @@ export const worldLevels: CampaignLevelDefinition[] = [
         cs: 'Chuť Neapole',
         en: 'A Taste of Naples',
       },
-      setting: {
-        cs: 'Slunná italská ulička s vůní čerstvé pizzy.',
-        en: 'A sunny Italian alley filled with the scent of fresh pizza.',
-      },
-      backgroundOptions: [
-        '/cutscenes/naples-street.jpg',
-        '/cutscenes/pizza-oven-glow.jpg',
-        '/cutscenes/italian-kitchen.jpg',
-      ],
       characters: [
         {
           id: 'narrator',
           name: { cs: 'Průvodce', en: 'Guide' },
-          side: 'left',
+          side: 'left' as const,
         },
       ],
-      lines: [
+      segments: [
         {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Pizza Margherita vznikla v Neapoli na konci 19. století jako pocta italské královně. Tři barvy — rajčata, mozzarella, bazalka — představují italskou vlajku.',
-            en: 'Pizza Margherita was born in Naples in the late 19th century as a tribute to the Italian queen. Three colors — tomatoes, mozzarella, basil — represent the Italian flag.',
-          },
-        },
-        {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Tajemství skvělé pizzy je v jednoduchosti. Kvalitní suroviny a správná teplota udělají víc než tucet přísad.',
-            en: 'The secret of great pizza is simplicity. Quality ingredients and the right temperature do more than a dozen toppings.',
-          },
-        },
-        {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Pojďme si to zkusit. Připrav těsto, rozetři rajčata a nech troubu udělat zbytek.',
-            en: 'Let us try it. Prepare the dough, spread the tomatoes, and let the oven do the rest.',
-          },
+          type: 'scene' as const,
+          background: '/cutscenes/naples-street.jpg',
+          lines: [
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Pizza Margherita vznikla v Neapoli na konci 19. století jako pocta italské královně. Tři barvy — rajčata, mozzarella, bazalka — představují italskou vlajku.',
+                en: 'Pizza Margherita was born in Naples in the late 19th century as a tribute to the Italian queen. Three colors — tomatoes, mozzarella, basil — represent the Italian flag.',
+              },
+            },
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Tajemství skvělé pizzy je v jednoduchosti. Kvalitní suroviny a správná teplota udělají víc než tucet přísad.',
+                en: 'The secret of great pizza is simplicity. Quality ingredients and the right temperature do more than a dozen toppings.',
+              },
+            },
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Pojďme si to zkusit. Připrav těsto, rozetři rajčata a nech troubu udělat zbytek.',
+                en: 'Let us try it. Prepare the dough, spread the tomatoes, and let the oven do the rest.',
+              },
+            },
+          ],
         },
       ],
     },
@@ -439,43 +436,40 @@ export const worldLevels: CampaignLevelDefinition[] = [
         cs: 'Duše v misce',
         en: 'Soul in a Bowl',
       },
-      setting: {
-        cs: 'Malý ramen bar v úzké tokijské uličce. Z okénka stoupá pára.',
-        en: 'A tiny ramen bar in a narrow Tokyo alley. Steam rises from the window.',
-      },
-      backgroundOptions: [
-        '/cutscenes/tokyo-ramen-bar.jpg',
-        '/cutscenes/steamy-noodle-shop.jpg',
-        '/cutscenes/japanese-street-night.jpg',
-      ],
       characters: [
         {
           id: 'narrator',
           name: { cs: 'Průvodce', en: 'Guide' },
-          side: 'left',
+          side: 'left' as const,
         },
       ],
-      lines: [
+      segments: [
         {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Ramen není jen polévka — je to celá filozofie. Každá oblast Japonska má svou variantu a každý kuchař svůj příběh.',
-            en: 'Ramen is not just soup — it is a whole philosophy. Every region of Japan has its own variant, and every cook has their own story.',
-          },
-        },
-        {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Klíčem je vývar. Čistý, hluboký, plný umami. Vše ostatní se staví kolem něj.',
-            en: 'The key is the broth. Clean, deep, full of umami. Everything else is built around it.',
-          },
-        },
-        {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Dnes si připravíš jednoduchý šóju ramen. Soustřeď se a dodržuj kroky přesně.',
-            en: 'Today you will make a simple shoyu ramen. Focus and follow the steps precisely.',
-          },
+          type: 'scene' as const,
+          background: '/cutscenes/tokyo-ramen-bar.jpg',
+          lines: [
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Ramen není jen polévka — je to celá filozofie. Každá oblast Japonska má svou variantu a každý kuchař svůj příběh.',
+                en: 'Ramen is not just soup — it is a whole philosophy. Every region of Japan has its own variant, and every cook has their own story.',
+              },
+            },
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Klíčem je vývar. Čistý, hluboký, plný umami. Vše ostatní se staví kolem něj.',
+                en: 'The key is the broth. Clean, deep, full of umami. Everything else is built around it.',
+              },
+            },
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Dnes si připravíš jednoduchý šóju ramen. Soustřeď se a dodržuj kroky přesně.',
+                en: 'Today you will make a simple shoyu ramen. Focus and follow the steps precisely.',
+              },
+            },
+          ],
         },
       ],
     },
@@ -611,43 +605,40 @@ export const worldLevels: CampaignLevelDefinition[] = [
         cs: 'Ulice plná vůní',
         en: 'A Street Full of Aromas',
       },
-      setting: {
-        cs: 'Rušný mexický trh za soumraku. Stánky s tacos svítí barvami a zní hudba.',
-        en: 'A bustling Mexican market at dusk. Taco stands glow with color and music fills the air.',
-      },
-      backgroundOptions: [
-        '/cutscenes/mexican-market-night.jpg',
-        '/cutscenes/taco-stand-glow.jpg',
-        '/cutscenes/street-food-mexico.jpg',
-      ],
       characters: [
         {
           id: 'narrator',
           name: { cs: 'Průvodce', en: 'Guide' },
-          side: 'left',
+          side: 'left' as const,
         },
       ],
-      lines: [
+      segments: [
         {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Tacos al pastor jsou ikonou mexického street foodu. Vznikly inspirací libanonského šawarma, který přivezli přistěhovalci.',
-            en: 'Tacos al pastor are an icon of Mexican street food. They were inspired by Lebanese shawarma brought by immigrants.',
-          },
-        },
-        {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Maso se marinuje v chili a koření, griluje na svislém rožni a podává s ananasem a koriandrem. Je to fúze dvou kultur na jedné tortille.',
-            en: 'The meat is marinated in chili and spices, grilled on a vertical spit, and served with pineapple and cilantro. It is a fusion of two cultures on one tortilla.',
-          },
-        },
-        {
-          speakerId: 'narrator',
-          text: {
-            cs: 'Dnes si připravíme domácí verzi — jednoduchou, ale plnou autentických chutí.',
-            en: 'Today we will make a home version — simple but full of authentic flavor.',
-          },
+          type: 'scene' as const,
+          background: '/cutscenes/mexican-market-night.jpg',
+          lines: [
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Tacos al pastor jsou ikonou mexického street foodu. Vznikly inspirací libanonského šawarma, který přivezli přistěhovalci.',
+                en: 'Tacos al pastor are an icon of Mexican street food. They were inspired by Lebanese shawarma brought by immigrants.',
+              },
+            },
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Maso se marinuje v chili a koření, griluje na svislém rožni a podává s ananasem a koriandrem. Je to fúze dvou kultur na jedné tortille.',
+                en: 'The meat is marinated in chili and spices, grilled on a vertical spit, and served with pineapple and cilantro. It is a fusion of two cultures on one tortilla.',
+              },
+            },
+            {
+              speakerId: 'narrator',
+              text: {
+                cs: 'Dnes si připravíme domácí verzi — jednoduchou, ale plnou autentických chutí.',
+                en: 'Today we will make a home version — simple but full of authentic flavor.',
+              },
+            },
+          ],
         },
       ],
     },
