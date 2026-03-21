@@ -118,6 +118,7 @@ function NodeCircle({
   const progressOffset = circumference - (circumference * node.completion) / 100
   const startOuterR = r + 1.7
   const startInnerR = r + 0.95
+  const focusRingR = node.isStart ? startOuterR + 1.15 : r + 1.5
   const labelOffset = node.isStart ? 0.9 : 0
 
   const isAvailable = node.status === 'available'
@@ -126,7 +127,7 @@ function NodeCircle({
 
   return (
     <g
-      className={`cursor-pointer ${shaking ? 'animate-shake' : ''} ${isAvailable ? 'animate-scale-pulse' : ''}`}
+      className={`node-focus-target cursor-pointer ${shaking ? 'animate-shake' : ''} ${isAvailable ? 'animate-scale-pulse' : ''}`}
       style={isAvailable ? { transformOrigin: `${cx}px ${cy}px` } as React.CSSProperties : undefined}
       onClick={(e) => {
         e.stopPropagation()
@@ -136,6 +137,16 @@ function NodeCircle({
       tabIndex={0}
       aria-label={`${node.label} — ${node.status}`}
     >
+      <circle
+        cx={cx}
+        cy={cy}
+        r={focusRingR}
+        fill="none"
+        stroke="#F5A623"
+        strokeWidth="0.65"
+        className="node-focus-ring pointer-events-none"
+      />
+
       {glowFilter && (
         <circle cx={cx} cy={cy} r={r + 1} fill="none" stroke="#FEDC56" strokeWidth="0.3" opacity={0.4} filter={glowFilter} />
       )}
@@ -602,6 +613,18 @@ export default function NodeTree({ lang, basePath, playLevelLabel, data, popover
         }
         .animate-scale-pulse {
           animation: scale-pulse 2s ease-in-out infinite;
+        }
+        .node-focus-target:focus,
+        .node-focus-target:focus-visible {
+          outline: none;
+        }
+        .node-focus-ring {
+          opacity: 0;
+          transition: opacity 140ms ease-out;
+        }
+        .node-focus-target:focus .node-focus-ring,
+        .node-focus-target:focus-visible .node-focus-ring {
+          opacity: 1;
         }
         @keyframes popIn {
           0% { opacity: 0; transform: scale(0.85) translateY(8px); }

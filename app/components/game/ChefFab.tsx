@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { usePathname } from 'next/navigation'
+import { useLiveChefSession } from '@/app/components/game/ai/useLiveChefSession'
 
 type Props = {
   lang: 'cs' | 'en'
@@ -14,6 +15,11 @@ type Props = {
     chefThinking: string
     chefError: string
     chefClose: string
+    chefVoiceStart: string
+    chefVoiceStop: string
+    chefVoiceConnecting: string
+    chefVoiceUnsupported: string
+    chefUseTranscript: string
   }
 }
 
@@ -21,6 +27,7 @@ type Message = {
   id: string
   role: 'assistant' | 'user'
   text: string
+  source?: 'chat' | 'live'
 }
 
 export default function ChefFab({ lang, labels }: Props) {
@@ -32,6 +39,23 @@ export default function ChefFab({ lang, labels }: Props) {
   const [messages, setMessages] = useState<Message[]>([])
   const listRef = useRef<HTMLDivElement | null>(null)
 
+  const liveSession = useLiveChefSession({
+    locale: lang,
+    screenContext: pathname,
+  })
+
+  const {
+    transcriptEvents,
+    isListening,
+    isConnecting,
+    lastError,
+    lastUserTranscript,
+    isSupported,
+    toggleListening,
+    stopListening,
+    disconnect,
+  } = liveSession
+
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ id: crypto.randomUUID(), role: 'assistant', text: labels.chefGreeting }])
@@ -42,19 +66,68 @@ export default function ChefFab({ lang, labels }: Props) {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight
     }
-  }, [messages, isLoading])
+  }, [messages, isLoading, liveSession.isListening, liveSession.isConnecting])
 
-  async function handleSend() {
-    const text = input.trim()
+  useEffect(() => {
+    setMessages((current) => {
+      const liveEventsById = new Map(transcriptEvents.map((event) => [event.id, event]))
+
+      const nextMessages = current
+        .filter((message) => message.source !== 'live' || liveEventsById.has(message.id))
+        .map((message) => {
+          if (message.source !== 'live') return message
+          const event = liveEventsById.get(message.id)
+          if (!event) return message
+          if (message.role === event.role && message.text === event.text) return message
+          return {
+            ...message,
+            role: event.role,
+            text: event.text,
+          }
+        })
+
+      for (const event of transcriptEvents) {
+        const hasMessage = nextMessages.some((message) => message.source === 'live' && message.id === event.id)
+        if (!hasMessage) {
+          nextMessages.push({
+            id: event.id,
+            role: event.role,
+            text: event.text,
+            source: 'live',
+          })
+        }
+      }
+
+      return nextMessages
+    })
+  }, [transcriptEvents])
+
+  useEffect(() => {
+    return () => {
+      void disconnect()
+    }
+  }, [disconnect])
+
+  useEffect(() => {
+    if (!open) {
+      void disconnect()
+    }
+  }, [disconnect, open])
+
+  async function handleSend(overrideText?: string) {
+    const text = typeof overrideText === 'string' ? overrideText.trim() : input.trim()
     if (!text || isLoading) return
 
     setError(null)
-    setInput('')
+    if (!overrideText) {
+      setInput('')
+    }
 
     const nextUserMessage: Message = {
       id: crypto.randomUUID(),
       role: 'user',
       text,
+      source: 'chat',
     }
 
     const nextMessages = [...messages, nextUserMessage]
@@ -93,6 +166,29 @@ export default function ChefFab({ lang, labels }: Props) {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  async function handleToggleVoice() {
+    setError(null)
+
+    if (!isSupported) {
+      setError(labels.chefVoiceUnsupported)
+      return
+    }
+
+    try {
+      await toggleListening()
+    } catch {
+      setError(labels.chefError)
+    }
+  }
+
+  async function handleUseTranscript() {
+    const transcript = lastUserTranscript.trim()
+    if (!transcript) return
+
+    await stopListening()
+    await handleSend(transcript)
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -146,10 +242,26 @@ export default function ChefFab({ lang, labels }: Props) {
             </div>
           )}
 
-          {error && <div className="text-xs text-[#E57373] px-1">{error}</div>}
+          {(isConnecting || isListening) && (
+            <div className="max-w-[92%] rounded-2xl px-3.5 py-2.5 text-xs bg-[#FFF8E1] border border-[#4E342E]/10 text-[#6D4C41]">
+              {isConnecting ? labels.chefVoiceConnecting : labels.chefVoiceStop}
+            </div>
+          )}
+
+          {(error || lastError) && <div className="text-xs text-[#E57373] px-1">{error ?? lastError}</div>}
         </div>
 
         <div className="border-t border-[#4E342E]/10 p-3 bg-white">
+          {lastUserTranscript.trim().length > 0 && (
+            <button
+              onClick={() => void handleUseTranscript()}
+              disabled={isLoading}
+              className="mb-2 text-xs font-semibold text-[#4E342E] underline decoration-[#FEDC56] disabled:opacity-50"
+            >
+              {labels.chefUseTranscript}
+            </button>
+          )}
+
           <div className="flex gap-2 items-end">
             <textarea
               value={input}
@@ -166,6 +278,23 @@ export default function ChefFab({ lang, labels }: Props) {
             >
               {labels.chefSend}
             </button>
+
+            <button
+              onClick={() => void handleToggleVoice()}
+              disabled={isConnecting}
+              className={`h-10 w-10 rounded-xl text-[#FFF8E1] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed ${
+                isListening ? 'bg-[#E57373]' : 'bg-[#4E342E]'
+              }`}
+              title={
+                isConnecting
+                  ? labels.chefVoiceConnecting
+                  : isListening
+                    ? labels.chefVoiceStop
+                    : labels.chefVoiceStart
+              }
+            >
+              <MicIcon className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
@@ -177,14 +306,27 @@ export default function ChefFab({ lang, labels }: Props) {
         onClick={() => setOpen(false)}
       />
 
-      <button
-        onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-[#FEDC56] hover:bg-[#f5d430] hover:scale-105 text-[#4E342E] shadow-lg flex items-center justify-center transition-all duration-200"
-        aria-label={labels.chef}
-      >
-        <ChefHatIcon className={`w-7 h-7 transition-transform duration-300 ${open ? 'rotate-12' : ''}`} />
-      </button>
+      {!open && (
+        <button
+          onClick={() => setOpen(true)}
+          className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-[#FEDC56] hover:bg-[#f5d430] hover:scale-105 text-[#4E342E] shadow-lg flex items-center justify-center transition-all duration-200"
+          aria-label={labels.chef}
+        >
+          <ChefHatIcon className="w-7 h-7" />
+        </button>
+      )}
     </>
+  )
+}
+
+function MicIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+      <path d="M19 10v2a7 7 0 01-14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="23" />
+      <line x1="8" y1="23" x2="16" y2="23" />
+    </svg>
   )
 }
 

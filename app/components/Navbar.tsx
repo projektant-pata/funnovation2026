@@ -25,7 +25,7 @@ export default async function Navbar({ lang }: { lang: string }) {
       {/* Logo */}
       <Link href={`/${lang}`} className="flex-shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="žemLOVEka" className="h-10 w-auto" />
+        <img src="/logo-ctverec.jpg" alt="žemLOVEka" className="h-10 w-auto" />
       </Link>
 
       {/* Desktop links */}

@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- ---------------------------------------------------------------------------
 -- Compatibility helpers for local PostgreSQL validation.
--- In Supabase these objects already exist, so these blocks are no-ops.
+-- In managed auth platforms these objects may already exist, so these blocks are no-ops.
 -- ---------------------------------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS auth;
 
@@ -1841,7 +1841,7 @@ CREATE POLICY glossary_term_translations_read_all ON public.glossary_term_transl
 	FOR SELECT USING (true);
 
 -- ---------------------------------------------------------------------------
--- Supabase role grants and stricter RLS defaults
+-- Optional anon/authenticated role grants and stricter RLS defaults
 -- ---------------------------------------------------------------------------
 DO $$
 BEGIN

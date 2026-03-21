@@ -4,6 +4,7 @@ import pool from '@/app/lib/db'
 import { generateStructuredJson } from '@/app/lib/ai/gemini'
 import { logAiInteraction } from '@/app/lib/ai/logging'
 import { loadPromptAsset, loadSchemaAsset } from '@/app/lib/ai/assets'
+import { sanitizeCookingContext } from '@/app/lib/ai/cookingContext'
 
 type ChatHistoryItem = {
   role: 'user' | 'assistant'
@@ -15,6 +16,7 @@ type ChatRequestBody = {
   message?: string
   history?: ChatHistoryItem[]
   screen?: string
+  context?: unknown
 }
 
 type UserContextRow = {
@@ -173,6 +175,7 @@ export async function POST(request: Request) {
 
   const history = Array.isArray(body.history) ? body.history.filter(isChatHistoryItem).slice(-8) : []
   const userContext = userId ? await getUserContext(userId) : null
+  const cookingContext = sanitizeCookingContext(body.context)
 
   const aiInput = {
     locale,
@@ -185,10 +188,12 @@ export async function POST(request: Request) {
     },
     context: {
       screen,
-      recipe: null,
-      current_step: null,
-      timer_state: null,
-      session_status: null,
+      cooking_session_id: cookingContext?.cooking_session_id ?? null,
+      source_context: cookingContext?.source_context ?? null,
+      recipe: cookingContext?.recipe ?? null,
+      current_step: cookingContext?.current_step ?? null,
+      timer_state: cookingContext?.timer_state ?? null,
+      session_status: cookingContext?.session_status ?? null,
     },
     history,
     user_message: message,

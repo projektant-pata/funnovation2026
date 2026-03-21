@@ -21,6 +21,11 @@ type Labels = {
   chefThinking: string
   chefError: string
   chefClose: string
+  chefVoiceStart: string
+  chefVoiceStop: string
+  chefVoiceConnecting: string
+  chefVoiceUnsupported: string
+  chefUseTranscript: string
   badges: string
   pantry: string
   shoppingList: string
@@ -79,6 +84,11 @@ export default function GameLayoutClient({ lang, labels, children, navbar }: Pro
               chefThinking: labels.chefThinking,
               chefError: labels.chefError,
               chefClose: labels.chefClose,
+              chefVoiceStart: labels.chefVoiceStart,
+              chefVoiceStop: labels.chefVoiceStop,
+              chefVoiceConnecting: labels.chefVoiceConnecting,
+              chefVoiceUnsupported: labels.chefVoiceUnsupported,
+              chefUseTranscript: labels.chefUseTranscript,
             }}
           />
         </>

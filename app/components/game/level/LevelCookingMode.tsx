@@ -17,6 +17,8 @@ type Step = {
   videoUrl?: string
 }
 
+type TranscriptEvent = { id: string; role: 'user' | 'assistant'; text: string }
+
 type Props = {
   recipeName: string
   ingredientsLabel: string
@@ -47,13 +49,35 @@ type Props = {
   onPrevStep: () => void
   onNextStep: () => void
   onFinish: () => void
-  lang: string
   chefLabel: string
-  chefGreeting: string
-  chefInputPlaceholder: string
-  chefSend: string
-  chefThinking: string
-  chefError: string
+
+  lang?: string
+  chefGreeting?: string
+  chefInputPlaceholder?: string
+  chefSend?: string
+  chefThinking?: string
+  chefError?: string
+
+  chefDescription?: string
+  chefComingSoon?: string
+  chefVoiceStartLabel?: string
+  chefVoiceStopLabel?: string
+  chefVoiceConnectingLabel?: string
+  chefVoiceUnsupportedLabel?: string
+  chefUseTranscriptLabel?: string
+  chefInputPlaceholderLabel?: string
+  chefSendLabel?: string
+  chefThinkingLabel?: string
+  chefVoiceActive?: boolean
+  chefVoiceConnecting?: boolean
+  chefVoiceSupported?: boolean
+  chefLiveError?: string | null
+  chefTranscriptEvents?: TranscriptEvent[]
+  canChefUseTranscript?: boolean
+  chefTextLoading?: boolean
+  onChefSendText?: (text: string) => void
+  onChefToggleVoice?: () => void
+  onChefUseTranscript?: () => void
 }
 
 export default function LevelCookingMode({
@@ -86,65 +110,147 @@ export default function LevelCookingMode({
   onPrevStep,
   onNextStep,
   onFinish,
-  lang,
   chefLabel,
+  lang,
   chefGreeting,
   chefInputPlaceholder,
   chefSend,
   chefThinking,
   chefError,
+  chefDescription,
+  chefComingSoon,
+  chefVoiceStartLabel,
+  chefVoiceStopLabel,
+  chefVoiceConnectingLabel,
+  chefVoiceUnsupportedLabel,
+  chefUseTranscriptLabel,
+  chefInputPlaceholderLabel,
+  chefSendLabel,
+  chefThinkingLabel,
+  chefVoiceActive,
+  chefVoiceConnecting,
+  chefVoiceSupported,
+  chefLiveError,
+  chefTranscriptEvents,
+  canChefUseTranscript,
+  chefTextLoading,
+  onChefSendText,
+  onChefToggleVoice,
+  onChefUseTranscript,
 }: Props) {
   type ChatMessage = { id: string; role: 'assistant' | 'user'; text: string }
 
   const step = steps[currentStepIndex]
   const isFirst = currentStepIndex === 0
   const isLast = currentStepIndex === steps.length - 1
+
+  const useLiveChefPanel = typeof onChefSendText === 'function'
+  const resolvedTranscriptEvents = chefTranscriptEvents ?? []
+  const resolvedVoiceActive = chefVoiceActive ?? false
+  const resolvedVoiceConnecting = chefVoiceConnecting ?? false
+  const resolvedVoiceSupported = chefVoiceSupported ?? false
+  const resolvedCanUseTranscript = canChefUseTranscript ?? false
+  const resolvedChefTextLoading = chefTextLoading ?? false
+
+  const resolvedDescription = chefDescription ?? chefGreeting ?? ''
+  const resolvedComingSoon = chefComingSoon ?? ''
+  const resolvedVoiceStartLabel = chefVoiceStartLabel ?? 'Start voice'
+  const resolvedVoiceStopLabel = chefVoiceStopLabel ?? 'Stop voice'
+  const resolvedVoiceConnectingLabel = chefVoiceConnectingLabel ?? 'Connecting...'
+  const resolvedVoiceUnsupportedLabel = chefVoiceUnsupportedLabel ?? 'Voice is not supported in this browser.'
+  const resolvedUseTranscriptLabel = chefUseTranscriptLabel ?? 'Use transcript'
+  const resolvedInputPlaceholder = chefInputPlaceholder ?? chefInputPlaceholderLabel ?? ''
+  const resolvedSendLabel = chefSendLabel ?? chefSend ?? 'Send'
+  const resolvedThinkingLabel = chefThinkingLabel ?? chefThinking ?? 'Thinking...'
+  const resolvedLegacyError = chefError ?? 'Assistant is temporarily unavailable.'
+  const resolvedLegacyLocale = lang ?? 'cs'
+
   const [chefCollapsed, setChefCollapsed] = useState(false)
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    { id: 'greeting', role: 'assistant', text: chefGreeting },
-  ])
+  const [chefInput, setChefInput] = useState('')
+
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(
+    chefGreeting ? [{ id: 'greeting', role: 'assistant', text: chefGreeting }] : []
+  )
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
-  const chatListRef = useRef<HTMLDivElement>(null)
+
+  const chefTranscriptRef = useRef<HTMLDivElement | null>(null)
+  const chatListRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
+    if (!useLiveChefPanel && chatMessages.length === 0 && chefGreeting) {
+      setChatMessages([{ id: 'greeting', role: 'assistant', text: chefGreeting }])
+    }
+  }, [useLiveChefPanel, chatMessages.length, chefGreeting])
+
+  useEffect(() => {
+    if (useLiveChefPanel) {
+      if (chefTranscriptRef.current) {
+        chefTranscriptRef.current.scrollTop = chefTranscriptRef.current.scrollHeight
+      }
+      return
+    }
+
     if (chatListRef.current) {
       chatListRef.current.scrollTop = chatListRef.current.scrollHeight
     }
-  }, [chatMessages, chatLoading])
+  }, [
+    useLiveChefPanel,
+    resolvedTranscriptEvents,
+    resolvedVoiceActive,
+    resolvedVoiceConnecting,
+    chatMessages,
+    chatLoading,
+  ])
 
-  async function handleChatSend() {
+  function submitChefInput() {
+    const text = chefInput.trim()
+    if (!text || resolvedChefTextLoading || !onChefSendText) return
+    onChefSendText(text)
+    setChefInput('')
+  }
+
+  async function handleLegacyChatSend() {
     const text = chatInput.trim()
     if (!text || chatLoading) return
+
     setChatInput('')
-    const userMsg: ChatMessage = { id: crypto.randomUUID(), role: 'user', text }
-    const next = [...chatMessages, userMsg]
-    setChatMessages(next)
+    const userMessage: ChatMessage = { id: crypto.randomUUID(), role: 'user', text }
+    const historyMessages = [...chatMessages, userMessage]
+    setChatMessages(historyMessages)
     setChatLoading(true)
+
     try {
-      const res = await fetch('/api/ai/chat', {
+      const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          locale: lang,
+          locale: resolvedLegacyLocale,
           message: text,
-          screen: `/game/freeplay`,
-          history: next.slice(-8).map((m) => ({ role: m.role, content: m.text })),
+          screen: '/game/freeplay',
+          history: historyMessages.slice(-8).map((message) => ({ role: message.role, content: message.text })),
         }),
       })
-      const json = await res.json()
-      const reply = typeof json.data?.reply === 'string' && json.data.reply.length > 0
-        ? json.data.reply : chefError
+
+      const payload = await response.json()
+      const reply =
+        typeof payload.data?.reply === 'string' && payload.data.reply.length > 0
+          ? payload.data.reply
+          : resolvedLegacyError
+
       setChatMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: reply }])
     } catch {
-      setChatMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: chefError }])
+      setChatMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: resolvedLegacyError }])
     } finally {
       setChatLoading(false)
     }
   }
 
-  function onChatKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleChatSend() }
+  function onLegacyChatKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      void handleLegacyChatSend()
+    }
   }
 
   return (
@@ -157,245 +263,352 @@ export default function LevelCookingMode({
 
       <div className="relative z-10 min-h-[100dvh] flex items-center justify-center px-3 py-5 sm:px-5 sm:py-8">
         <div className="h-[80dvh] w-full max-w-7xl flex items-stretch">
-        <div className="w-full max-w-7xl mx-auto rounded-3xl border border-[#FFF8E1]/35 bg-[#FFF8E1]/88 backdrop-blur-sm shadow-2xl p-4 sm:p-6 flex flex-col">
-          {/* Timer bar */}
-          <div className={`rounded-2xl border bg-white/90 shadow-sm p-4 mb-4 transition-colors duration-300 ${
-            timerFinished
-              ? 'border-[#E57373]/60 bg-[#E57373]/10 animate-pulse'
-              : 'border-[#4E342E]/12'
-          }`}>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs uppercase tracking-[0.14em] text-[#6D4C41]/70">{timerLabel}</p>
-                <p className={`text-3xl font-black leading-none mt-1 transition-colors ${
-                  timerFinished ? 'text-[#E57373]' : 'text-[#4E342E]'
-                }`}>
-                  {timerValue}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {timerFinished ? (
-                  <TimerButton label="OK" onClick={onDismissTimerFinished} active />
-                ) : (
-                  <>
-                    <TimerButton label={timerAdd30Label} onClick={onAdd30} />
-                    <TimerButton label={timerAdd60Label} onClick={onAdd60} />
-                    <TimerButton label={timerResetLabel} onClick={onReset} />
-                    <TimerButton
-                      label={isTimerRunning ? timerPauseLabel : timerResumeLabel}
-                      onClick={onToggleTimer}
-                      active
-                    />
-                  </>
-                )}
+          <div className="w-full max-w-7xl mx-auto rounded-3xl border border-[#FFF8E1]/35 bg-[#FFF8E1]/88 backdrop-blur-sm shadow-2xl p-4 sm:p-6 flex flex-col">
+            <div
+              className={`rounded-2xl border bg-white/90 shadow-sm p-4 mb-4 transition-colors duration-300 ${
+                timerFinished ? 'border-[#E57373]/60 bg-[#E57373]/10 animate-pulse' : 'border-[#4E342E]/12'
+              }`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.14em] text-[#6D4C41]/70">{timerLabel}</p>
+                  <p
+                    className={`text-3xl font-black leading-none mt-1 transition-colors ${
+                      timerFinished ? 'text-[#E57373]' : 'text-[#4E342E]'
+                    }`}
+                  >
+                    {timerValue}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {timerFinished ? (
+                    <TimerButton label="OK" onClick={onDismissTimerFinished} active />
+                  ) : (
+                    <>
+                      <TimerButton label={timerAdd30Label} onClick={onAdd30} />
+                      <TimerButton label={timerAdd60Label} onClick={onAdd60} />
+                      <TimerButton label={timerResetLabel} onClick={onReset} />
+                      <TimerButton
+                        label={isTimerRunning ? timerPauseLabel : timerResumeLabel}
+                        onClick={onToggleTimer}
+                        active
+                      />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Main 3-column grid: ingredients | steps | chef */}
-          <div className={`flex-1 min-h-0 grid grid-cols-1 gap-4 ${
-            chefCollapsed
-              ? 'lg:grid-cols-[280px_1fr_auto]'
-              : 'lg:grid-cols-[280px_1fr_320px]'
-          }`}>
-            {/* Ingredients sidebar */}
-            <aside className="rounded-2xl border border-[#4E342E]/10 bg-[#FFF8E1]/95 p-4 lg:overflow-y-auto lg:min-h-0">
-              <h2 className="text-sm font-bold text-[#4E342E] mb-3">{ingredientsLabel}</h2>
-              <ul className="space-y-2">
-                {ingredients.map((ingredient) => {
-                  const checked = checkedIngredientIds.has(ingredient.id)
-                  return (
-                    <li key={ingredient.id}>
-                      <button
-                        type="button"
-                        onClick={() => onToggleIngredient(ingredient.id)}
-                        className={`w-full flex items-start gap-2 text-left rounded-lg px-2 py-1.5 transition-colors ${
-                          checked ? 'bg-[#FEDC56]/35 text-[#4E342E]' : 'hover:bg-[#4E342E]/5 text-[#5D4037]'
-                        }`}
-                      >
-                        <span
-                          className={`mt-0.5 h-4 w-4 rounded border flex items-center justify-center text-[10px] ${
+            <div
+              className={`flex-1 min-h-0 grid grid-cols-1 gap-4 ${
+                chefCollapsed ? 'lg:grid-cols-[280px_1fr_auto]' : 'lg:grid-cols-[280px_1fr_320px]'
+              }`}
+            >
+              <aside className="rounded-2xl border border-[#4E342E]/10 bg-[#FFF8E1]/95 p-4 lg:overflow-y-auto lg:min-h-0">
+                <h2 className="text-sm font-bold text-[#4E342E] mb-3">{ingredientsLabel}</h2>
+                <ul className="space-y-2">
+                  {ingredients.map((ingredient) => {
+                    const checked = checkedIngredientIds.has(ingredient.id)
+                    return (
+                      <li key={ingredient.id}>
+                        <button
+                          type="button"
+                          onClick={() => onToggleIngredient(ingredient.id)}
+                          className={`w-full flex items-start gap-2 text-left rounded-lg px-2 py-1.5 transition-colors ${
                             checked
-                              ? 'border-[#4E342E] bg-[#4E342E] text-[#FFF8E1]'
-                              : 'border-[#4E342E]/40 text-transparent'
+                              ? 'bg-[#FEDC56]/35 text-[#4E342E]'
+                              : 'hover:bg-[#4E342E]/5 text-[#5D4037]'
                           }`}
                         >
-                          ✓
-                        </span>
-                        <span className="text-sm leading-snug">{ingredient.label}</span>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            </aside>
+                          <span
+                            className={`mt-0.5 h-4 w-4 rounded border flex items-center justify-center text-[10px] ${
+                              checked
+                                ? 'border-[#4E342E] bg-[#4E342E] text-[#FFF8E1]'
+                                : 'border-[#4E342E]/40 text-transparent'
+                            }`}
+                          >
+                            ✓
+                          </span>
+                          <span className="text-sm leading-snug">{ingredient.label}</span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </aside>
 
-            {/* Step content */}
-            <article className="rounded-2xl border border-[#4E342E]/10 bg-white/95 p-4 sm:p-6 lg:overflow-y-auto lg:min-h-0">
-              <p className="text-xs uppercase tracking-[0.14em] text-[#6D4C41]/70">{recipeName}</p>
-              <h2 className="text-xl sm:text-2xl font-black text-[#4E342E] mt-1">
-                {stepLabel} {currentStepIndex + 1}/{steps.length}
-              </h2>
-              <p className="text-lg font-semibold text-[#5D4037] mt-4">{step.title}</p>
+              <article className="rounded-2xl border border-[#4E342E]/10 bg-white/95 p-4 sm:p-6 lg:overflow-y-auto lg:min-h-0">
+                <p className="text-xs uppercase tracking-[0.14em] text-[#6D4C41]/70">{recipeName}</p>
+                <h2 className="text-xl sm:text-2xl font-black text-[#4E342E] mt-1">
+                  {stepLabel} {currentStepIndex + 1}/{steps.length}
+                </h2>
+                <p className="text-lg font-semibold text-[#5D4037] mt-4">{step.title}</p>
 
-              <div className={`mt-3 ${step.image || step.videoUrl ? 'flex flex-col sm:flex-row gap-4' : ''}`}>
-                <p className="text-base text-[#4E342E] leading-relaxed flex-1">{step.instruction}</p>
+                <div className={`mt-3 ${step.image || step.videoUrl ? 'flex flex-col sm:flex-row gap-4' : ''}`}>
+                  <p className="text-base text-[#4E342E] leading-relaxed flex-1">{step.instruction}</p>
 
-                {step.videoUrl && (
-                  <div className="sm:w-56 shrink-0 rounded-xl overflow-hidden border border-[#4E342E]/10 bg-black aspect-video">
-                    <iframe
-                      src={step.videoUrl}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                )}
-
-                {!step.videoUrl && step.image && (
-                  <div className="sm:w-56 shrink-0 rounded-xl overflow-hidden border border-[#4E342E]/10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={step.image}
-                      alt={step.title}
-                      className="w-full h-auto object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {step.tip && (
-                <div className="mt-4 rounded-xl border border-[#F5A623]/30 bg-[#FEDC56]/20 p-3">
-                  <p className="text-sm text-[#5D4037]">{step.tip}</p>
-                </div>
-              )}
-
-              {step.suggestedSeconds != null && step.suggestedSeconds > 0 && (
-                <button
-                  type="button"
-                  onClick={() => onSetTimer(step.suggestedSeconds!)}
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-[#4E342E]/20 bg-[#FFF8E1] px-3 py-1.5 text-xs font-semibold text-[#4E342E] hover:bg-[#FEDC56]/30 transition-colors"
-                >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  {formatSuggestedTime(step.suggestedSeconds)}
-                </button>
-              )}
-
-              <div className="mt-6 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={onPrevStep}
-                  disabled={isFirst}
-                  className="rounded-xl border border-[#4E342E]/20 px-4 py-2 text-sm font-semibold text-[#4E342E] disabled:opacity-35 disabled:cursor-not-allowed"
-                >
-                  {prevStepLabel}
-                </button>
-
-                {!isLast && (
-                  <button
-                    type="button"
-                    onClick={onNextStep}
-                    className="rounded-xl bg-[#4E342E] hover:bg-[#5D4037] px-4 py-2 text-sm font-semibold text-[#FFF8E1] transition-colors"
-                  >
-                    {nextStepLabel}
-                  </button>
-                )}
-
-                {isLast && (
-                  <button
-                    type="button"
-                    onClick={onFinish}
-                    className="rounded-xl bg-[#F5A623] hover:bg-[#f09a00] px-4 py-2 text-sm font-bold text-[#4E342E] transition-colors"
-                  >
-                    {finishLabel}
-                  </button>
-                )}
-              </div>
-            </article>
-
-            {/* Chef AI panel — integrated column */}
-            {chefCollapsed ? (
-              <div className="flex flex-col items-center pt-2">
-                <button
-                  type="button"
-                  onClick={() => setChefCollapsed(false)}
-                  className="w-12 h-12 rounded-full bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] shadow-md flex items-center justify-center transition-all hover:scale-105"
-                  aria-label={chefLabel}
-                >
-                  <ChefHatIcon className="w-6 h-6" />
-                </button>
-              </div>
-            ) : (
-              <aside className="rounded-2xl border border-[#4E342E]/10 bg-white/95 flex flex-col">
-                {/* Header */}
-                <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#4E342E]/10">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-[#FEDC56] flex items-center justify-center">
-                      <ChefHatIcon className="w-4 h-4 text-[#4E342E]" />
+                  {step.videoUrl && (
+                    <div className="sm:w-56 shrink-0 rounded-xl overflow-hidden border border-[#4E342E]/10 bg-black aspect-video">
+                      <iframe
+                        src={step.videoUrl}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
                     </div>
-                    <span className="text-xs font-bold text-[#4E342E]">{chefLabel}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setChefCollapsed(true)}
-                    className="p-1.5 rounded-lg text-[#6D4C41]/50 hover:text-[#4E342E] hover:bg-[#4E342E]/8 transition-colors"
-                    aria-label="Collapse"
-                  >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </button>
-                </div>
+                  )}
 
-                {/* Chat messages */}
-                <div ref={chatListRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-[#FFF8EC]">
-                  {chatMessages.map((m) => (
-                    <div
-                      key={m.id}
-                      className={`max-w-[92%] rounded-2xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap ${
-                        m.role === 'assistant'
-                          ? 'bg-white border border-[#4E342E]/10 text-[#4E342E]'
-                          : 'bg-[#FEDC56]/80 text-[#4E342E] ml-auto'
-                      }`}
-                    >
-                      {m.text}
-                    </div>
-                  ))}
-                  {chatLoading && (
-                    <div className="max-w-[92%] rounded-2xl px-3 py-2 text-xs bg-white border border-[#4E342E]/10 text-[#6D4C41]/60">
-                      {chefThinking}
+                  {!step.videoUrl && step.image && (
+                    <div className="sm:w-56 shrink-0 rounded-xl overflow-hidden border border-[#4E342E]/10">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={step.image} alt={step.title} className="w-full h-auto object-cover" />
                     </div>
                   )}
                 </div>
 
-                {/* Chat input */}
-                <div className="border-t border-[#4E342E]/10 px-3 py-3">
-                  <div className="flex gap-2 items-end">
-                    <textarea
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      onKeyDown={onChatKeyDown}
-                      rows={2}
-                      placeholder={chefInputPlaceholder}
-                      className="flex-1 resize-none rounded-xl border border-[#4E342E]/15 bg-white px-3 py-2 text-sm text-[#4E342E] placeholder-[#6D4C41]/45 focus:outline-none focus:border-[#FEDC56]"
-                    />
+                {step.tip && (
+                  <div className="mt-4 rounded-xl border border-[#F5A623]/30 bg-[#FEDC56]/20 p-3">
+                    <p className="text-sm text-[#5D4037]">{step.tip}</p>
+                  </div>
+                )}
+
+                {step.suggestedSeconds != null && step.suggestedSeconds > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => onSetTimer(step.suggestedSeconds!)}
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-[#4E342E]/20 bg-[#FFF8E1] px-3 py-1.5 text-xs font-semibold text-[#4E342E] hover:bg-[#FEDC56]/30 transition-colors"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    {formatSuggestedTime(step.suggestedSeconds)}
+                  </button>
+                )}
+
+                <div className="mt-6 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={onPrevStep}
+                    disabled={isFirst}
+                    className="rounded-xl border border-[#4E342E]/20 px-4 py-2 text-sm font-semibold text-[#4E342E] disabled:opacity-35 disabled:cursor-not-allowed"
+                  >
+                    {prevStepLabel}
+                  </button>
+
+                  {!isLast && (
                     <button
                       type="button"
-                      onClick={() => void handleChatSend()}
-                      disabled={chatLoading || chatInput.trim().length === 0}
-                      className="h-10 px-3 rounded-xl bg-[#FEDC56] text-[#4E342E] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={onNextStep}
+                      className="rounded-xl bg-[#4E342E] hover:bg-[#5D4037] px-4 py-2 text-sm font-semibold text-[#FFF8E1] transition-colors"
                     >
-                      {chefSend}
+                      {nextStepLabel}
+                    </button>
+                  )}
+
+                  {isLast && (
+                    <button
+                      type="button"
+                      onClick={onFinish}
+                      className="rounded-xl bg-[#F5A623] hover:bg-[#f09a00] px-4 py-2 text-sm font-bold text-[#4E342E] transition-colors"
+                    >
+                      {finishLabel}
+                    </button>
+                  )}
+                </div>
+              </article>
+
+              {chefCollapsed ? (
+                <div className="flex flex-col items-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setChefCollapsed(false)}
+                    className="w-12 h-12 rounded-full bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] shadow-md flex items-center justify-center transition-all hover:scale-105"
+                    aria-label={chefLabel}
+                  >
+                    <ChefHatIcon className="w-6 h-6" />
+                  </button>
+                </div>
+              ) : (
+                <aside className="rounded-2xl border border-[#4E342E]/10 bg-white/95 flex flex-col">
+                  <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#4E342E]/10">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#FEDC56] flex items-center justify-center">
+                        <ChefHatIcon className="w-4 h-4 text-[#4E342E]" />
+                      </div>
+                      <span className="text-xs font-bold text-[#4E342E]">{chefLabel}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setChefCollapsed(true)}
+                      className="p-1.5 rounded-lg text-[#6D4C41]/50 hover:text-[#4E342E] hover:bg-[#4E342E]/8 transition-colors"
+                      aria-label="Collapse"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
                     </button>
                   </div>
-                </div>
-              </aside>
-            )}
+
+                  {useLiveChefPanel ? (
+                    <div
+                      ref={chefTranscriptRef}
+                      className={`flex-1 overflow-y-auto px-3 py-3 ${
+                        resolvedTranscriptEvents.length === 0
+                          ? 'flex flex-col items-center justify-center text-center'
+                          : 'space-y-2'
+                      }`}
+                    >
+                      {resolvedTranscriptEvents.length === 0 ? (
+                        <>
+                          <ChefHatIcon className="w-10 h-10 text-[#E57373]/20 mb-2" />
+                          <p className="text-xs text-[#6D4C41]/50 leading-relaxed">{resolvedDescription}</p>
+                          <p className="text-[10px] text-[#6D4C41]/30 mt-1">{resolvedComingSoon}</p>
+                        </>
+                      ) : (
+                        resolvedTranscriptEvents.map((event) => (
+                          <div
+                            key={event.id}
+                            className={`max-w-[95%] rounded-xl px-2.5 py-2 text-xs leading-relaxed whitespace-pre-wrap ${
+                              event.role === 'assistant'
+                                ? 'bg-white border border-[#4E342E]/10 text-[#4E342E]'
+                                : 'bg-[#FEDC56]/65 text-[#4E342E] ml-auto'
+                            }`}
+                          >
+                            {event.text}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  ) : (
+                    <div ref={chatListRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-[#FFF8EC]">
+                      {chatMessages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`max-w-[92%] rounded-2xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap ${
+                            message.role === 'assistant'
+                              ? 'bg-white border border-[#4E342E]/10 text-[#4E342E]'
+                              : 'bg-[#FEDC56]/80 text-[#4E342E] ml-auto'
+                          }`}
+                        >
+                          {message.text}
+                        </div>
+                      ))}
+                      {chatLoading && (
+                        <div className="max-w-[92%] rounded-2xl px-3 py-2 text-xs bg-white border border-[#4E342E]/10 text-[#6D4C41]/60">
+                          {resolvedThinkingLabel}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="border-t border-[#4E342E]/10 px-3 py-3">
+                    {useLiveChefPanel ? (
+                      <>
+                        {resolvedCanUseTranscript && (
+                          <button
+                            type="button"
+                            onClick={() => onChefUseTranscript?.()}
+                            className="mb-2 text-[11px] font-semibold text-[#4E342E] underline decoration-[#FEDC56]"
+                          >
+                            {resolvedUseTranscriptLabel}
+                          </button>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={chefInput}
+                            onChange={(event) => setChefInput(event.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter') {
+                                event.preventDefault()
+                                submitChefInput()
+                              }
+                            }}
+                            placeholder={resolvedVoiceSupported ? resolvedInputPlaceholder : resolvedVoiceUnsupportedLabel}
+                            className="flex-1 rounded-xl border border-[#4E342E]/15 bg-[#FFF8E1]/60 px-3 py-2.5 text-sm text-[#4E342E] placeholder:text-[#6D4C41]/35 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/40"
+                          />
+                          <button
+                            type="button"
+                            onClick={submitChefInput}
+                            disabled={resolvedChefTextLoading || chefInput.trim().length === 0}
+                            className="h-10 px-3 rounded-xl bg-[#FEDC56] text-[#4E342E] font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {resolvedSendLabel}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onChefToggleVoice?.()}
+                            disabled={resolvedVoiceConnecting || !resolvedVoiceSupported || !onChefToggleVoice}
+                            className={`w-10 h-10 rounded-full text-[#FFF8E1] flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                              resolvedVoiceActive ? 'bg-[#E57373]' : 'bg-[#4E342E] hover:bg-[#5D4037]'
+                            }`}
+                            aria-label={
+                              resolvedVoiceConnecting
+                                ? resolvedVoiceConnectingLabel
+                                : resolvedVoiceActive
+                                  ? resolvedVoiceStopLabel
+                                  : resolvedVoiceStartLabel
+                            }
+                          >
+                            <MicIcon className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        {(resolvedVoiceConnecting || resolvedVoiceActive) && (
+                          <p className="mt-2 text-[11px] text-[#6D4C41]/70">
+                            {resolvedVoiceConnecting ? resolvedVoiceConnectingLabel : resolvedVoiceStopLabel}
+                          </p>
+                        )}
+
+                        {resolvedChefTextLoading && (
+                          <p className="mt-2 text-[11px] text-[#6D4C41]/70">{resolvedThinkingLabel}</p>
+                        )}
+
+                        {chefLiveError && <p className="mt-2 text-[11px] text-[#E57373]">{chefLiveError}</p>}
+                      </>
+                    ) : (
+                      <div className="flex gap-2 items-end">
+                        <textarea
+                          value={chatInput}
+                          onChange={(event) => setChatInput(event.target.value)}
+                          onKeyDown={onLegacyChatKeyDown}
+                          rows={2}
+                          placeholder={resolvedInputPlaceholder}
+                          className="flex-1 resize-none rounded-xl border border-[#4E342E]/15 bg-white px-3 py-2 text-sm text-[#4E342E] placeholder-[#6D4C41]/45 focus:outline-none focus:border-[#FEDC56]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => void handleLegacyChatSend()}
+                          disabled={chatLoading || chatInput.trim().length === 0}
+                          className="h-10 px-3 rounded-xl bg-[#FEDC56] text-[#4E342E] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {resolvedSendLabel}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </aside>
+              )}
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </section>
@@ -444,7 +657,15 @@ function ChefHatIcon({ className }: { className?: string }) {
 
 function MicIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
       <path d="M19 10v2a7 7 0 01-14 0v-2" />
       <line x1="12" y1="19" x2="12" y2="23" />

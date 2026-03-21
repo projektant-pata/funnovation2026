@@ -2,6 +2,10 @@
 
 Gamifikovaná výuka vaření — Duolingo pro vaření.
 
+## Dokumentace
+
+Projektová dokumentace je konsolidovaná ve složce `docs/` (kromě tohoto `README.md`).
+
 ## Požadavky
 
 - [Docker](https://docs.docker.com/get-docker/) a [Docker Compose](https://docs.docker.com/compose/install/) (Docker Desktop obsahuje obojí)
@@ -42,7 +46,7 @@ Aplikace poběží na **http://localhost:3000**. Změny v kódu se projeví okam
 docker compose up --build
 ```
 
-Aplikace poběží na **http://localhost:3003**.
+Aplikace poběží na **http://localhost:4030**.
 
 ### Zastavení
 
@@ -68,7 +72,7 @@ npm install
 npm run dev
 ```
 
-Aplikace poběží na **http://localhost:3000**. PostgreSQL musí běžet zvlášť — nastav `DATABASE_URL` v `.env`.
+Aplikace poběží na **http://localhost:4030**. PostgreSQL musí běžet zvlášť — můžeš nastavít `DATABASE_URL` v `.env`.
 
 ## SOPS decrypt (2 způsoby)
 

@@ -47,7 +47,7 @@ Většina mladých lidí (18–35) neumí efektivně vařit. Existující řeše
 | Vrstva | Technologie |
 |--------|-------------|
 | Frontend | Next.js 14+ (App Router), React, TypeScript, Tailwind CSS, shadcn/ui |
-| Backend / DB | Supabase (Auth, PostgreSQL, Storage, Realtime) |
+| Backend / DB | PostgreSQL 16 (self-hosted), vlastní Auth vrstva (JWT + Google OAuth), media storage, RLS |
 | AI | Google Gemini API — Gemini 3 Flash (hlavní funkce), Gemini 3.1 Flash-Lite (lehké úlohy), Gemini 2.5 Flash Native Audio (live voice/image) |
 | i18n | next-intl, JSON klíče per locale (`/messages/cs.json`, `/messages/en.json`) |
 | State management | Zustand |
@@ -55,7 +55,7 @@ Většina mladých lidí (18–35) neumí efektivně vařit. Existující řeše
 
 **Klíčová pravidla:**
 - Všechna AI volání jdou přes Next.js API routes — nikdy nevystavovat Gemini API klíče klientovi.
-- Supabase Row Level Security (RLS) na každé tabulce.
+- PostgreSQL Row Level Security (RLS) na každé tabulce.
 - Každý user-facing string jde přes i18n — žádný hardcoded text v komponentách.
 - Taby pro odsazení ve všech souborech.
 
@@ -511,7 +511,7 @@ Bottom tab bar (mobil) / sidebar (desktop):
 Pořadí, ve kterém se funkce implementují. Vyšší priorita = dříve.
 
 ### P0 — Základ (bez toho aplikace nefunguje)
-1. Supabase setup (auth, DB schema, RLS)
+1. PostgreSQL setup (auth vrstva, DB schema, RLS)
 2. Next.js projekt s i18n (CZ + EN)
 3. Auth flow (registrace, přihlášení, profil)
 4. Onboarding dotazník + AI evaluace

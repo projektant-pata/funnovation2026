@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { createPortal } from 'react-dom'
 
 type MenuLabels = {
   profile: string
@@ -152,44 +153,45 @@ export default function NavbarUserMenu({
         )}
       </div>
 
-      {/* Logout confirm modal */}
-      {confirming && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center"
-          onClick={() => setConfirming(false)}
-        >
+      {confirming && typeof document !== 'undefined' &&
+        createPortal(
           <div
-            className="animate-popup-in bg-white rounded-3xl shadow-2xl px-8 py-7 w-80 flex flex-col items-center gap-5"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[100] bg-black/30 flex items-center justify-center p-4"
+            onClick={() => setConfirming(false)}
           >
-            <div className="w-14 h-14 rounded-full bg-[#E57373]/10 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-[#E57373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
+            <div
+              className="animate-popup-in bg-white rounded-3xl shadow-2xl px-8 py-7 w-80 max-w-full flex flex-col items-center gap-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-14 h-14 rounded-full bg-[#E57373]/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-[#E57373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-black text-[#4E342E]">{labels.logoutConfirm}</p>
+                <p className="text-sm text-[#6D4C41]/60 mt-1">{labels.logoutDescription}</p>
+              </div>
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => setConfirming(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-[#4E342E]/15 text-sm font-semibold text-[#6D4C41] hover:bg-[#FFF3E0] transition-colors"
+                >
+                  {labels.cancel}
+                </button>
+                <button
+                  onClick={handleLogoutConfirmed}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-[#E57373] text-white text-sm font-semibold hover:bg-[#ef5350] transition-colors"
+                >
+                  {labels.logoutButton}
+                </button>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-lg font-black text-[#4E342E]">{labels.logoutConfirm}</p>
-              <p className="text-sm text-[#6D4C41]/60 mt-1">{labels.logoutDescription}</p>
-            </div>
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={() => setConfirming(false)}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-[#4E342E]/15 text-sm font-semibold text-[#6D4C41] hover:bg-[#FFF3E0] transition-colors"
-              >
-                {labels.cancel}
-              </button>
-              <button
-                onClick={handleLogoutConfirmed}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#E57373] text-white text-sm font-semibold hover:bg-[#ef5350] transition-colors"
-              >
-                {labels.logoutButton}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </>
   )
 }

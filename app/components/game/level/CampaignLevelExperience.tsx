@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type {
-  CampaignCutsceneData,
   CampaignCutsceneSegment,
   CampaignLevelDefinition,
   CampaignLocale,
@@ -12,6 +11,7 @@ import LevelCutscene from './LevelCutscene'
 import LevelSummary from './LevelSummary'
 import LevelCookingMode from './LevelCookingMode'
 import LevelCompletion from './LevelCompletion'
+import { useLiveChefSession, type LiveToolAction } from '@/app/components/game/ai/useLiveChefSession'
 
 type LevelLabels = {
   cutsceneModeLabel: string
@@ -44,6 +44,13 @@ type LevelLabels = {
   aiReflectionTitle: string
   chef: string
   chefGreeting: string
+  chefDescription: string
+  comingSoon: string
+  chefVoiceStart: string
+  chefVoiceStop: string
+  chefVoiceConnecting: string
+  chefVoiceUnsupported: string
+  chefUseTranscript: string
   chefInputPlaceholder: string
   chefSend: string
   chefThinking: string
@@ -87,6 +94,63 @@ function localizeSegments(
   })
 }
 
+type ChatAction = {
+  action_type:
+    | 'none'
+    | 'timer_start'
+    | 'timer_set'
+    | 'timer_pause'
+    | 'timer_resume'
+    | 'timer_cancel'
+    | 'step_next'
+    | 'step_previous'
+    | 'step_go_to'
+  timer_seconds: number
+  target_step_number: number
+}
+
+function toLiveToolAction(action: ChatAction): ReturnType<typeof mapToolActionType> {
+  return mapToolActionType(action.action_type, action.timer_seconds, action.target_step_number)
+}
+
+function mapToolActionType(
+  type:
+    | 'none'
+    | 'timer_start'
+    | 'timer_set'
+    | 'timer_pause'
+    | 'timer_resume'
+    | 'timer_cancel'
+    | 'step_next'
+    | 'step_previous'
+    | 'step_go_to',
+  timerSeconds: number,
+  stepNumber: number
+) {
+  switch (type) {
+    case 'timer_set':
+      return timerSeconds > 0 ? ({ type: 'timer_set', seconds: Math.round(timerSeconds) } as const) : null
+    case 'timer_start':
+      return timerSeconds > 0
+        ? ({ type: 'timer_start', seconds: Math.round(timerSeconds) } as const)
+        : ({ type: 'timer_start' } as const)
+    case 'timer_pause':
+      return { type: 'timer_pause' } as const
+    case 'timer_resume':
+      return { type: 'timer_resume' } as const
+    case 'timer_cancel':
+      return { type: 'timer_cancel' } as const
+    case 'step_next':
+      return { type: 'step_next' } as const
+    case 'step_previous':
+      return { type: 'step_previous' } as const
+    case 'step_go_to':
+      return stepNumber > 0 ? ({ type: 'step_go_to', stepNumber: Math.round(stepNumber) } as const) : null
+    default:
+      return null
+  }
+}
+
 export default function CampaignLevelExperience({
   lang,
   level,
@@ -100,15 +164,138 @@ export default function CampaignLevelExperience({
   const [isTimerRunning, setIsTimerRunning] = useState(false)
   const [timerFinished, setTimerFinished] = useState(false)
   const [note, setNote] = useState('')
+  const [chefChatMessages, setChefChatMessages] = useState<Array<{ id: string; role: 'user' | 'assistant'; text: string }>>([])
+  const [isChefThinking, setIsChefThinking] = useState(false)
+
+  const ingredientLines = useMemo(
+    () =>
+      level.ingredients.map((ingredient) => ({
+        id: ingredient.id,
+        label: `${pick(ingredient.amount, lang)} - ${pick(ingredient.name, lang)}`,
+      })),
+    [level.ingredients, lang]
+  )
+
+  const steps = useMemo(
+    () =>
+      level.steps.map((step) => ({
+        id: step.id,
+        title: pick(step.title, lang),
+        instruction: pick(step.instruction, lang),
+        tip: step.tip ? pick(step.tip, lang) : undefined,
+        suggestedSeconds: step.suggestedSeconds,
+        image: step.image,
+        videoUrl: step.videoUrl,
+      })),
+    [level.steps, lang]
+  )
+
+  const currentStep = steps[currentStepIndex] ?? null
+
+  const cookingContext = useMemo(
+    () => ({
+      source_context: 'campaign_level',
+      session_status: phase,
+      recipe: {
+        id: level.nodeId,
+        title: pick(level.recipeName, lang),
+        ingredients: ingredientLines.map((ingredient) => ingredient.label),
+      },
+      current_step: currentStep
+        ? {
+            step_number: currentStepIndex + 1,
+            title: currentStep.title,
+            instruction: currentStep.instruction,
+            suggested_seconds: currentStep.suggestedSeconds ?? null,
+          }
+        : null,
+      timer_state: {
+        total_seconds: timerSeconds,
+        remaining_seconds: timerSeconds,
+        is_running: isTimerRunning,
+        is_finished: timerFinished,
+      },
+    }),
+    [phase, level.nodeId, level.recipeName, lang, ingredientLines, currentStep, currentStepIndex, timerSeconds, isTimerRunning, timerFinished]
+  )
+
+  const runToolAction = useCallback(
+    async (action: LiveToolAction) => {
+      switch (action.type) {
+        case 'timer_set': {
+          setTimerSeconds(Math.max(1, action.seconds))
+          setTimerFinished(false)
+          return { ok: true, message: 'Timer set' }
+        }
+        case 'timer_start': {
+          if (typeof action.seconds === 'number' && action.seconds > 0) {
+            setTimerSeconds(Math.max(1, action.seconds))
+          }
+          setTimerFinished(false)
+          setIsTimerRunning(true)
+          return { ok: true, message: 'Timer started' }
+        }
+        case 'timer_pause': {
+          setIsTimerRunning(false)
+          return { ok: true, message: 'Timer paused' }
+        }
+        case 'timer_resume': {
+          setIsTimerRunning((prev) => (timerSeconds > 0 ? true : prev))
+          return { ok: timerSeconds > 0, message: timerSeconds > 0 ? 'Timer resumed' : 'No timer to resume' }
+        }
+        case 'timer_cancel': {
+          setTimerSeconds(0)
+          setIsTimerRunning(false)
+          setTimerFinished(false)
+          return { ok: true, message: 'Timer cancelled' }
+        }
+        case 'step_next': {
+          setCurrentStepIndex((prev) => Math.min(prev + 1, steps.length - 1))
+          return { ok: true, message: 'Moved to next step' }
+        }
+        case 'step_previous': {
+          setCurrentStepIndex((prev) => Math.max(prev - 1, 0))
+          return { ok: true, message: 'Moved to previous step' }
+        }
+        case 'step_go_to': {
+          const target = Math.max(1, Math.min(action.stepNumber, steps.length)) - 1
+          setCurrentStepIndex(target)
+          return { ok: true, message: `Moved to step ${target + 1}` }
+        }
+        default:
+          return { ok: false, message: 'Unsupported action' }
+      }
+    },
+    [steps.length, timerSeconds]
+  )
+
+  const liveChef = useLiveChefSession({
+    locale: lang === 'en' ? 'en' : 'cs',
+    screenContext: `level:${phase}`,
+    cookingContext,
+    onToolAction: runToolAction,
+  })
+
+  const {
+    isListening: chefVoiceActive,
+    isConnecting: chefVoiceConnecting,
+    isSupported: chefVoiceSupported,
+    lastError: chefLiveError,
+    transcriptEvents: chefTranscriptEvents,
+    lastUserTranscript,
+    toggleListening: toggleChefVoice,
+    stopListening: stopChefListening,
+  } = liveChef
 
   useEffect(() => {
-    if (!isTimerRunning || timerSeconds <= 0) {
-      if (isTimerRunning && timerSeconds <= 0) {
-        setIsTimerRunning(false)
-        setTimerFinished(true)
-      }
-      return
+    if (phase !== 'cooking') {
+      void stopChefListening()
     }
+  }, [phase, stopChefListening])
+
+  useEffect(() => {
+    if (!isTimerRunning || timerSeconds <= 0) return
+
     const id = window.setInterval(() => {
       setTimerSeconds((prev) => {
         if (prev <= 1) {
@@ -123,27 +310,98 @@ export default function CampaignLevelExperience({
     return () => window.clearInterval(id)
   }, [isTimerRunning, timerSeconds])
 
-  const ingredientLines = useMemo(
-    () =>
-      level.ingredients.map((ingredient) => ({
-        id: ingredient.id,
-        label: `${pick(ingredient.amount, lang)} - ${pick(ingredient.name, lang)}`,
+  const chefEvents = useMemo(
+    () => [
+      ...chefTranscriptEvents.map((event) => ({
+        id: event.id,
+        role: event.role,
+        text: event.text,
       })),
-    [lang, level.ingredients]
+      ...chefChatMessages,
+    ],
+    [chefTranscriptEvents, chefChatMessages]
   )
 
-  const steps = useMemo(
-    () =>
-      level.steps.map((step) => ({
-        id: step.id,
-        title: pick(step.title, lang),
-        instruction: pick(step.instruction, lang),
-        tip: step.tip ? pick(step.tip, lang) : undefined,
-        suggestedSeconds: step.suggestedSeconds,
-        image: step.image,
-        videoUrl: step.videoUrl,
-      })),
-    [lang, level.steps]
+  const sendChefTextMessage = useCallback(
+    async (rawText: string) => {
+      const text = rawText.trim()
+      if (!text || isChefThinking) return
+
+      const messageId =
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : `chef_${Date.now()}_${Math.floor(Math.random() * 100000)}`
+
+      const userMessage = { id: messageId, role: 'user' as const, text }
+      const history = [...chefEvents, userMessage].slice(-8).map((item) => ({
+        role: item.role,
+        content: item.text,
+      }))
+
+      setChefChatMessages((prev) => [...prev, userMessage])
+      setIsChefThinking(true)
+
+      try {
+        const response = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            locale: lang === 'en' ? 'en' : 'cs',
+            message: text,
+            screen: `level:${phase}`,
+            context: cookingContext,
+            history,
+          }),
+        })
+
+        const payload = (await response.json()) as {
+          success?: boolean
+          data?: {
+            reply?: string
+            actions?: ChatAction[]
+          }
+        }
+
+        const actions = Array.isArray(payload.data?.actions) ? payload.data.actions : []
+        for (const action of actions) {
+          const mapped = toLiveToolAction(action)
+          if (!mapped) continue
+          await runToolAction(mapped)
+        }
+
+        const assistantReply =
+          typeof payload.data?.reply === 'string' && payload.data.reply.length > 0
+            ? payload.data.reply
+            : labels.chefError
+
+        setChefChatMessages((prev) => [
+          ...prev,
+          {
+            id:
+              typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+                ? crypto.randomUUID()
+                : `chef_${Date.now()}_${Math.floor(Math.random() * 100000)}`,
+            role: 'assistant',
+            text: assistantReply,
+          },
+        ])
+      } catch {
+        setChefChatMessages((prev) => [
+          ...prev,
+          {
+            id:
+              typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+                ? crypto.randomUUID()
+                : `chef_${Date.now()}_${Math.floor(Math.random() * 100000)}`,
+            role: 'assistant',
+            text: labels.chefError,
+          },
+        ])
+      } finally {
+        setIsChefThinking(false)
+      }
+    },
+    [chefEvents, cookingContext, isChefThinking, labels.chefError, lang, phase, runToolAction]
   )
 
   const cutsceneSegments = useMemo(
@@ -161,7 +419,6 @@ export default function CampaignLevelExperience({
       })),
     [lang, level.cutscene.characters]
   )
-
   const postSegments = useMemo(
     () => level.postRecipeCutscene ? localizeSegments(level.postRecipeCutscene.segments, lang) : [],
     [lang, level.postRecipeCutscene]
@@ -274,13 +531,33 @@ export default function CampaignLevelExperience({
           setIsTimerRunning(false)
           setPhase(level.postRecipeCutscene ? 'postcutscene' : 'completion')
         }}
-        lang={lang}
         chefLabel={labels.chef}
-        chefGreeting={labels.chefGreeting}
-        chefInputPlaceholder={labels.chefInputPlaceholder}
-        chefSend={labels.chefSend}
-        chefThinking={labels.chefThinking}
-        chefError={labels.chefError}
+        chefDescription={labels.chefDescription}
+        chefComingSoon={labels.comingSoon}
+        chefVoiceStartLabel={labels.chefVoiceStart}
+        chefVoiceStopLabel={labels.chefVoiceStop}
+        chefVoiceConnectingLabel={labels.chefVoiceConnecting}
+        chefVoiceUnsupportedLabel={labels.chefVoiceUnsupported}
+        chefUseTranscriptLabel={labels.chefUseTranscript}
+        chefInputPlaceholderLabel={labels.chefInputPlaceholder}
+        chefSendLabel={labels.chefSend}
+        chefThinkingLabel={labels.chefThinking}
+        chefVoiceActive={chefVoiceActive}
+        chefVoiceConnecting={chefVoiceConnecting}
+        chefVoiceSupported={chefVoiceSupported}
+        chefLiveError={chefLiveError}
+        chefTranscriptEvents={chefEvents}
+        canChefUseTranscript={lastUserTranscript.trim().length > 0}
+        chefTextLoading={isChefThinking}
+        onChefSendText={(text: string) => {
+          void sendChefTextMessage(text)
+        }}
+        onChefToggleVoice={() => {
+          void toggleChefVoice()
+        }}
+        onChefUseTranscript={() => {
+          void sendChefTextMessage(lastUserTranscript)
+        }}
       />
     )
   }

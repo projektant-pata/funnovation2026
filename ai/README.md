@@ -1,16 +1,16 @@
-# AI Prompt Engineering Pack
+# Balicek AI prompt engineeringu
 
-This folder contains production-ready prompt and schema assets for Gemini integration.
+Tato slozka obsahuje produkcne pripravene prompty a schema assety pro Gemini integraci.
 
-- Prompts: `ai/prompts/*.md`
-- Structured output schemas (OpenAPI/JSON Schema compatible): `ai/schemas/*.json`
-- Documentation:
-  - `ai/docs/PROMPTS.md` (consolidated non-Live prompting + safety + schema strategy)
-  - `ai/docs/LIVE.md` (Gemini Live architecture and implementation notes)
+- Prompty: `ai/prompts/*.md`
+- Schema strukturovaneho vystupu (kompatibilni s OpenAPI/JSON Schema): `ai/schemas/*.json`
+- Dokumentace:
+  - `docs/API_PROMPTS.md` (konsolidovana non-Live prompt strategie + safety + schema strategie)
+  - `docs/LIVE.md` (architektura Gemini Live a implementacni poznamky)
 
-Conventions:
+Konvence:
 
-- Every prompt returns strict JSON only.
-- Every schema requires `schema_version` with enum `v1`.
-- Health data constraints must respect explicit consent.
-- Output language must follow the requested locale (`cs` or `en`).
+- Kazdy prompt vraci pouze striktni JSON.
+- Kazde schema vyzaduje `schema_version` s enum `v1`.
+- Omezeni pro zdravotni data musi respektovat explicitni souhlas.
+- Jazyk vystupu musi nasledovat pozadovane locale (`cs` nebo `en`).

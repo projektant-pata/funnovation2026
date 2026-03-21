@@ -23,7 +23,7 @@ No test suite is configured.
 
 ## Architecture
 
-**App overview:** žemLOVEka is a gamified cooking education platform (Duolingo for cooking). Full spec lives in `zemLOVEka_MasterPrompt.md`.
+**App overview:** žemLOVEka is a gamified cooking education platform (Duolingo for cooking). Full spec lives in `docs/zemLOVEka_MasterPrompt.md`.
 
 **Routing:**
 - `/[lang]` — Landing page (marketing, existing, untouched for now)
@@ -60,7 +60,7 @@ No test suite is configured.
 
 **Map (World mode):** Replacing current political Leaflet map with a playful, hand-drawn style SVG map. Options: `react-simple-maps` with custom styled topojson, or fully custom SVG. Must match the app's playful cooking aesthetic (warm colors, rounded shapes, food icons per region).
 
-**Data flow:** `app/lib/mockRecipes.ts` is the single source of truth — an in-memory object keyed by ISO-2 country code (will eventually be replaced by Supabase). The API routes read from it:
+**Data flow:** `app/lib/mockRecipes.ts` is the single source of truth — an in-memory object keyed by ISO-2 country code (being progressively replaced by PostgreSQL-backed data from `schema.sql`). The API routes read from it:
 - `GET /api/countries` — returns all countries that have recipes
 - `GET /api/countries/[id]/recipes` — accepts ISO-2 code or country name, returns that country's recipes
 
@@ -69,7 +69,7 @@ No test suite is configured.
 - `WorldMap.tsx` — actual Leaflet/react-leaflet component
 - Planned migration from Leaflet to SVG-based approach for World mode
 
-**Styling:** Tailwind v4 (configured via `postcss.config.mjs`, no separate config file needed). Component-level styles use CSS Modules (`WorldMap.module.css`). Brand colors are defined in `color-palette.md`.
+**Styling:** Tailwind v4 (configured via `postcss.config.mjs`, no separate config file needed). Component-level styles use CSS Modules (`WorldMap.module.css`). Brand colors are defined in `docs/color-palette.md`.
 
 ## Next.js version notes
 
