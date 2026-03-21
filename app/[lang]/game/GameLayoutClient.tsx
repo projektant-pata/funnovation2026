@@ -34,22 +34,22 @@ type Props = {
 export default function GameLayoutClient({ lang, labels, children, navbar }: Props) {
   const pathname = usePathname()
   const segments = pathname.split('/').filter(Boolean)
-  const isCampaignLevelRoute =
-    segments.length === 4 &&
+  const isLevelRoute =
     segments[0] === lang &&
     segments[1] === 'game' &&
-    segments[2] === 'campaign'
+    ((segments.length === 4 && segments[2] === 'campaign') ||
+     (segments.length === 5 && segments[2] === 'world'))
 
   return (
     <div className="bg-[#FFF3E0] min-h-screen font-[family-name:var(--font-geist-sans)] flex flex-col">
-      {!isCampaignLevelRoute && navbar}
+      {!isLevelRoute && navbar}
 
       {/* Content with fade-in animation */}
-      <main className={`flex-1 overflow-auto animate-[fadeIn_200ms_ease-out] ${isCampaignLevelRoute ? '' : 'pb-24'}`}>
+      <main className={`flex-1 overflow-auto animate-[fadeIn_200ms_ease-out] ${isLevelRoute ? '' : 'pb-24'}`}>
         {children}
       </main>
 
-      {!isCampaignLevelRoute && (
+      {!isLevelRoute && (
         <>
           <BottomNav
             lang={lang}

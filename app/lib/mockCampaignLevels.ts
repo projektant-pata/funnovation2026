@@ -26,6 +26,8 @@ export interface CampaignStep {
   instruction: LocalizedText
   tip?: LocalizedText
   suggestedSeconds?: number
+  image?: string
+  videoUrl?: string
 }
 
 export interface CampaignLevelDefinition {

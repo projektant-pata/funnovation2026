@@ -39,7 +39,8 @@
     "sandbox": "Sandbox",
     "campaign": "Kampaň",
     "dictionary": "Slovník",
-    "login": "Přihlásit se"
+    "login": "Přihlásit se",
+    "explore": "Objevuj"
   },
   "footer": {
     "tagline": "Duolingo pro vaření.",
@@ -107,6 +108,40 @@
       "notePlaceholder": "Co se povedlo? Co bys příště udělal/a jinak?",
       "photoLabel": "Fotka výsledku",
       "aiReflectionTitle": "Reflexe se Šéfkuchařem"
+    },
+    "worldSection": {
+      "enterRegion": "Vstoupit do regionu",
+      "recipesCompleted": "receptů dokončeno",
+      "comingSoon": "Již brzy",
+      "backToMap": "Zpět na mapu",
+      "regionLocked": "Region je zamčený",
+      "title": "Svět",
+      "subtitle": "Klikni na region a prozkoumej jeho kuchyni"
+    },
+    "freeplaySection": {
+      "title": "Všechny recepty",
+      "subtitle": "Vař, co chceš — bez příběhu. Filtruj, hledej, vař."
+    },
+    "nodePopover": {
+      "completed": "Dokončeno",
+      "inProgress": "Rozpracováno",
+      "available": "Dostupné",
+      "locked": "Zamčeno",
+      "mainTask": "Hlavní úkol",
+      "bonusTasks": "Bonusové úkoly",
+      "close": "Zavřít"
+    },
+    "userMenu": {
+      "profile": "Profil",
+      "mealPlan": "Jídelníček",
+      "shoppingList": "Nákupní seznam",
+      "pantry": "Špajz",
+      "settings": "Nastavení",
+      "logout": "Odhlásit se",
+      "logoutConfirm": "Odhlásit se?",
+      "logoutDescription": "Opravdu se chceš odhlásit?",
+      "cancel": "Zrušit",
+      "logoutButton": "Odhlásit"
     }
   }
 }

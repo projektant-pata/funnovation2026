@@ -1,22 +1,19 @@
 import { notFound } from 'next/navigation'
-import { getDictionary, hasLocale, type Locale } from '../../../dictionaries'
+import { getDictionary, hasLocale, type Locale } from '../../../../dictionaries'
 import CampaignLevelExperience from '@/app/components/game/level/CampaignLevelExperience'
-import {
-  getCampaignLevelByNodeId,
-  type CampaignLocale,
-} from '@/app/lib/mockCampaignLevels'
+import { getWorldLevelByNodeId } from '@/app/lib/mockWorldRegions'
+import type { CampaignLocale } from '@/app/lib/mockCampaignLevels'
 
-type Props = { params: Promise<{ lang: string; nodeId: string }> }
+type Props = { params: Promise<{ lang: string; regionId: string; nodeId: string }> }
 
-export default async function CampaignLevelPage({ params }: Props) {
-  const { lang, nodeId } = await params
+export default async function WorldLevelPage({ params }: Props) {
+  const { lang, regionId, nodeId } = await params
   if (!hasLocale(lang)) notFound()
 
-  const level = getCampaignLevelByNodeId(nodeId)
+  const level = getWorldLevelByNodeId(regionId, nodeId)
   if (!level) notFound()
 
-  const locale = lang as Locale
-  const d = await getDictionary(locale)
+  const d = await getDictionary(lang as Locale)
 
   return (
     <CampaignLevelExperience
@@ -55,7 +52,7 @@ export default async function CampaignLevelPage({ params }: Props) {
         chefDescription: d.game.chefDescription,
         comingSoon: d.game.comingSoon,
       }}
-      backToTreeHref={`/${lang}/game/campaign`}
+      backToTreeHref={`/${lang}/game/world/${regionId}`}
     />
   )
 }

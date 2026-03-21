@@ -39,7 +39,8 @@
     "sandbox": "Sandbox",
     "campaign": "Campaign",
     "dictionary": "Dictionary",
-    "login": "Sign in"
+    "login": "Sign in",
+    "explore": "Explore"
   },
   "footer": {
     "tagline": "Duolingo for cooking.",
@@ -107,6 +108,40 @@
       "notePlaceholder": "What worked? What would you do differently next time?",
       "photoLabel": "Result photo",
       "aiReflectionTitle": "Reflection with Chef AI"
+    },
+    "worldSection": {
+      "enterRegion": "Enter region",
+      "recipesCompleted": "recipes completed",
+      "comingSoon": "Coming soon",
+      "backToMap": "Back to map",
+      "regionLocked": "Region is locked",
+      "title": "World",
+      "subtitle": "Click a region to explore its cuisine"
+    },
+    "freeplaySection": {
+      "title": "All recipes",
+      "subtitle": "Cook whatever you want — no story. Filter, search, cook."
+    },
+    "nodePopover": {
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "available": "Available",
+      "locked": "Locked",
+      "mainTask": "Main task",
+      "bonusTasks": "Bonus tasks",
+      "close": "Close"
+    },
+    "userMenu": {
+      "profile": "Profile",
+      "mealPlan": "Meal plan",
+      "shoppingList": "Shopping list",
+      "pantry": "Pantry",
+      "settings": "Settings",
+      "logout": "Log out",
+      "logoutConfirm": "Log out?",
+      "logoutDescription": "Are you sure you want to log out?",
+      "cancel": "Cancel",
+      "logoutButton": "Log out"
     }
   }
 }

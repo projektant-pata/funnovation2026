@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { hasLocale, type Locale } from '../../dictionaries'
+import { getDictionary, hasLocale, type Locale } from '../../dictionaries'
 import pool from '@/app/lib/db'
 import RecipeGrid from '@/app/components/RecipeGrid'
 
@@ -60,15 +60,16 @@ export default async function FreeplayPage({ params }: Props) {
   if (!hasLocale(lang)) notFound()
 
   const recipes = await getRecipes(lang as Locale)
+  const d = await getDictionary(lang as Locale)
 
   return (
     <div className="px-6 py-10 max-w-6xl mx-auto">
       <div className="mb-10">
         <div className="text-xs font-bold uppercase tracking-widest text-[#6D4C41]/40 mb-2">
-          Freeplay
+          {d.game.freeplay}
         </div>
-        <h1 className="text-4xl font-black text-[#4E342E] mb-2">Všechny recepty</h1>
-        <p className="text-[#6D4C41]/60">Vař, co chceš — bez příběhu. Filtruj, hledej, vař.</p>
+        <h1 className="text-4xl font-black text-[#4E342E] mb-2">{d.game.freeplaySection.title}</h1>
+        <p className="text-[#6D4C41]/60">{d.game.freeplaySection.subtitle}</p>
       </div>
 
       <RecipeGrid recipes={recipes} lang={lang} />

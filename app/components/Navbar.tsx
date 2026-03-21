@@ -32,7 +32,7 @@ export default async function Navbar({ lang }: { lang: string }) {
           href={`/${lang}/game`}
           className="px-3 py-2 rounded-lg text-base font-semibold text-[#6D4C41] hover:bg-[#4E342E]/8 transition-colors"
         >
-          Objevuj
+          {d?.nav.explore ?? 'Explore'}
         </Link>
         <Link
           href={`/${lang}/dictionary`}
@@ -52,7 +52,7 @@ export default async function Navbar({ lang }: { lang: string }) {
           <div className="flex items-center gap-2">
             {/* Bell */}
             <button
-              aria-label="Oznámení"
+              aria-label={d?.game.notifications ?? 'Notifications'}
               className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#4E342E]/8 transition-colors text-[#6D4C41]"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -60,7 +60,23 @@ export default async function Navbar({ lang }: { lang: string }) {
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
             </button>
-            <NavbarUserMenu lang={lang} initial={initial} color={color} />
+            <NavbarUserMenu
+              lang={lang}
+              initial={initial}
+              color={color}
+              labels={{
+                profile: d?.game.userMenu.profile ?? 'Profile',
+                mealPlan: d?.game.userMenu.mealPlan ?? 'Meal plan',
+                shoppingList: d?.game.userMenu.shoppingList ?? 'Shopping list',
+                pantry: d?.game.userMenu.pantry ?? 'Pantry',
+                settings: d?.game.userMenu.settings ?? 'Settings',
+                logout: d?.game.userMenu.logout ?? 'Log out',
+                logoutConfirm: d?.game.userMenu.logoutConfirm ?? 'Log out?',
+                logoutDescription: d?.game.userMenu.logoutDescription ?? 'Are you sure you want to log out?',
+                cancel: d?.game.userMenu.cancel ?? 'Cancel',
+                logoutButton: d?.game.userMenu.logoutButton ?? 'Log out',
+              }}
+            />
           </div>
         ) : (
           <Link

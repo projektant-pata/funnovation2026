@@ -40,6 +40,9 @@ type LevelLabels = {
   notePlaceholder: string
   photoLabel: string
   aiReflectionTitle: string
+  chef: string
+  chefDescription: string
+  comingSoon: string
 }
 
 type Props = {
@@ -72,16 +75,30 @@ export default function CampaignLevelExperience({
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [timerSeconds, setTimerSeconds] = useState(0)
   const [isTimerRunning, setIsTimerRunning] = useState(false)
+  const [timerFinished, setTimerFinished] = useState(false)
   const [note, setNote] = useState('')
 
   useEffect(() => {
-    if (!isTimerRunning) return
+    if (!isTimerRunning || timerSeconds <= 0) {
+      if (isTimerRunning && timerSeconds <= 0) {
+        setIsTimerRunning(false)
+        setTimerFinished(true)
+      }
+      return
+    }
     const id = window.setInterval(() => {
-      setTimerSeconds((prev) => prev + 1)
+      setTimerSeconds((prev) => {
+        if (prev <= 1) {
+          setIsTimerRunning(false)
+          setTimerFinished(true)
+          return 0
+        }
+        return prev - 1
+      })
     }, 1000)
 
     return () => window.clearInterval(id)
-  }, [isTimerRunning])
+  }, [isTimerRunning, timerSeconds])
 
   const ingredientLines = useMemo(
     () =>
@@ -100,6 +117,8 @@ export default function CampaignLevelExperience({
         instruction: pick(step.instruction, lang),
         tip: step.tip ? pick(step.tip, lang) : undefined,
         suggestedSeconds: step.suggestedSeconds,
+        image: step.image,
+        videoUrl: step.videoUrl,
       })),
     [lang, level.steps]
   )
@@ -186,18 +205,28 @@ export default function CampaignLevelExperience({
         timerLabel={labels.timer}
         timerValue={formatTimer(timerSeconds)}
         isTimerRunning={isTimerRunning}
+        timerFinished={timerFinished}
         timerAdd30Label={labels.add30s}
         timerAdd60Label={labels.add1m}
         timerResetLabel={labels.reset}
         timerPauseLabel={labels.pause}
         timerResumeLabel={labels.resume}
-        onAdd30={() => setTimerSeconds((prev) => prev + 30)}
-        onAdd60={() => setTimerSeconds((prev) => prev + 60)}
+        onAdd30={() => { setTimerSeconds((prev) => prev + 30); setTimerFinished(false) }}
+        onAdd60={() => { setTimerSeconds((prev) => prev + 60); setTimerFinished(false) }}
         onReset={() => {
           setTimerSeconds(0)
           setIsTimerRunning(false)
+          setTimerFinished(false)
         }}
-        onToggleTimer={() => setIsTimerRunning((prev) => !prev)}
+        onToggleTimer={() => {
+          if (timerSeconds > 0) setIsTimerRunning((prev) => !prev)
+        }}
+        onSetTimer={(seconds) => {
+          setTimerSeconds(seconds)
+          setIsTimerRunning(true)
+          setTimerFinished(false)
+        }}
+        onDismissTimerFinished={() => setTimerFinished(false)}
         stepLabel={labels.step}
         currentStepIndex={currentStepIndex}
         steps={steps}
@@ -210,6 +239,9 @@ export default function CampaignLevelExperience({
           setIsTimerRunning(false)
           setPhase('completion')
         }}
+        chefLabel={labels.chef}
+        chefDescription={labels.chefDescription}
+        chefComingSoon={labels.comingSoon}
       />
     )
   }

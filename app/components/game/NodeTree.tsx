@@ -4,10 +4,22 @@ import Link from 'next/link'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { NodeTreeData, StoryNode, NodeStatus } from '@/app/lib/mockCampaign'
 
+type PopoverLabels = {
+  completed: string
+  inProgress: string
+  available: string
+  locked: string
+  mainTask: string
+  bonusTasks: string
+  close: string
+}
+
 type Props = {
   lang: string
+  basePath: string
   playLevelLabel: string
   data: NodeTreeData
+  popoverLabels: PopoverLabels
 }
 
 const NODE_R = 3
@@ -51,7 +63,7 @@ function CheckIcon({ x, y }: { x: number; y: number }) {
     <polyline
       points={`${x - 1.2},${y} ${x - 0.3},${y + 1} ${x + 1.5},${y - 1}`}
       fill="none"
-      stroke="#3E2723"
+      stroke="#4E342E"
       strokeWidth="0.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -157,7 +169,7 @@ function NodeCircle({
       <text
         x={cx} y={cy + r + 2.8 + labelOffset}
         textAnchor="middle"
-        fill={node.status === 'locked' ? 'rgba(78,52,46,0.3)' : '#3E2723'}
+        fill={node.status === 'locked' ? 'rgba(78,52,46,0.3)' : '#4E342E'}
         fontSize="1.8" fontWeight="600"
         className="select-none pointer-events-none"
       >
@@ -207,19 +219,36 @@ function centeredVb(node: StoryNode, vbW: number, vbH: number): ViewBox {
 
 /* ─── Popover ─── */
 
+function statusBadge(status: NodeStatus, labels: PopoverLabels) {
+  switch (status) {
+    case 'completed':
+      return { bg: 'bg-[#66BB6A]/15', text: 'text-[#2E7D32]', label: labels.completed }
+    case 'in_progress':
+      return { bg: 'bg-[#FEDC56]/20', text: 'text-[#E65100]', label: labels.inProgress }
+    case 'available':
+      return { bg: 'bg-[#4E342E]/8', text: 'text-[#4E342E]', label: labels.available }
+    default:
+      return { bg: 'bg-[#4E342E]/5', text: 'text-[#4E342E]/40', label: labels.locked }
+  }
+}
+
 function NodePopover({
   node,
   containerRect,
   viewBox,
   lang,
+  basePath,
   playLevelLabel,
+  popoverLabels,
   onClose,
 }: {
   node: StoryNode
   containerRect: { width: number; height: number }
   viewBox: ViewBox
   lang: string
+  basePath: string
   playLevelLabel: string
+  popoverLabels: PopoverLabels
   onClose: () => void
 }) {
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -242,70 +271,115 @@ function NodePopover({
 
   const screen = svgToScreen(node.x, node.y, viewBox, containerRect)
 
-  const popoverW = 260
+  const popoverW = 300
   const showAbove = screen.y > containerRect.height * 0.5
 
   const left = Math.max(8, Math.min(screen.x - popoverW / 2, containerRect.width - popoverW - 8))
   const topOrBottom = showAbove
-    ? { bottom: containerRect.height - screen.y + 16 }
-    : { top: screen.y + 16 }
+    ? { bottom: containerRect.height - screen.y + 20 }
+    : { top: screen.y + 20 }
+
+  const badge = statusBadge(node.status, popoverLabels)
 
   return (
     <div
       ref={popoverRef}
-      className="absolute z-50 bg-white border border-[#4E342E]/10 rounded-xl shadow-2xl p-4 w-[260px] animate-[fadeIn_150ms_ease-out]"
+      className="absolute z-50 w-[300px] animate-[popIn_200ms_cubic-bezier(0.34,1.56,0.64,1)]"
       style={{ left, ...topOrBottom }}
     >
       {/* Arrow */}
       <div
-        className="absolute w-3 h-3 bg-white rotate-45"
+        className="absolute w-3.5 h-3.5 bg-white rotate-45 z-[-1]"
         style={{
-          left: Math.max(16, Math.min(screen.x - left - 6, popoverW - 24)),
+          left: Math.max(20, Math.min(screen.x - left - 7, popoverW - 28)),
           ...(showAbove
             ? { bottom: -6, borderBottom: '1px solid rgba(78,52,46,0.1)', borderRight: '1px solid rgba(78,52,46,0.1)' }
             : { top: -6, borderTop: '1px solid rgba(78,52,46,0.1)', borderLeft: '1px solid rgba(78,52,46,0.1)' }),
         }}
       />
 
-      <div className="flex items-center justify-between mb-1.5">
-        <h3 className="text-[#3E2723] font-bold text-sm">{node.label}</h3>
-        <button
-          onClick={onClose}
-          className="text-[#4E342E]/40 hover:text-[#4E342E]/80 text-lg leading-none"
-          aria-label="Zavřít"
-        >
-          &times;
-        </button>
-      </div>
-      <p className="text-[#4E342E]/50 text-xs mb-2">{node.description}</p>
-      <div className="text-[#3E2723] text-xs space-y-1">
-        <div className="flex items-start gap-2">
-          <span className="text-[#4E342E] font-semibold shrink-0">Hlavní úkol:</span>
-          <span>{node.mainTask}</span>
-        </div>
-        {node.subtasks.length > 0 && (
-          <div className="flex items-start gap-2">
-            <span className="text-[#4E342E]/40 shrink-0">Bonusy:</span>
-            <span>{node.subtasks.join(', ')}</span>
+      <div className="bg-white rounded-2xl border border-[#4E342E]/10 shadow-[0_8px_32px_rgba(78,52,46,0.15)] overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#4E342E] to-[#5D4037] px-4 py-3 flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="text-[#FEDC56] font-bold text-sm leading-tight">{node.label}</h3>
+            <p className="text-white/60 text-[11px] mt-0.5 leading-snug">{node.description}</p>
           </div>
-        )}
-        {node.completion > 0 && (
-          <div className="mt-2 h-1.5 bg-[#4E342E]/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[#FEDC56] rounded-full transition-all"
-              style={{ width: `${node.completion}%` }}
-            />
-          </div>
-        )}
-
-        {node.status !== 'locked' && (
-          <Link
-            href={`/${lang}/game/campaign/${node.id}`}
-            className="mt-3 inline-flex rounded-lg bg-[#4E342E] hover:bg-[#5D4037] text-[#FFF8E1] text-xs font-semibold px-3 py-1.5 transition-colors"
+          <button
+            onClick={onClose}
+            className="shrink-0 w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            aria-label={popoverLabels.close}
           >
-            {playLevelLabel}
-          </Link>
-        )}
+            <svg className="w-3 h-3 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-4 py-3 space-y-3">
+          {/* Status badge + completion */}
+          <div className="flex items-center gap-2">
+            <span className={`${badge.bg} ${badge.text} text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full`}>
+              {badge.label}
+            </span>
+            {node.completion > 0 && (
+              <span className="text-[10px] font-semibold text-[#4E342E]/50">{node.completion}%</span>
+            )}
+          </div>
+
+          {/* Progress bar */}
+          {node.completion > 0 && (
+            <div className="h-1.5 bg-[#4E342E]/8 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500 ease-out"
+                style={{
+                  width: `${node.completion}%`,
+                  background: node.completion === 100
+                    ? 'linear-gradient(90deg, #66BB6A, #43A047)'
+                    : 'linear-gradient(90deg, #FEDC56, #F5A623)',
+                }}
+              />
+            </div>
+          )}
+
+          {/* Main task */}
+          <div className="rounded-xl bg-[#FFF8E1] border border-[#F5A623]/20 p-2.5">
+            <div className="flex items-center gap-2 mb-1">
+              <svg className="w-3.5 h-3.5 text-[#F5A623] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z" />
+              </svg>
+              <span className="text-[10px] uppercase tracking-wider font-bold text-[#4E342E]/50">{popoverLabels.mainTask}</span>
+            </div>
+            <p className="text-sm font-semibold text-[#4E342E] pl-5.5">{node.mainTask}</p>
+          </div>
+
+          {/* Subtasks */}
+          {node.subtasks.length > 0 && (
+            <div className="space-y-1.5">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-[#4E342E]/40">{popoverLabels.bonusTasks}</span>
+              {node.subtasks.map((task) => (
+                <div key={task} className="flex items-center gap-2 pl-0.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#4E342E]/20 shrink-0" />
+                  <span className="text-xs text-[#4E342E]/70">{task}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* CTA button */}
+          {node.status !== 'locked' && (
+            <Link
+              href={`${basePath}/${node.id}`}
+              className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#FEDC56] hover:bg-[#f5d430] text-[#4E342E] text-sm font-bold py-2.5 transition-all hover:shadow-md active:scale-[0.98]"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              {playLevelLabel}
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -320,7 +394,7 @@ function findCurrentNode(nodes: StoryNode[]): StoryNode | undefined {
   )
 }
 
-export default function NodeTree({ lang, playLevelLabel, data }: Props) {
+export default function NodeTree({ lang, basePath, playLevelLabel, data, popoverLabels }: Props) {
   const [shakingId, setShakingId] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
@@ -503,7 +577,9 @@ export default function NodeTree({ lang, playLevelLabel, data }: Props) {
             containerRect={containerRect}
             viewBox={vb}
             lang={lang}
+            basePath={basePath}
             playLevelLabel={playLevelLabel}
+            popoverLabels={popoverLabels}
             onClose={() => setSelectedId(null)}
           />
         )
@@ -526,6 +602,10 @@ export default function NodeTree({ lang, playLevelLabel, data }: Props) {
         }
         .animate-scale-pulse {
           animation: scale-pulse 2s ease-in-out infinite;
+        }
+        @keyframes popIn {
+          0% { opacity: 0; transform: scale(0.85) translateY(8px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
         }
       `}</style>
     </div>

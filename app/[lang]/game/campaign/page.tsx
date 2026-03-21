@@ -13,8 +13,18 @@ export default async function CampaignPage({ params }: Props) {
   return (
     <NodeTree
       lang={lang}
+      basePath={`/${lang}/game/campaign`}
       playLevelLabel={d.game.level.playLevel}
       data={campaignData}
+      popoverLabels={{
+        completed: d.game.nodePopover.completed,
+        inProgress: d.game.nodePopover.inProgress,
+        available: d.game.nodePopover.available,
+        locked: d.game.nodePopover.locked,
+        mainTask: d.game.nodePopover.mainTask,
+        bonusTasks: d.game.nodePopover.bonusTasks,
+        close: d.game.nodePopover.close,
+      }}
     />
   )
 }
