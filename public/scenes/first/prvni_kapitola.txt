@@ -1,5 +1,8 @@
 # PRVNÍ KAPITOLA — DEN JEDNA
 
+SCÉNA 1
+[/scenes/bedroom.png]
+
 Ty (v duchu):
 „Pátek. Za čtyři hodiny odjíždím."
 
@@ -25,6 +28,9 @@ Ty:
 
 ---
 Pátek odpoledne. Internát, pokoj.
+
+SCÉNA 2
+[/scenes/intr.png]
 
 Ty:
 „…Aha."
@@ -56,6 +62,9 @@ Ty:
 
 ---
 O chvíli později. Kuchyňka.
+
+SCÉNA 3
+[/scenes/kitchen.png]
 
 [Sedíš s talířem v ruce.]
 
