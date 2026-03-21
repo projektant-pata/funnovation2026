@@ -28,7 +28,7 @@ services:
       - .:/app
       - /app/node_modules          # anonymous volume keeps container node_modules
     ports:
-      - "3003:3000"
+      - "3000:3000"
     environment:
       DATABASE_URL: postgresql://zemloveka:zemloveka_dev@db:5432/zemloveka
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}

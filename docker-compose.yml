@@ -25,18 +25,20 @@ services:
       target: runner
     restart: unless-stopped
     ports:
-      - "3003:3003"
+      - "4030:4030"
     environment:
       DATABASE_URL: postgresql://zemloveka:${POSTGRES_PASSWORD:-zemloveka_dev}@db:5432/zemloveka
       JWT_SECRET: ${JWT_SECRET:-zemloveka-dev-secret-change-in-prod}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      APP_URL: ${APP_URL:-http://localhost:3003}
+      APP_URL: ${APP_URL:-http://localhost:4030}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_API_BASE_URL: ${GEMINI_API_BASE_URL:-https://generativelanguage.googleapis.com/v1beta}
       GEMINI_TEXT_MODEL: ${GEMINI_TEXT_MODEL:-gemini-3-flash-preview}
       GEMINI_CHAT_MODEL: ${GEMINI_CHAT_MODEL:-gemini-3-flash-preview}
       GEMINI_ONBOARDING_MODEL: ${GEMINI_ONBOARDING_MODEL:-gemini-3-flash-preview}
+      GEMINI_LIVE_MODEL: ${GEMINI_LIVE_MODEL:-gemini-2.5-flash-native-audio-preview-12-2025}
+      GEMINI_LIVE_API_BASE_URL: ${GEMINI_LIVE_API_BASE_URL:-https://generativelanguage.googleapis.com/v1alpha}
       NODE_ENV: production
     depends_on:
       db:
