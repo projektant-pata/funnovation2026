@@ -70,7 +70,7 @@ export default function GameLayoutClient({ lang, labels, children, navbar }: Pro
               world: labels.world,
               freeplay: labels.freeplay,
               reels: labels.reels,
-              groups: labels.groups,
+              social: labels.social,
             }}
           />
           <ChefFab

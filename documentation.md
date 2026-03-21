@@ -880,36 +880,123 @@ Uživatel → UI komponenta
 
 ## 10. Screenshots
 
-### Wireframe — kampaňový node tree
+### Landing page — hero
 
-![Campaign wireframe](public/campaign.png)
+![Landing page hero](public/screenshots/index.png)
+
+*Úvodní obrazovka s logem, sloganem a CTA tlačítkem "Začít vařit".*
+
+---
+
+### Landing page — statistiky a kampaň
+
+![Landing page statistiky](public/screenshots/index2.png)
+
+*Sekce s klíčovými čísly (5 regionů, 20+ receptů, 6 kampaní) a představení kampaňového módu s ukázkou node tree.*
+
+---
+
+### Landing page — světová mapa a sandbox
+
+![Landing page mapa](public/screenshots/index3.png)
+
+*Sekce světové mapy s interaktivní ukázkou a sandbox sekce pro volné vaření.*
+
+---
+
+### Landing page — tým a footer
+
+![Landing page tým](public/screenshots/index4.png)
+
+*Představení týmu (Hrant, Richard "Pata", Jan "Miko") a footer s navigací a odkazem na GDPR.*
+
+---
+
+### Kampaň — node tree
+
+![Kampaňový node tree](public/screenshots/campaign.png)
+
+*Interaktivní strom kampaně — uzly propojené větvením s butterfly-effect rozhodnutími. Zlatý uzel = dokončeno, tmavý = aktuální, šedé = zamčené.*
+
+---
+
+### Kampaň — cutscéna (vizuální novela)
+
+![Kampaňová cutscéna](public/screenshots/campaign2.png)
+
+*Úvodní cutscéna kapitoly — anime postavy v prostředí školy. Dialogové bubliny s textem a animovanými postavami.*
+
+---
+
+### Level — přehled před vařením
+
+![Přehled levelu](public/screenshots/cooking.png)
+
+*Obrazovka přehledu levelu před spuštěním vaření: název receptu, cíl, seznam ingrediencí, obtížnost 2/5, čas 12–15 min a XP odměna.*
+
+---
+
+### Level — vaření s AI asistentem
+
+![Vaření s AI asistentem](public/screenshots/cooking2.png)
+
+*Aktivní vaření — timer (02:49), krok 2/8 s instrukcí, checklist ingrediencí vlevo a otevřený chat se Šéfkuchařem (AI asistent) vpravo.*
+
+---
 
 ### Světová mapa
 
-![World map](public/map.png)
+![Světová mapa](public/screenshots/map.png)
 
-### Postavy (herní cutscény)
+*Stylizovaná SVG mapa světa s klikatelnými regiony (Amerika, Evropa, Afrika, Asie, Oceánie). Otevřený sidebar s přehledem regionu Evropa a tlačítkem "Vstoupit do regionu".*
 
-Postavy použité v kampaňových cutscénách:
+---
 
-| Postava | Soubor |
-|---------|--------|
-| Niki | `public/chefs/niki.png` |
-| Pata | `public/chefs/pata.png` |
-| Stefy | `public/chefs/stefy.png` |
+### GDPR — právní přehled
 
-### Herní prostředí (cutscény)
+![GDPR stránka](public/screenshots/gdpr.png)
 
-| Prostředí | Soubor |
-|-----------|--------|
-| Ložnice (intro) | `public/scenes/bedroom.png` |
-| Kuchyně | `public/scenes/kitchen.png` |
-| Škola | `public/scenes/spse.png` |
-| Intro scéna | `public/scenes/intr.png` |
+*Veřejná GDPR stránka — sekce s právním základem zpracování, popisem kategorií dat a politikou sdílení s třetími stranami (Google Gemini API).*
 
-### Logo aplikace
+---
 
-![Logo žemLOVEka](public/logo.png)
+### GDPR — správa práv a souhlasů
+
+![GDPR práva a souhlasy](public/screenshots/gdpr1.png)
+
+*Interaktivní část GDPR stránky — seznam práv subjektu údajů (přístup, výmaz, oprava, omezení, stížnost), tlačítka pro export dat a smazání účtu, kontakt správce.*
+
+---
+
+### Profil hráče
+
+![Profil hráče](public/screenshots/profile.png)
+
+*Profilová stránka uživatele "Pata" — level 1, XP progress bar, statistiky (streak 12 dní, hvězdy, úspěchy), grid odznáků a karty pro Kampaň a Deníček.*
+
+---
+
+### Registrace
+
+![Registrace](public/screenshots/register.png)
+
+*Registrační formulář — uživatelské jméno, e-mail, heslo a potvrzení hesla. Minimální tření, přímý přechod na onboarding.*
+
+---
+
+### Onboarding wizard
+
+![Onboarding wizard](public/screenshots/setup-wizard.png)
+
+*Onboarding dotazník (krok 1/5) — výběr pohlaví pro personalizaci obsahu. Progress bar nahoře, jednoduché kartičky s možnostmi.*
+
+---
+
+### Reels feed
+
+![Reels feed](public/screenshots/reels.png)
+
+*Sociální sekce — TikTok-style vertikální scroll videí z vaření. Viditelný bottom nav s tlačítky Reels, Hrát a Social.*
 
 ---
 

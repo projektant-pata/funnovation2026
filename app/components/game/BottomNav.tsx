@@ -12,7 +12,7 @@ type Props = {
     world: string
     freeplay: string
     reels: string
-    groups: string
+    social: string
   }
 }
 
@@ -72,67 +72,72 @@ export default function BottomNav({ lang, labels }: Props) {
   return (
     <div
       ref={navRef}
-      className="fixed bottom-6 left-0 right-0 z-50 flex items-end justify-between px-4"
+      className="fixed bottom-6 left-0 right-0 z-50 flex items-end justify-center px-4"
     >
-      {/* Reels — left */}
-      <div
-        className="transition-all duration-300 ease-out"
-        style={{
-          opacity: expanded ? 0 : 1,
-          transform: expanded ? 'scale(0.8)' : 'scale(1)',
-          pointerEvents: expanded ? 'none' : 'auto',
-        }}
-      >
-        <Link href={`${base}/social/reels`} className={sideBtnClass(isActive('/social/reels'))}>
-          <ReelsIcon className="w-5 h-5" />
-          <span className="hidden xs:inline">{labels.reels}</span>
-        </Link>
-      </div>
+      {/* All buttons grouped in center */}
+      <div className="flex items-end gap-3">
 
-      {/* Center — Hrát + arc */}
-      <div className="relative flex items-end justify-center">
-        {subItems.map((item, i) => (
-          <Link
-            key={item.path}
-            href={item.href}
-            onClick={() => setExpanded(false)}
-            className={`absolute left-1/2 bottom-0 ${subBtnClass(isActive(item.path), i === 0)}`}
-            style={{
-              transform: expanded
-                ? `translate(calc(-50% + ${subPositions[i].x}px), ${subPositions[i].y}px) scale(1)`
-                : 'translate(-50%, 0) scale(0)',
-              opacity: expanded ? 1 : 0,
-              transition: `transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1) ${expanded ? i * 50 : (2 - i) * 30}ms, opacity 200ms ease ${expanded ? i * 50 : 0}ms`,
-              pointerEvents: expanded ? 'auto' : 'none',
-            }}
-          >
-            <item.icon className="w-4 h-4 shrink-0" />
-            <span>{item.label}</span>
-          </Link>
-        ))}
-
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-2 px-7 py-4 rounded-full bg-[#FEDC56] text-[#4E342E] font-extrabold text-lg whitespace-nowrap shadow-xl transition-all duration-300 ease-out hover:bg-[#f5d430]"
+        {/* Reels — left */}
+        <div
+          className="transition-all duration-300 ease-out"
+          style={{
+            opacity: expanded ? 0 : 1,
+            transform: expanded ? 'scale(0.8)' : 'scale(1)',
+            pointerEvents: expanded ? 'none' : 'auto',
+          }}
         >
-          <PlayIcon className="w-5 h-5" />
-          <span>{labels.play}</span>
-        </button>
-      </div>
+          <Link href={`${base}/social/reels`} className={sideBtnClass(isActive('/social/reels'))}>
+            <ReelsIcon className="w-5 h-5" />
+            <span>{labels.reels}</span>
+          </Link>
+        </div>
 
-      {/* Skupiny — right */}
-      <div
-        className="transition-all duration-300 ease-out"
-        style={{
-          opacity: expanded ? 0 : 1,
-          transform: expanded ? 'scale(0.8)' : 'scale(1)',
-          pointerEvents: expanded ? 'none' : 'auto',
-        }}
-      >
-        <Link href={`${base}/social/groups`} className={sideBtnClass(isActive('/social/groups'))}>
-          <GroupsIcon className="w-5 h-5" />
-          <span className="hidden xs:inline">{labels.groups}</span>
-        </Link>
+        {/* Hrát + arc sub-items */}
+        <div className="relative flex items-end justify-center">
+          {subItems.map((item, i) => (
+            <Link
+              key={item.path}
+              href={item.href}
+              onClick={() => setExpanded(false)}
+              className={`absolute left-1/2 bottom-0 ${subBtnClass(isActive(item.path), i === 0)}`}
+              style={{
+                transform: expanded
+                  ? `translate(calc(-50% + ${subPositions[i].x}px), ${subPositions[i].y}px) scale(1)`
+                  : 'translate(-50%, 0) scale(0)',
+                opacity: expanded ? 1 : 0,
+                transition: `transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1) ${expanded ? i * 50 : (2 - i) * 30}ms, opacity 200ms ease ${expanded ? i * 50 : 0}ms`,
+                pointerEvents: expanded ? 'auto' : 'none',
+              }}
+            >
+              <item.icon className="w-4 h-4 shrink-0" />
+              <span>{item.label}</span>
+            </Link>
+          ))}
+
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-2 px-7 py-4 rounded-full bg-[#FEDC56] text-[#4E342E] font-extrabold text-lg whitespace-nowrap shadow-xl transition-all duration-300 ease-out hover:bg-[#f5d430]"
+          >
+            <PlayIcon className="w-5 h-5" />
+            <span>{labels.play}</span>
+          </button>
+        </div>
+
+        {/* Social — right */}
+        <div
+          className="transition-all duration-300 ease-out"
+          style={{
+            opacity: expanded ? 0 : 1,
+            transform: expanded ? 'scale(0.8)' : 'scale(1)',
+            pointerEvents: expanded ? 'none' : 'auto',
+          }}
+        >
+          <Link href={`${base}/social`} className={sideBtnClass(isActive('/social'))}>
+            <SocialIcon className="w-5 h-5" />
+            <span>{labels.social}</span>
+          </Link>
+        </div>
+
       </div>
     </div>
   )
@@ -174,7 +179,7 @@ function ReelsIcon({ className }: { className?: string }) {
   )
 }
 
-function GroupsIcon({ className }: { className?: string }) {
+function SocialIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" />
